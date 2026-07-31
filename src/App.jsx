@@ -49,13 +49,14 @@ function NotFound() {
 }
 
 function AppLayout() {
+  const location = useLocation();
   return (
     <>
       <Navbar />
       <main>
         <PageTransition>
           <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loading-spinner"></div></div>}>
-            <Routes>
+            <Routes location={location} key={location.pathname}>
               <Route path="/" element={<Home />} />
               <Route path="/academy" element={<Academy />} />
               <Route path="/academy/grades-5-8" element={<Grades5to8 />} />
