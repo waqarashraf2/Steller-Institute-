@@ -1,10 +1,32 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { itCourses as initialIt, beautyCourses as initialBeauty } from '../data/courses';
 
 const CoursesContext = createContext();
 
+const CACHE_KEY = 'stellar_courses_cache';
+const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+
+const defaultFallbackCourses = [
+  ...initialIt.map(c => ({ ...c, category: 'it', image_url: c.image, banner_url: c.bannerImage })),
+  ...initialBeauty.map(c => ({ ...c, category: 'beauty', image_url: c.image, banner_url: c.bannerImage }))
+];
+
+function getInitialCourses() {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { ts, data } = JSON.parse(cached);
+      if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch {}
+  return defaultFallbackCourses;
+}
+
 export function CoursesProvider({ children }) {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState(getInitialCourses);
+  const [loading, setLoading] = useState(false);
 
   const fetchCourses = async () => {
     try {
@@ -12,9 +34,12 @@ export function CoursesProvider({ children }) {
       const response = await fetch(`${apiUrl}/courses`);
       if (response.ok) {
         const data = await response.json();
-        setCourses(data);
-      } else {
-        console.error('Failed to fetch courses');
+        if (Array.isArray(data) && data.length > 0) {
+          setCourses(data);
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+          } catch {}
+        }
       }
     } catch (err) {
       console.error('Error fetching courses:', err);

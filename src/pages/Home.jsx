@@ -285,7 +285,7 @@ export default function Home() {
                     <div className="course-card-v2">
                       <div className="course-card-img">
                         {course.image_url ? (
-                          <img src={course.image_url} alt={course.title} loading="lazy" />
+                          <img src={course.image_url} alt={course.title} loading="lazy" decoding="async" />
                         ) : (
                           <ImagePlaceholder label="Course Image" />
                         )}

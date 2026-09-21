@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { itCourses, beautyCourses } from '../data/courses';
+import CertificateTemplate from '../components/CertificateTemplate';
 import './StellarAdmin.css';
 
 const API = import.meta.env.VITE_API_URL || '/api';
@@ -13,6 +14,24 @@ const emptyImg = {
   placeholder_key: '', image_url: ''
 };
 
+const createDefaultRegNo = () => {
+  const yy = new Date().getFullYear().toString().slice(-2);
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `STI${yy}${rand}`;
+};
+
+const emptyCert = {
+  registration_no: '',
+  student_name: '',
+  course_title: 'Digital Marketing and Website Development',
+  course_duration: 'A 3-Month Professional Course Conducted by Stellar Institute.',
+  conducted_by: 'Stellar Institute.',
+  issue_date: new Date().toISOString().split('T')[0],
+  principal_title: 'Stellar Institute & Academy',
+  instructor_title: 'Stellar Institute',
+  is_valid: true
+};
+
 export default function StellarAdmin() {
   const [token, setToken] = useState(sessionStorage.getItem('stellar-admin-token') || '');
   const [user, setUser] = useState(null);
@@ -20,7 +39,7 @@ export default function StellarAdmin() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   
-  const [activeTab, setActiveTab] = useState('announcements'); // 'announcements' | 'images'
+  const [activeTab, setActiveTab] = useState('announcements'); // 'announcements' | 'images' | 'courses' | 'certificates' | 'pages'
   const [loading, setLoading] = useState(false);
 
   // Announcements State
@@ -42,6 +61,14 @@ export default function StellarAdmin() {
   const [editingCourse, setEditingCourse] = useState(null);
   const [courseForm, setCourseForm] = useState(emptyCourse);
 
+  // Certificates State
+  const [certificates, setCertificates] = useState([]);
+  const [certForm, setCertForm] = useState({ ...emptyCert, registration_no: createDefaultRegNo() });
+  const [editingCertId, setEditingCertId] = useState(null);
+  const [certSearch, setCertSearch] = useState('');
+  const [savingCert, setSavingCert] = useState(false);
+  const certPrintRef = useRef(null);
+
   // Pages state
   const [privacyPolicy, setPrivacyPolicy] = useState('');
   const [savingPolicy, setSavingPolicy] = useState(false);
@@ -55,11 +82,12 @@ export default function StellarAdmin() {
     if (!token) return;
     setLoading(true);
     try {
-      const [rAnns, rImgs, rCourses, rPages] = await Promise.all([
+      const [rAnns, rImgs, rCourses, rPages, rCerts] = await Promise.all([
         fetch(`${API}/admin-announcements`, { headers: headers() }),
         fetch(`${API}/admin-images`, { headers: headers() }),
         fetch(`${API}/courses`, { headers: headers() }),
-        fetch(`${API}/pages?slug=privacy-policy`)
+        fetch(`${API}/pages?slug=privacy-policy`),
+        fetch(`${API}/admin-certificates`, { headers: headers() }).catch(() => ({ ok: false }))
       ]);
       
       if (rAnns.status === 401 || rCourses.status === 401) { logout(); return; }
@@ -70,6 +98,9 @@ export default function StellarAdmin() {
       if (rPages.ok) {
         const pData = await rPages.json();
         setPrivacyPolicy(pData.content || '');
+      }
+      if (rCerts && rCerts.ok) {
+        setCertificates(await rCerts.json());
       }
     } catch {}
     setLoading(false);
@@ -285,6 +316,66 @@ export default function StellarAdmin() {
     } catch {}
   };
 
+  // --- CERTIFICATES LOGIC ---
+  const handleSaveCertificate = async (e) => {
+    e.preventDefault();
+    if (!certForm.student_name.trim() || !certForm.registration_no.trim()) {
+      alert('Please fill in Student Name and Registration No.');
+      return;
+    }
+    setSavingCert(true);
+    try {
+      const payload = editingCertId ? { ...certForm, id: editingCertId } : certForm;
+      const r = await fetch(`${API}/admin-certificates`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify(payload)
+      });
+      if (r.ok) {
+        alert(editingCertId ? 'Certificate updated successfully!' : 'Certificate created & registered successfully!');
+        setEditingCertId(null);
+        setCertForm({ ...emptyCert, registration_no: createDefaultRegNo() });
+        fetchData();
+      } else {
+        const err = await r.json();
+        alert(err.error || 'Failed to save certificate');
+      }
+    } catch {
+      alert('Network error saving certificate');
+    } finally {
+      setSavingCert(false);
+    }
+  };
+
+  const handleEditCertificate = (c) => {
+    setEditingCertId(c.id);
+    setCertForm({
+      registration_no: c.registration_no || '',
+      student_name: c.student_name || '',
+      course_title: c.course_title || '',
+      course_duration: c.course_duration || 'A 3-Month Professional Course Conducted by Stellar Institute.',
+      conducted_by: c.conducted_by || 'Stellar Institute.',
+      issue_date: c.issue_date ? c.issue_date.split('T')[0] : new Date().toISOString().split('T')[0],
+      principal_title: c.principal_title || 'Stellar Institute & Academy',
+      instructor_title: c.instructor_title || 'Stellar Institute',
+      is_valid: c.is_valid !== undefined ? c.is_valid : true
+    });
+  };
+
+  const handleDeleteCertificate = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this certificate record?')) return;
+    try {
+      const r = await fetch(`${API}/admin-certificates`, {
+        method: 'DELETE',
+        headers: headers(),
+        body: JSON.stringify({ id })
+      });
+      if (r.ok) {
+        fetchData();
+      }
+    } catch {}
+  };
+
   if (!token) return (
     <div className="admin-login-wrapper">
       <div className="admin-login-card">
@@ -320,6 +411,7 @@ export default function StellarAdmin() {
             <button className={`admin-tab-btn ${activeTab === 'announcements' ? 'active' : ''}`} onClick={() => setActiveTab('announcements')}>Announcements</button>
             <button className={`admin-tab-btn ${activeTab === 'images' ? 'active' : ''}`} onClick={() => setActiveTab('images')}>Website Images</button>
             <button className={`admin-tab-btn ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => setActiveTab('courses')}>Course Manager</button>
+            <button className={`admin-tab-btn ${activeTab === 'certificates' ? 'active' : ''}`} onClick={() => setActiveTab('certificates')}>Certificates</button>
             <button className={`admin-tab-btn ${activeTab === 'pages' ? 'active' : ''}`} onClick={() => setActiveTab('pages')}>Pages</button>
           </div>
         </div>
@@ -723,6 +815,304 @@ export default function StellarAdmin() {
               <button onClick={() => setDeleteTarget(null)} className="btn btn-secondary">Cancel</button>
               <button onClick={() => handleDeleteAnn(deleteTarget.id)} className="admin-delete-confirm-btn">Delete</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- CERTIFICATES TAB --- */}
+      {!loading && activeTab === 'certificates' && (
+        <div className="vercel-container fade-in">
+          <div className="vercel-header">
+            <div>
+              <h2 className="vercel-title">Student Certificates & QR Registry</h2>
+              <p className="vercel-subtitle">Generate official certificates, customize student credentials, and manage live QR verification.</p>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={fetchData} className="admin-logout-btn" title="Refresh">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div className="admin-stats">
+            <div className="stat-card">
+              <div className="stat-number">{certificates.length}</div>
+              <div className="stat-label">Total Issued</div>
+            </div>
+            <div className="stat-card stat-active">
+              <div className="stat-number">{certificates.filter(c => c.is_valid).length}</div>
+              <div className="stat-label">Active & Verified</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{courses.length}</div>
+              <div className="stat-label">Available Courses</div>
+            </div>
+          </div>
+
+          {/* Top: 2-Column Certificate Generator & Live Preview */}
+          <div className="cert-admin-layout">
+            {/* Form */}
+            <div className="cert-form-card">
+              <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '16px', color: 'var(--admin-text)' }}>
+                {editingCertId ? '✏️ Edit Certificate' : '🎓 Generate New Certificate'}
+              </h3>
+              <form onSubmit={handleSaveCertificate} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div className="vercel-field-group">
+                  <label className="vercel-label">Student Full Name *</label>
+                  <input
+                    type="text"
+                    className="vercel-input"
+                    value={certForm.student_name}
+                    onChange={e => setCertForm({ ...certForm, student_name: e.target.value })}
+                    placeholder="e.g. Anas Ali"
+                    required
+                  />
+                </div>
+
+                <div className="vercel-field-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label className="vercel-label">Registration No *</label>
+                    <button
+                      type="button"
+                      onClick={() => setCertForm({ ...certForm, registration_no: createDefaultRegNo() })}
+                      style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '12px', cursor: 'pointer', fontWeight: 600 }}
+                    >
+                      🎲 Auto Generate
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    className="vercel-input"
+                    value={certForm.registration_no}
+                    onChange={e => setCertForm({ ...certForm, registration_no: e.target.value })}
+                    placeholder="e.g. STI250189"
+                    required
+                  />
+                </div>
+
+                <div className="vercel-field-group">
+                  <label className="vercel-label">Course Title *</label>
+                  <input
+                    type="text"
+                    className="vercel-input"
+                    value={certForm.course_title}
+                    onChange={e => setCertForm({ ...certForm, course_title: e.target.value })}
+                    placeholder="e.g. Digital Marketing and Website Development"
+                    required
+                  />
+                </div>
+
+                <div className="vercel-field-group">
+                  <label className="vercel-label">Course Description / Duration Line</label>
+                  <input
+                    type="text"
+                    className="vercel-input"
+                    value={certForm.course_duration}
+                    onChange={e => setCertForm({ ...certForm, course_duration: e.target.value })}
+                    placeholder="e.g. A 3-Month Professional Course Conducted by Stellar Institute."
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="vercel-field-group">
+                    <label className="vercel-label">Issue Date</label>
+                    <input
+                      type="date"
+                      className="vercel-input"
+                      value={certForm.issue_date}
+                      onChange={e => setCertForm({ ...certForm, issue_date: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="vercel-field-group">
+                    <label className="vercel-label">Status</label>
+                    <select
+                      className="vercel-select"
+                      value={certForm.is_valid ? 'true' : 'false'}
+                      onChange={e => setCertForm({ ...certForm, is_valid: e.target.value === 'true' })}
+                    >
+                      <option value="true">Valid (Active)</option>
+                      <option value="false">Revoked / Suspended</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="vercel-field-group">
+                    <label className="vercel-label">Principal Subtitle</label>
+                    <input
+                      type="text"
+                      className="vercel-input"
+                      value={certForm.principal_title}
+                      onChange={e => setCertForm({ ...certForm, principal_title: e.target.value })}
+                    />
+                  </div>
+                  <div className="vercel-field-group">
+                    <label className="vercel-label">Instructor Subtitle</label>
+                    <input
+                      type="text"
+                      className="vercel-input"
+                      value={certForm.instructor_title}
+                      onChange={e => setCertForm({ ...certForm, instructor_title: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                  <button type="submit" className="vercel-btn-primary" disabled={savingCert} style={{ flex: 1 }}>
+                    {savingCert ? 'Saving...' : editingCertId ? 'Update & Save' : 'Register & Issue Certificate'}
+                  </button>
+                  {editingCertId && (
+                    <button
+                      type="button"
+                      className="vercel-btn-secondary"
+                      onClick={() => {
+                        setEditingCertId(null);
+                        setCertForm({ ...emptyCert, registration_no: createDefaultRegNo() });
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            {/* Interactive Live Preview */}
+            <div className="cert-preview-pane">
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '16px' }}>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--admin-text)' }}>
+                  👁️ Real-Time Certificate Preview
+                </span>
+                <span style={{ fontSize: '12px', color: 'var(--admin-muted)' }}>
+                  Landscape (100% Exact Print Layout)
+                </span>
+              </div>
+
+              <div className="cert-outer-wrapper" style={{ padding: '0', background: 'transparent' }}>
+                <CertificateTemplate
+                  ref={certPrintRef}
+                  student_name={certForm.student_name || 'Student Name'}
+                  registration_no={certForm.registration_no || 'STI250189'}
+                  course_title={certForm.course_title || 'Course Title Here'}
+                  course_duration={certForm.course_duration || 'A 3-Month Professional Course Conducted by Stellar Institute.'}
+                  principal_title={certForm.principal_title || 'Stellar Institute & Academy'}
+                  instructor_title={certForm.instructor_title || 'Stellar Institute'}
+                />
+              </div>
+
+              <div className="cert-preview-actions no-print">
+                <button
+                  type="button"
+                  className="cert-action-btn-print"
+                  onClick={() => window.print()}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6 9 6 2 18 2 18 9" />
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                    <rect x="6" y="14" width="12" height="8" />
+                  </svg>
+                  Print / Save Certificate PDF
+                </button>
+                <a
+                  href={`/verify/${certForm.registration_no || 'STI250189'}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="cert-action-btn-verify"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+                  </svg>
+                  Test Verification Link
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom: All Issued Certificates Table & Search */}
+          <div style={{ marginTop: '40px' }}>
+            <div className="admin-actions-bar">
+              <h2>Registered Certificates Registry ({certificates.length})</h2>
+              <div style={{ width: '280px' }}>
+                <input
+                  type="text"
+                  className="vercel-input"
+                  placeholder="Search by student or reg no..."
+                  value={certSearch}
+                  onChange={e => setCertSearch(e.target.value)}
+                  style={{ padding: '8px 12px', fontSize: '13px' }}
+                />
+              </div>
+            </div>
+
+            {certificates.length === 0 ? (
+              <div className="admin-empty">No certificates issued yet. Fill the form above to register your first student!</div>
+            ) : (
+              <div className="admin-table-wrapper">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Reg No.</th>
+                      <th>Student Name</th>
+                      <th>Course</th>
+                      <th>Issue Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {certificates
+                      .filter(c => 
+                        !certSearch ||
+                        (c.student_name && c.student_name.toLowerCase().includes(certSearch.toLowerCase())) ||
+                        (c.registration_no && c.registration_no.toLowerCase().includes(certSearch.toLowerCase())) ||
+                        (c.course_title && c.course_title.toLowerCase().includes(certSearch.toLowerCase()))
+                      )
+                      .map(c => (
+                        <tr key={c.id}>
+                          <td style={{ fontWeight: 800, color: '#0284c7' }}>{c.registration_no}</td>
+                          <td style={{ fontWeight: 600 }}>{c.student_name}</td>
+                          <td>{c.course_title}</td>
+                          <td>{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
+                          <td>
+                            <span className={`cert-badge-status ${c.is_valid ? 'cert-badge-active' : 'cert-badge-inactive'}`}>
+                              {c.is_valid ? 'Active' : 'Revoked'}
+                            </span>
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button
+                                className="admin-edit-btn"
+                                onClick={() => {
+                                  handleEditCertificate(c);
+                                  window.scrollTo({ top: 120, behavior: 'smooth' });
+                                }}
+                              >
+                                Edit / View
+                              </button>
+                              <a
+                                href={`/verify/${c.registration_no}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="admin-edit-btn"
+                                style={{ textDecoration: 'none', color: '#0284c7' }}
+                              >
+                                Verify
+                              </a>
+                              <button
+                                className="admin-del-btn"
+                                onClick={() => handleDeleteCertificate(c.id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}

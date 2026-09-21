@@ -106,6 +106,7 @@ export default function SkilledInstitute() {
                           src={course.banner_url || course.image_url} 
                           alt={course.title}
                           loading="lazy"
+                          decoding="async"
                           style={{
                             width: '100%',
                             height: '100%',

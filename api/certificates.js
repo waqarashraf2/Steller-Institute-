@@ -1,0 +1,39 @@
+import { getDb, ensureTables } from './db.js';
+import { setCorsHeaders, setSecurityHeaders } from './security.js';
+
+export default async function handler(req, res) {
+  setCorsHeaders(res, req, { isPublic: true });
+  setSecurityHeaders(res);
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  await ensureTables();
+  const db = getDb();
+
+  try {
+    if (req.method === 'GET') {
+      const reg = req.query.reg || req.query.id;
+      if (!reg) {
+        return res.status(400).json({ error: 'Registration number is required' });
+      }
+
+      const rows = await db`
+        SELECT id, registration_no, student_name, course_title, course_duration, conducted_by, 
+               issue_date, principal_title, instructor_title, is_valid, created_at
+        FROM certificates
+        WHERE UPPER(registration_no) = UPPER(${reg.trim()})
+      `;
+
+      if (rows.length === 0) {
+        return res.status(404).json({ error: 'Certificate not found', found: false });
+      }
+
+      return res.status(200).json({ found: true, certificate: rows[0] });
+    }
+
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (err) {
+    console.error('Certificate verification error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+}

@@ -68,6 +68,22 @@ export async function ensureTables() {
     )
   `;
 
+  await db`
+    CREATE TABLE IF NOT EXISTS certificates (
+      id SERIAL PRIMARY KEY,
+      registration_no VARCHAR(100) NOT NULL UNIQUE,
+      student_name VARCHAR(255) NOT NULL,
+      course_title VARCHAR(255) NOT NULL,
+      course_duration VARCHAR(255) DEFAULT 'A 3-Month Professional Course Conducted by Stellar Institute.',
+      conducted_by VARCHAR(255) DEFAULT 'Stellar Institute.',
+      issue_date DATE DEFAULT CURRENT_DATE,
+      principal_title VARCHAR(255) DEFAULT 'Stellar Institute & Academy',
+      instructor_title VARCHAR(255) DEFAULT 'Stellar Institute',
+      is_valid BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
   const existingAdmin = await db`SELECT id FROM admin_users WHERE username = 'admin'`;
   if (existingAdmin.length === 0) {
     const defaultPass = process.env.ADMIN_DEFAULT_PASS;

@@ -38,7 +38,9 @@ import adminSeedHandler from './api/admin-seed.js';
 import adminAnnouncementsHandler from './api/admin-announcements.js';
 import adminImagesHandler from './api/admin-images.js';
 import adminPagesHandler from './api/admin-pages.js';
+import adminCertificatesHandler from './api/admin-certificates.js';
 import announcementsHandler from './api/announcements.js';
+import certificatesHandler from './api/certificates.js';
 import contactHandler from './api/contact.js';
 import pagesHandler from './api/pages.js';
 
@@ -48,7 +50,9 @@ app.all('/api/admin-seed', wrapHandler(adminSeedHandler));
 app.all('/api/admin-announcements', wrapHandler(adminAnnouncementsHandler));
 app.all('/api/admin-images', wrapHandler(adminImagesHandler));
 app.all('/api/admin-pages', wrapHandler(adminPagesHandler));
+app.all('/api/admin-certificates', wrapHandler(adminCertificatesHandler));
 app.all('/api/announcements', wrapHandler(announcementsHandler));
+app.all('/api/certificates', wrapHandler(certificatesHandler));
 app.all('/api/contact', wrapHandler(contactHandler));
 app.all('/api/pages', wrapHandler(pagesHandler));
 

@@ -14,21 +14,24 @@ const slides = [
     heading: 'Building Tomorrow\'s Leaders, Today.',
     subheading: 'From foundational education to professional skills, Stellar Institute shapes futures at every stage.',
     cta: { text: 'Explore Programs', link: '/skilled-institute' },
-    cta2: { text: 'Contact Us', link: '/contact' }
+    cta2: { text: 'Contact Us', link: '/contact' },
+    defaultImage: '/assets/stellar_images/hero_slide_1.jpg'
   },
   {
     tag: 'Stellar Academy',
     heading: 'Your Path to Top Grades\nStarts Here.',
     subheading: 'Preparing students for board exams with the guidance and discipline needed to score the highest grades.',
     cta: { text: 'View Programs', link: '/academy' },
-    cta2: { text: 'Register Now', link: '/admission' }
+    cta2: { text: 'Register Now', link: '/admission' },
+    defaultImage: '/assets/stellar_images/hero_slide_2.jpg'
   },
   {
     tag: 'Stellar Skilled Institute',
     heading: 'Learn Skills. Build a Career.\nStart earning.',
     subheading: 'Master Graphic Design, Digital Marketing, Web Development, and more, and unlock real earning opportunities with international clients.',
     cta: { text: 'Browse Courses', link: '/skilled-institute' },
-    cta2: { text: 'Enroll Now', link: '/admission' }
+    cta2: { text: 'Enroll Now', link: '/admission' },
+    defaultImage: '/assets/stellar_images/hero_slide_3.jpg'
   }
 ];
 
@@ -70,7 +73,12 @@ export default function HeroSlider() {
           transition={{ duration: 0.8 }}
         >
           <div className="hero-slide-bg" style={{ position: 'absolute', inset: 0, zIndex: 1, width: '100%', height: '100%' }}>
-            <ImagePlaceholder label={`Hero Slide ${current + 1}`} priority={current === 0} />
+            <ImagePlaceholder 
+              label={`Hero Slide ${current + 1}`} 
+              placeholderKey={`Hero Slide ${current + 1}`}
+              fallbackUrl={slide.defaultImage}
+              priority={current === 0} 
+            />
           </div>
           <div className="hero-slide-overlay" />
           

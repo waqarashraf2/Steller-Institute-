@@ -20,6 +20,7 @@ const AdmissionThankYou = React.lazy(() => import('./pages/AdmissionThankYou'));
 const ComingSoon = React.lazy(() => import('./pages/ComingSoon'));
 const StellarAdmin = React.lazy(() => import('./pages/StellarAdmin'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
+const VerifyCertificate = React.lazy(() => import('./pages/VerifyCertificate'));
 
 import CursorTrail from './components/CursorTrail';
 import AnnouncementPopup from './components/AnnouncementPopup';
@@ -70,6 +71,8 @@ function AppLayout() {
               <Route path="/admission" element={<Admission />} />
               <Route path="/admission/thankyou" element={<AdmissionThankYou />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/verify/:regNo" element={<VerifyCertificate />} />
+              <Route path="/verify" element={<VerifyCertificate />} />
               <Route path="/coming-soon" element={<ComingSoon />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />

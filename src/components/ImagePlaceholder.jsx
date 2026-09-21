@@ -11,22 +11,27 @@ import './ImagePlaceholder.css';
  *   - className: optional extra class
  *   - style: optional inline style overrides
  */
-export default function ImagePlaceholder({ label = 'Image Here', placeholderKey, className = '', style = {}, priority = false }) {
+export default function ImagePlaceholder({ 
+  label = 'Image Here', 
+  placeholderKey, 
+  fallbackUrl,
+  defaultSrc,
+  className = '', 
+  style = {}, 
+  priority = false 
+}) {
   const customImage = useWebsiteImage(placeholderKey || label);
-  const { loaded } = useWebsiteImages();
+  const activeImage = customImage || fallbackUrl || defaultSrc;
 
-  // Remove the strict !loaded check so we render the placeholder block immediately
-  // while waiting for the customImage to resolve.
-  // if (!loaded) return null; 
-
-  if (customImage) {
+  if (activeImage) {
     return (
       <img 
-        src={customImage} 
+        src={activeImage} 
         alt={label} 
         className={className} 
         loading={priority ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : 'auto'}
+        decoding="async"
         style={{ width: '100%', height: '100%', objectFit: 'cover', ...style }} 
       />
     );

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { defaultWebsiteImages } from '../data/defaultImages';
 
 const WebsiteImagesContext = createContext({});
 
@@ -25,10 +26,10 @@ function saveCache(images) {
 
 export function WebsiteImagesProvider({ children }) {
   const cached = loadCache();
-  const [images, setImages] = useState(cached || {});
-  // Always mark as loaded immediately — slider should never wait for the API.
-  // If cache exists, images are already populated. If not, placeholder shows
-  // while the fetch completes in the background.
+  const [images, setImages] = useState(() => ({
+    ...defaultWebsiteImages,
+    ...(cached || {})
+  }));
   const [loaded, setLoaded] = useState(true);
 
   useEffect(() => {

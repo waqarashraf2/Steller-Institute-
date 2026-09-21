@@ -1,0 +1,584 @@
+/* ==========================================================================
+   STELLAR INSTITUTE OFFICIAL CERTIFICATE OF COMPLETION
+   100% Pixel-Perfect Replica Matching Original Reference Design
+   ========================================================================== */
+
+.cert-outer-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background: transparent;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.cert-container {
+  position: relative;
+  width: 1000px;
+  height: 630px;
+  min-width: 1000px;
+  min-height: 630px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 12px 36px rgba(10, 37, 64, 0.14);
+  display: flex;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 12px;
+}
+
+/* ─── Inner Framing Border ────────────────────────────────────────── */
+.cert-inner-frame {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  border: 1.5px solid #2e235c;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ─── Four Corner Brackets (Exact Replica) ────────────────────────── */
+/* Top Left - Cyan Corner */
+.cert-bracket-tl {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 38px;
+  height: 38px;
+  border-top: 5px solid #00a8ea;
+  border-left: 5px solid #00a8ea;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Top Right - Cyan Corner (Mirrors Top-Left Design) */
+.cert-bracket-tr {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 38px;
+  height: 38px;
+  border-top: 5px solid #00a8ea;
+  border-right: 5px solid #00a8ea;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Bottom Left - Cyan Vertical + Yellow Horizontal */
+.cert-bracket-bl-v {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 5px;
+  height: 38px;
+  background: #00a8ea;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.cert-bracket-bl-h {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 38px;
+  height: 5px;
+  background: #ffd000;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Bottom Right - Cyan Vertical + Yellow Horizontal */
+.cert-bracket-br-v {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 5px;
+  height: 38px;
+  background: #00a8ea;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.cert-bracket-br-h {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 38px;
+  height: 5px;
+  background: #ffd000;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ─── Watermark Background (Official Logo Emblem) ───────────────── */
+.cert-watermark-svg {
+  position: absolute;
+  top: 48%;
+  left: 48%;
+  transform: translate(-50%, -50%) rotate(-6deg);
+  width: 340px;
+  height: 390px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Left Main Content (White Canvas) ────────────────────────────── */
+.cert-main {
+  flex: 1;
+  padding: 22px 16px 14px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
+/* Header & Official Logo */
+.cert-header {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.cert-logo-img {
+  width: 270px;
+  height: auto;
+  max-height: 75px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+/* Body / Student Details (Compact Spacing Matching Reference) */
+.cert-body {
+  margin-top: 8px;
+  margin-bottom: 2px;
+}
+
+.cert-intro-text {
+  font-size: 18px;
+  color: #1e293b;
+  font-weight: 500;
+  margin: 0 0 2px 0;
+}
+
+.cert-student-name-wrap {
+  margin: 3px 0 8px 0;
+  display: inline-block;
+  min-width: 380px;
+}
+
+.cert-student-name {
+  font-family: 'Alex Brush', 'Allura', 'Great Vibes', cursive;
+  font-size: 64px;
+  color: #0266b8;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.05;
+  display: block;
+  padding: 0 10px 0 0;
+}
+
+.cert-name-underline {
+  width: 420px;
+  height: 1.5px;
+  background: #0f172a;
+  margin-top: -2px;
+}
+
+.cert-middle-text {
+  font-size: 18px;
+  color: #1e293b;
+  font-weight: 500;
+  margin-top: 8px;
+  margin-bottom: 6px;
+}
+
+.cert-course-title {
+  font-size: 26.5px;
+  font-weight: 800;
+  color: #0052cc;
+  line-height: 1.25;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.cert-course-desc {
+  font-size: 17px;
+  color: #334155;
+  line-height: 1.42;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.cert-desc-bold {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+/* Signatures Area */
+.cert-signatures {
+  display: flex;
+  justify-content: flex-start;
+  gap: 75px;
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+
+.cert-sig-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 205px;
+  text-align: center;
+}
+
+.cert-sig-line {
+  width: 100%;
+  height: 1.5px;
+  background: #0f172a;
+  margin-bottom: 6px;
+}
+
+.cert-sig-role {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.cert-sig-org {
+  font-size: 12.5px;
+  color: #475569;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* Footer Info Strip */
+.cert-footer-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1.5px solid #00a8ea;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0b1e3e;
+}
+
+.cert-footer-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cert-footer-item svg {
+  color: #1f1b4c;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.cert-footer-div {
+  width: 1.5px;
+  height: 14px;
+  background: #1f1b4c;
+  opacity: 0.5;
+}
+
+/* ─── Right Navy Banner (Exact Replica) ─────────────────────────────── */
+.cert-banner-wrapper {
+  position: relative;
+  width: 310px;
+  min-width: 310px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  /* Safely placed to give room for text on left */
+  background: transparent;
+  padding-top: 0;
+  /* Keeps batch container at the very top */
+  padding-right: 21px;
+  /* Shifted safely 3px to the left */
+}
+
+.cert-banner-container {
+  position: relative;
+  width: 285px;
+  height: 422px;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* Yellow Swallowtail Notch Accent Line at the Bottom (Prominent & Sharp) */
+.cert-banner-yellow-backing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffd000;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 24px), 0 100%);
+  z-index: 2;
+}
+
+.cert-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 6px);
+  /* 6px prominent yellow V-cut line at the bottom */
+  background: #2e235c;
+  color: #ffffff;
+  padding: 58px 12px 16px 12px;
+  /* Content shifted further down inside badge */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 24px), 0 100%);
+  z-index: 3;
+  box-sizing: border-box;
+}
+
+/* Far-Right Yellow Curved Bar Accent */
+.cert-far-right-yellow {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  width: 35px;
+  height: 287px;
+  background: #ffd000;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 18px;
+  z-index: 1;
+}
+
+/* Top Registration Group */
+.cert-banner-top-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.cert-reg-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.cert-reg-pill-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cert-reg-dash {
+  width: 16px;
+  height: 2px;
+  background: #ffd000;
+}
+
+.cert-reg-pill {
+  padding: 4px 22px;
+  border: 1.5px solid #ffd000;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+}
+
+/* Laurel Wreath Badge Row with exact transparent image */
+.cert-badge-crest-wrap {
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0;
+  background: transparent;
+}
+
+.cert-laurel-crest-img {
+  width: 100%;
+  height: auto;
+  max-height: 90px;
+  object-fit: contain;
+  display: block;
+  background: transparent;
+}
+
+/* Certificate of Completion Heading */
+.cert-banner-heading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.cert-banner-main-title {
+  font-size: 31px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.cert-banner-sub-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 3.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.cert-banner-divider-line {
+  width: 86%;
+  height: 2px;
+  background: #ffd000;
+  margin: 8px auto;
+}
+
+/* Dynamic QR Card (Snug right above the bottom V-cut) */
+.cert-qr-card {
+  margin-top: 8px;
+  margin-bottom: 0;
+  background: #ffffff;
+  border: 2px solid #ffd000;
+  border-radius: 9px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 256px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.cert-qr-box {
+  width: 54px;
+  height: 54px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cert-qr-text {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.cert-qr-heading {
+  font-size: 12px;
+  font-weight: 900;
+  color: #0b1e3e;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.cert-qr-subtext {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+.cert-qr-reg {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0284c7;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ─── Print Styles (Exact 100% Isolated Certificate PDF Output) ── */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    overflow: hidden !important;
+  }
+
+  /* Hide all outside dashboard / portal UI elements */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Isolate and print only the Certificate Card */
+  #printable-certificate,
+  #printable-certificate * {
+    visibility: visible !important;
+  }
+
+  #printable-certificate {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) scale(1.05) !important;
+    transform-origin: center center !important;
+    width: 1000px !important;
+    height: 630px !important;
+    min-width: 1000px !important;
+    min-height: 630px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    background: #ffffff !important;
+    z-index: 9999999 !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .no-print,
+  .admin-topbar,
+  .admin-stats,
+  .cert-admin-layout > .cert-form-card,
+  .cert-preview-actions,
+  .admin-actions-bar,
+  .admin-table-wrapper,
+  .cert-preview-pane > span,
+  header,
+  footer,
+  nav {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
