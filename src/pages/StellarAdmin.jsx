@@ -88,9 +88,9 @@ export default function StellarAdmin() {
     'Authorization': `Bearer ${token}`
   }), [token]);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (showLoading = false) => {
     if (!token) return;
-    setLoading(true);
+    if (showLoading) setLoading(true);
     try {
       const [rAnns, rImgs, rCourses, rPages, rCerts] = await Promise.all([
         fetch(`${API}/admin-announcements`, { headers: headers() }),
@@ -142,14 +142,14 @@ export default function StellarAdmin() {
         setCertificates(getLocalCerts());
       }
     } catch {}
-    setLoading(false);
+    if (showLoading) setLoading(false);
   }, [token, headers]);
 
   useEffect(() => {
     if (token) {
       const s = sessionStorage.getItem('stellar-admin-user');
       if (s) setUser(JSON.parse(s));
-      fetchData();
+      fetchData(true);
     }
   }, [token, fetchData]);
 
@@ -482,19 +482,29 @@ export default function StellarAdmin() {
   const handleDeleteCertificate = async (id, registrationNo) => {
     if (!window.confirm('Are you sure you want to delete this certificate record?')) return;
     try {
-      try {
-        await fetch(`${API}/admin-certificates`, {
-          method: 'DELETE',
-          headers: headers(),
-          body: JSON.stringify({ id, registration_no: registrationNo })
-        });
-      } catch {}
+      const isMatch = (c) => {
+        if (id && c.id && String(c.id) === String(id)) return true;
+        if (registrationNo && c.registration_no && c.registration_no.trim().toUpperCase() === registrationNo.trim().toUpperCase()) return true;
+        return false;
+      };
 
-      const local = getLocalCerts().filter(c => c.id !== id && c.registration_no !== registrationNo);
+      setCertificates(prev => prev.filter(c => !isMatch(c)));
+      const local = getLocalCerts().filter(c => !isMatch(c));
       saveLocalCerts(local);
-      setCertificates(local);
-      fetchData();
-    } catch {}
+
+      if (editingCertId === id || (registrationNo && certForm.registration_no === registrationNo)) {
+        setEditingCertId(null);
+        setCertForm({ ...emptyCert, registration_no: createDefaultRegNo() });
+      }
+
+      await fetch(`${API}/admin-certificates`, {
+        method: 'DELETE',
+        headers: headers(),
+        body: JSON.stringify({ id, registration_no: registrationNo })
+      });
+    } catch (err) {
+      console.warn('Error deleting certificate:', err);
+    }
   };
 
   const handleDownloadPdf = async () => {
