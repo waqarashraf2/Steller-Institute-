@@ -1,15 +1,84 @@
 /* Admission Form */
 
 .admission-section {
-  padding: 60px 0 90px;
+  padding: 60px 0 52px;
   background-color: #f8fafc;
 }
 
+/* Two-column: info strip + form */
 .admission-wrapper {
-  max-width: 720px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: start;
 }
 
+@media (min-width: 960px) {
+  .admission-wrapper {
+    grid-template-columns: 260px 1fr;
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+}
+
+/* Left info strip */
+.admission-info {
+  display: none;
+}
+
+@media (min-width: 960px) {
+  .admission-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 100px;
+  }
+}
+
+.admission-info-block {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #0a2540;
+  border-radius: 6px;
+  padding: 18px 20px;
+}
+
+.admission-info-block h4 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin: 0 0 8px 0;
+}
+
+.admission-info-block p {
+  font-size: 14px;
+  color: #0f172a;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.admission-info-block small {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+.admission-info-note {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.55;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+}
+
+/* Form card */
 .admission-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -19,42 +88,42 @@
 }
 
 .admission-card-header {
-  padding: 28px 32px 20px;
+  padding: 24px 28px 18px;
   border-bottom: 1px solid #e2e8f0;
 }
 
 .admission-card-header h2 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #0a2540;
-  margin: 0 0 6px 0;
+  margin: 0 0 5px 0;
   letter-spacing: -0.01em;
 }
 
 .admission-card-header p {
-  font-size: 14px;
+  font-size: 13px;
   color: #64748b;
   margin: 0;
   line-height: 1.5;
 }
 
 .admission-card-body {
-  padding: 28px 32px 32px;
+  padding: 24px 28px 28px;
 }
 
 @media (max-width: 600px) {
   .admission-card-header {
-    padding: 20px 18px 16px;
+    padding: 18px 16px 14px;
   }
   .admission-card-body {
-    padding: 20px 18px 24px;
+    padding: 18px 16px 22px;
   }
 }
 
 /* Form Groups */
 .admission-group {
-  margin-bottom: 24px;
-  padding-bottom: 20px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -65,10 +134,10 @@
 }
 
 .admission-group-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #0a2540;
-  margin: 0 0 14px 0;
+  margin: 0 0 12px 0;
 }
 
 .admission-group-title .opt,
@@ -79,17 +148,17 @@
   margin-left: 4px;
 }
 
-/* Inputs and Rows */
+/* Rows */
 .admission-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 12px;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 560px) {
   .admission-row {
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 14px;
   }
 }
 
@@ -99,12 +168,14 @@
 }
 
 .admission-field label {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   color: #334155;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   display: flex;
   align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .admission-field label .req {
@@ -116,9 +187,9 @@
 .admission-select,
 .admission-textarea {
   width: 100%;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 5px;
   background-color: #ffffff;
   color: #0f172a;
   font-size: 14px;
@@ -151,13 +222,13 @@
 }
 
 .admission-textarea {
-  min-height: 90px;
+  min-height: 85px;
   resize: vertical;
 }
 
 /* Submit */
 .admission-submit-wrap {
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
 .admission-submit-btn {
@@ -165,9 +236,9 @@
   background: #0a2540;
   color: #ffffff;
   border: none;
-  border-radius: 6px;
-  padding: 13px 20px;
-  font-size: 15px;
+  border-radius: 5px;
+  padding: 12px 20px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -175,6 +246,7 @@
   justify-content: center;
   gap: 8px;
   transition: background 0.2s ease;
+  letter-spacing: 0.01em;
 }
 
 .admission-submit-btn:hover:not(:disabled) {

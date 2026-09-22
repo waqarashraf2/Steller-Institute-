@@ -75,6 +75,29 @@ export default function Admission() {
       <section className="admission-section">
         <div className="container">
           <div className="admission-wrapper">
+
+            {/* Left info strip — visible on wide screens */}
+            <div className="admission-info">
+              <div className="admission-info-block">
+                <h4>Session</h4>
+                <p>2025 – 2026</p>
+                <small>Admissions open now</small>
+              </div>
+              <div className="admission-info-block">
+                <h4>Admissions Office</h4>
+                <p>+92 300 0000000</p>
+                <small>Mon – Sat, 9am – 5pm</small>
+              </div>
+              <div className="admission-info-block">
+                <h4>Response Time</h4>
+                <p>24 – 48 hours</p>
+                <small>A counsellor will call to confirm</small>
+              </div>
+              <p className="admission-info-note">
+                Submitting this form is free. No registration fee is charged at the application stage.
+              </p>
+            </div>
+
             <ScrollReveal>
               <div className="admission-card">
                 <div className="admission-card-header">
@@ -329,7 +352,7 @@ export default function Admission() {
       </section>
 
       {/* Process Cards */}
-      <section style={{ padding: '80px 0', backgroundColor: '#f8fafc' }}>
+      <section style={{ padding: '40px 0 72px', backgroundColor: '#f8fafc' }}>
         <div className="container">
           <div style={{ maxWidth: '700px', margin: '0 auto 52px', textAlign: 'center' }}>
             <h2 style={{ fontSize: '32px', fontWeight: '700', color: '#0f172a', marginBottom: '14px', lineHeight: 1.2 }}>
