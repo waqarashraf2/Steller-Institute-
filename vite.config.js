@@ -7,6 +7,7 @@ export default defineConfig({
     react()
   ],
   server: {
+    host: true,
     proxy: {
       '/api': {
         target: 'https://stellar-institute-frontend.vercel.app',
