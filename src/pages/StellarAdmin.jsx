@@ -1275,16 +1275,15 @@ export default function StellarAdmin() {
             </div>
           </div>
 
-          {/* Bottom: All Issued Certificates Table & Search */}
-          <div style={{ marginTop: '40px' }}>
-            <div className="admin-actions-bar">
+          {/* Bottom: Registered Certificates Registry & Search */}
+          <div style={{ marginTop: '36px' }}>
+            <div className="cert-registry-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                <h2>Registered Certificates Registry ({certificates.length})</h2>
+                <h2 className="cert-registry-title">Registered Certificates ({certificates.length})</h2>
                 <button
                   type="button"
                   onClick={syncCertificatesToCloud}
-                  className="admin-edit-btn"
-                  style={{ fontSize: '12px', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                  className="cert-table-btn"
                   title="Upload all local certificates to cloud database"
                 >
                   Sync to Cloud DB
@@ -1303,10 +1302,10 @@ export default function StellarAdmin() {
             </div>
 
             {certificates.length === 0 ? (
-              <div className="admin-empty">No certificates issued yet. Fill the form above to register your first student!</div>
+              <div className="admin-empty">No certificates issued yet. Fill the form above to register your first student.</div>
             ) : (
-              <div className="admin-table-wrapper">
-                <table className="admin-table">
+              <div className="cert-table-card">
+                <table className="cert-table">
                   <thead>
                     <tr>
                       <th>Reg No.</th>
@@ -1314,7 +1313,7 @@ export default function StellarAdmin() {
                       <th>Course</th>
                       <th>Issue Date</th>
                       <th>Status</th>
-                      <th>Actions</th>
+                      <th style={{ textAlign: 'right', paddingRight: '20px' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1327,19 +1326,21 @@ export default function StellarAdmin() {
                       )
                       .map(c => (
                         <tr key={c.id || c.registration_no}>
-                          <td style={{ fontWeight: 800, color: '#0284c7' }}>{c.registration_no}</td>
-                          <td style={{ fontWeight: 600 }}>{c.student_name}</td>
-                          <td>{c.course_title}</td>
-                          <td>{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
+                          <td className="cert-td-reg">{c.registration_no}</td>
+                          <td className="cert-td-name">{c.student_name}</td>
+                          <td className="cert-td-course">{c.course_title}</td>
+                          <td className="cert-td-date">{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
                           <td>
-                            <span className={`cert-badge-status ${c.is_valid ? 'cert-badge-active' : 'cert-badge-inactive'}`}>
+                            <span className={`cert-status-tag ${c.is_valid ? 'cert-status-active' : 'cert-status-inactive'}`}>
+                              <span className="cert-status-dot" />
                               {c.is_valid ? 'Active' : 'Revoked'}
                             </span>
                           </td>
                           <td>
-                            <div style={{ display: 'flex', gap: '8px' }}>
+                            <div className="cert-td-actions">
                               <button
-                                className="admin-edit-btn"
+                                type="button"
+                                className="cert-action-btn"
                                 onClick={() => {
                                   handleEditCertificate(c);
                                   window.scrollTo({ top: 120, behavior: 'smooth' });
@@ -1351,13 +1352,13 @@ export default function StellarAdmin() {
                                 href={`/verify/${c.registration_no}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="admin-edit-btn"
-                                style={{ textDecoration: 'none', color: '#0284c7' }}
+                                className="cert-action-btn"
                               >
                                 Verify
                               </a>
                               <button
-                                className="admin-del-btn"
+                                type="button"
+                                className="cert-action-btn cert-action-btn-danger"
                                 onClick={() => handleDeleteCertificate(c.id, c.registration_no)}
                               >
                                 Delete
