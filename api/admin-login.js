@@ -1,7 +1,7 @@
-import { getDb, ensureTables } from './db.js';
+import { getDb, ensureTables } from './_db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { setCorsHeaders, setSecurityHeaders, rateLimit, getJwtSecret, getClientIp } from './security.js';
+import { setCorsHeaders, setSecurityHeaders, rateLimit, getJwtSecret, getClientIp } from './_security.js';
 
 export default async function handler(req, res) {
   setCorsHeaders(res, req);

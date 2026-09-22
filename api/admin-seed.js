@@ -1,7 +1,7 @@
-import { getDb, ensureTables } from './db.js';
+import { getDb, ensureTables } from './_db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './security.js';
+import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './_security.js';
 
 // This endpoint now REQUIRES a valid admin JWT token.
 // Only an existing admin can create new admin users.

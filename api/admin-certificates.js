@@ -1,6 +1,6 @@
-import { getDb, ensureTables } from './db.js';
+import { getDb, ensureTables } from './_db.js';
 import jwt from 'jsonwebtoken';
-import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './security.js';
+import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './_security.js';
 
 function verifyToken(req) {
   const auth = req.headers.authorization;

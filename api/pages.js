@@ -1,5 +1,5 @@
-import { getDb, ensureTables } from './db.js';
-import { setCorsHeaders, setSecurityHeaders } from './security.js';
+import { getDb, ensureTables } from './_db.js';
+import { setCorsHeaders, setSecurityHeaders } from './_security.js';
 
 export default async function handler(req, res) {
   setCorsHeaders(res, req, { isPublic: true });
