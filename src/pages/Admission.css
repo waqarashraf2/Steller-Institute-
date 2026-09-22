@@ -1,122 +1,74 @@
-/* =====================
-   ADMISSION FORM STYLES
-   ===================== */
+/* ── Admission Form ── */
 
-/* Form card wrapper */
+/* Outer card */
 .adm-form {
   background: #ffffff;
-  border: 1px solid #dde3ec;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-/* Navy top bar — session badge */
-.adm-form-topbar {
-  background: #0a2540;
-  padding: 14px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.adm-form-topbar-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.55);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.adm-form-topbar-session {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.7);
-  letter-spacing: 0.04em;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 3px 10px;
-  border-radius: 3px;
+  border: 1px solid #d1d9e4;
+  border-radius: 4px;
+  box-shadow:
+    0 1px 2px rgba(10, 37, 64, 0.04),
+    0 8px 32px rgba(10, 37, 64, 0.06);
 }
 
 /* Form body */
 .adm-form-body {
-  padding: 32px;
+  padding: 36px 40px 40px;
 }
 
-@media (max-width: 600px) {
-  .adm-form-body {
-    padding: 20px 18px;
-  }
-  .adm-form-topbar {
-    padding: 12px 18px;
-  }
+@media (max-width: 640px) {
+  .adm-form-body { padding: 24px 20px 28px; }
 }
 
-/* Fieldsets */
+/* Section group */
 .adm-fieldset {
-  margin-bottom: 28px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #f0f4f8;
+  margin-bottom: 32px;
 }
 
 .adm-fieldset:last-of-type {
-  border-bottom: none;
   margin-bottom: 0;
-  padding-bottom: 0;
 }
 
-.adm-fieldset-legend {
-  font-size: 11px;
+/* Section title — clean, not a ruled eyebrow */
+.adm-section-title {
+  font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: #0a2540;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin: 0 0 18px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #0a2540;
+  display: inline-block;
 }
 
-.adm-fieldset-legend::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #e8edf3;
-}
-
-/* Grid row */
+/* Grid rows */
 .adm-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 20px;
 }
 
 @media (min-width: 520px) {
-  .adm-row {
-    grid-template-columns: 1fr 1fr;
-  }
+  .adm-row { grid-template-columns: 1fr 1fr; }
 }
 
 .adm-row-single {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 0;
 }
 
-/* Field */
+/* Individual field */
 .adm-field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
+/* Label — sentence case, restrained */
 .adm-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: #334155;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: #475569;
+  letter-spacing: 0;
 }
 
 .adm-label .req {
@@ -124,80 +76,113 @@
   margin-left: 2px;
 }
 
+.adm-label .opt-note {
+  font-weight: 400;
+  color: #94a3b8;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* Inputs — bottom border only, feels like a real form */
 .adm-input,
 .adm-select,
 .adm-textarea {
   width: 100%;
-  padding: 10px 13px;
-  border: 1px solid #c8d4e0;
-  border-radius: 4px;
-  background: #fafbfc;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 1.5px solid #c8d4e0;
+  border-radius: 0;
+  background: transparent;
   color: #0f172a;
-  font-size: 14px;
+  font-size: 15px;
   font-family: inherit;
   box-sizing: border-box;
-  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.2s ease;
   -webkit-appearance: none;
   appearance: none;
 }
 
 .adm-input::placeholder,
 .adm-textarea::placeholder {
-  color: #a0aec0;
-  font-style: normal;
+  color: #b0bec8;
 }
 
 .adm-input:focus,
 .adm-select:focus,
 .adm-textarea:focus {
   outline: none;
-  border-color: #0a2540;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.08);
+  border-bottom-color: #0a2540;
+  border-bottom-width: 2px;
 }
 
 .adm-input:hover:not(:focus),
 .adm-select:hover:not(:focus),
 .adm-textarea:hover:not(:focus) {
-  border-color: #94a3b8;
-  background: #ffffff;
+  border-bottom-color: #94a3b8;
 }
 
+/* Select */
 .adm-select {
   cursor: pointer;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
+  background-position: right 2px center;
+  padding-right: 22px;
 }
 
+/* Textarea */
 .adm-textarea {
-  min-height: 100px;
+  min-height: 90px;
   resize: vertical;
-  line-height: 1.55;
+  padding: 10px 0;
+  line-height: 1.6;
+  border: 1.5px solid #c8d4e0;
+  border-radius: 3px;
+  padding: 10px 12px;
+  background: #f9fafb;
 }
 
-/* Error alert */
+.adm-textarea:focus {
+  border-color: #0a2540;
+  border-width: 1.5px;
+  background: #ffffff;
+}
+
+/* Error */
 .adm-error {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  border-left: 3px solid #ef4444;
-  border-radius: 4px;
+  background: #fff5f5;
+  border-left: 3px solid #e53e3e;
   padding: 12px 16px;
   font-size: 14px;
-  color: #b91c1c;
-  margin-bottom: 24px;
+  color: #c53030;
+  margin-bottom: 28px;
 }
 
-/* Submit */
+/* Divider between major groups */
+.adm-divider {
+  border: none;
+  border-top: 1px solid #eef1f5;
+  margin: 28px 0;
+}
+
+/* Submit area */
+.adm-submit-area {
+  margin-top: 36px;
+  border-top: 1px solid #eef1f5;
+  padding-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .adm-submit {
   width: 100%;
   background: #0a2540;
   color: #ffffff;
   border: none;
-  border-radius: 4px;
-  padding: 13px 24px;
-  font-size: 14px;
+  border-radius: 3px;
+  padding: 14px 24px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -205,21 +190,27 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.2s ease, transform 0.1s ease;
-  margin-top: 24px;
+  transition: background 0.2s ease, transform 0.12s ease;
 }
 
 .adm-submit:hover:not(:disabled) {
-  background: #1e3a8a;
+  background: #163660;
 }
 
 .adm-submit:active:not(:disabled) {
-  transform: scale(0.99);
+  transform: scale(0.992);
 }
 
 .adm-submit:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
+}
+
+.adm-submit-note {
+  font-size: 12px;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.5;
 }
 
 /* Loading spinner */
@@ -230,11 +221,11 @@
   animation: adm-spin 0.75s linear infinite;
 }
 
-/* Left context — override pill badge to plain text label */
+/* Left context — replace pill badge with plain eyebrow */
 .adm-eyebrow-plain {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;

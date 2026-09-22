@@ -35,16 +35,13 @@ export default function Admission() {
     e.preventDefault();
     setStatus('sending');
     setErrorMsg('');
-
     try {
       const res = await fetch(`https://stellarinstitute.pk/api/admission.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-
       const data = await res.json();
-
       if (data.success) {
         navigate('/admission/thankyou');
       } else {
@@ -80,7 +77,7 @@ export default function Admission() {
               }
             `}</style>
 
-            {/* ── LEFT: context column (unchanged) ── */}
+            {/* ── LEFT: context column ── */}
             <div style={{ position: 'sticky', top: '100px' }}>
               <div className="adm-eyebrow-plain">Apply for Admission</div>
               <h2 style={{ fontSize: 'clamp(32px, 4vw, 42px)', fontWeight: '700', color: '#0f172a', marginBottom: '24px', lineHeight: 1.1 }}>
@@ -89,7 +86,6 @@ export default function Admission() {
               <p style={{ fontSize: '16px', color: '#475569', lineHeight: 1.6, marginBottom: '40px' }}>
                 Share a few details below and our admissions team will get in touch to guide you through the rest — class placement, fee structure, and available seats.
               </p>
-
               <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <li className="benefit-item">
                   <div className="benefit-icon">
@@ -118,17 +114,10 @@ export default function Admission() {
               </ul>
             </div>
 
-            {/* ── RIGHT: structured admission form ── */}
+            {/* ── RIGHT: admission form ── */}
             <div>
               <ScrollReveal>
                 <div className="adm-form">
-
-                  {/* Navy top bar */}
-                  <div className="adm-form-topbar">
-                    <span className="adm-form-topbar-label">Admission Application</span>
-                    <span className="adm-form-topbar-session">Session 2025 – 2026</span>
-                  </div>
-
                   <form className="adm-form-body" onSubmit={handleSubmit}>
 
                     {status === 'error' && (
@@ -137,43 +126,47 @@ export default function Admission() {
 
                     {/* Student Details */}
                     <div className="adm-fieldset">
-                      <div className="adm-fieldset-legend">Student Details</div>
+                      <div className="adm-section-title">Student details</div>
                       <div className="adm-row">
                         <div className="adm-field">
-                          <label className="adm-label" htmlFor="fullName">Full Name <span className="req">*</span></label>
+                          <label className="adm-label" htmlFor="fullName">Full name <span className="req">*</span></label>
                           <input className="adm-input" type="text" id="fullName" name="fullName" placeholder="Student's full name" value={formData.fullName} onChange={handleChange} required />
                         </div>
                         <div className="adm-field">
-                          <label className="adm-label" htmlFor="mobileNumber">Mobile Number <span className="req">*</span></label>
+                          <label className="adm-label" htmlFor="mobileNumber">Mobile number <span className="req">*</span></label>
                           <input className="adm-input" type="tel" id="mobileNumber" name="mobileNumber" placeholder="+92-300-0000000" value={formData.mobileNumber} onChange={handleChange} required />
                         </div>
                       </div>
                     </div>
 
+                    <hr className="adm-divider" />
+
                     {/* Parent / Guardian */}
                     <div className="adm-fieldset">
-                      <div className="adm-fieldset-legend">Parent / Guardian</div>
+                      <div className="adm-section-title">Parent / Guardian</div>
                       <div className="adm-row">
                         <div className="adm-field">
-                          <label className="adm-label" htmlFor="parentName">Father / Guardian Name <span className="req">*</span></label>
+                          <label className="adm-label" htmlFor="parentName">Father / Guardian name <span className="req">*</span></label>
                           <input className="adm-input" type="text" id="parentName" name="parentName" placeholder="Guardian's full name" value={formData.parentName} onChange={handleChange} required />
                         </div>
                         <div className="adm-field">
-                          <label className="adm-label" htmlFor="parentMobile">Contact Number <span className="req">*</span></label>
+                          <label className="adm-label" htmlFor="parentMobile">Contact number <span className="req">*</span></label>
                           <input className="adm-input" type="tel" id="parentMobile" name="parentMobile" placeholder="+92-300-0000000" value={formData.parentMobile} onChange={handleChange} required />
                         </div>
                       </div>
-                      <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                      <div className="adm-row-single" style={{ marginTop: '20px' }}>
                         <div className="adm-field">
-                          <label className="adm-label" htmlFor="email">Email Address <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#94a3b8', fontSize: '11px' }}>(Optional)</span></label>
+                          <label className="adm-label" htmlFor="email">Email address <span className="opt-note">(Optional)</span></label>
                           <input className="adm-input" type="email" id="email" name="email" placeholder="your@email.com" value={formData.email} onChange={handleChange} />
                         </div>
                       </div>
                     </div>
 
+                    <hr className="adm-divider" />
+
                     {/* Program of Study */}
                     <div className="adm-fieldset">
-                      <div className="adm-fieldset-legend">Program of Study</div>
+                      <div className="adm-section-title">Program of study</div>
                       <div className="adm-row">
                         <div className="adm-field">
                           <label className="adm-label" htmlFor="classCourse">Class / Course <span className="req">*</span></label>
@@ -189,7 +182,7 @@ export default function Admission() {
                           </select>
                         </div>
                         <div className="adm-field">
-                          <label className="adm-label" htmlFor="board">Board <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#94a3b8', fontSize: '11px' }}>(Optional)</span></label>
+                          <label className="adm-label" htmlFor="board">Board <span className="opt-note">(Optional)</span></label>
                           <select className="adm-select" id="board" name="board" value={formData.board} onChange={handleChange}>
                             <option value="">Select Board</option>
                             <option value="Punjab Board">Punjab Board</option>
@@ -200,11 +193,10 @@ export default function Admission() {
                         </div>
                       </div>
 
-                      {/* Conditional sub-selections */}
                       {formData.classCourse === 'IT Courses' && (
-                        <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                        <div className="adm-row-single" style={{ marginTop: '20px' }}>
                           <div className="adm-field">
-                            <label className="adm-label" htmlFor="specificCourse">Select IT Course <span className="req">*</span></label>
+                            <label className="adm-label" htmlFor="specificCourse">IT Course <span className="req">*</span></label>
                             <select className="adm-select" id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
                               <option value="">Select IT Course</option>
                               {itCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
@@ -214,9 +206,9 @@ export default function Admission() {
                       )}
 
                       {formData.classCourse === 'Beauty Courses' && (
-                        <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                        <div className="adm-row-single" style={{ marginTop: '20px' }}>
                           <div className="adm-field">
-                            <label className="adm-label" htmlFor="specificCourse">Select Beauty Course <span className="req">*</span></label>
+                            <label className="adm-label" htmlFor="specificCourse">Beauty Course <span className="req">*</span></label>
                             <select className="adm-select" id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
                               <option value="">Select Beauty Course</option>
                               {beautyCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
@@ -226,9 +218,9 @@ export default function Admission() {
                       )}
 
                       {formData.classCourse === '5th - 8th Classes' && (
-                        <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                        <div className="adm-row-single" style={{ marginTop: '20px' }}>
                           <div className="adm-field">
-                            <label className="adm-label" htmlFor="specificCourse">Select Class <span className="req">*</span></label>
+                            <label className="adm-label" htmlFor="specificCourse">Grade <span className="req">*</span></label>
                             <select className="adm-select" id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
                               <option value="">Select Class</option>
                               <option value="5th Class">Class 5</option>
@@ -241,9 +233,9 @@ export default function Admission() {
                       )}
 
                       {(formData.classCourse === 'First Year - I' || formData.classCourse === 'Second Year - II') && (
-                        <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                        <div className="adm-row-single" style={{ marginTop: '20px' }}>
                           <div className="adm-field">
-                            <label className="adm-label" htmlFor="specificCourse">Select Program / Stream <span className="req">*</span></label>
+                            <label className="adm-label" htmlFor="specificCourse">Stream <span className="req">*</span></label>
                             <select className="adm-select" id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
                               <option value="">Select Option</option>
                               <option value="FSc Pre-Medical">FSc Pre-Medical</option>
@@ -259,24 +251,31 @@ export default function Admission() {
                       )}
                     </div>
 
+                    <hr className="adm-divider" />
+
                     {/* Remarks */}
                     <div className="adm-fieldset">
-                      <div className="adm-fieldset-legend">Remarks <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#94a3b8', fontSize: '11px' }}>(Optional)</span></div>
+                      <div className="adm-section-title">
+                        Remarks <span style={{ fontWeight: 400, fontSize: '11px', textTransform: 'none', letterSpacing: 0, color: '#94a3b8' }}>(Optional)</span>
+                      </div>
                       <div className="adm-field">
-                        <textarea className="adm-textarea" id="message" name="message" placeholder="Any questions, additional information..." value={formData.message} onChange={handleChange} />
+                        <textarea className="adm-textarea" id="message" name="message" placeholder="Any questions or additional notes..." value={formData.message} onChange={handleChange} />
                       </div>
                     </div>
 
-                    <button type="submit" className="adm-submit" disabled={status === 'sending'}>
-                      {status === 'sending' ? (
-                        <>
-                          <svg className="adm-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" strokeOpacity="0.2"/><path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/></svg>
-                          <span>Submitting...</span>
-                        </>
-                      ) : (
-                        <span>Submit Application</span>
-                      )}
-                    </button>
+                    <div className="adm-submit-area">
+                      <button type="submit" className="adm-submit" disabled={status === 'sending'}>
+                        {status === 'sending' ? (
+                          <>
+                            <svg className="adm-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" strokeOpacity="0.2"/><path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/></svg>
+                            <span>Submitting...</span>
+                          </>
+                        ) : (
+                          <span>Submit Application</span>
+                        )}
+                      </button>
+                      <p className="adm-submit-note">No application fee. Our team will contact you within 24–48 hours.</p>
+                    </div>
 
                   </form>
                 </div>
@@ -298,7 +297,6 @@ export default function Admission() {
               Our counsellors are here to help you pick the right class — from Nursery through Intermediate and O/A Level.
             </p>
           </div>
-
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '30px' }}>
             <div className="process-card">
               <div className="process-number">01</div>
