@@ -5,146 +5,77 @@
   background-color: #f8fafc;
 }
 
-/* Two-column layout */
+/* Two-column: info strip + form */
 .admission-wrapper {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 40px;
+  gap: 32px;
   align-items: start;
 }
 
 @media (min-width: 960px) {
   .admission-wrapper {
-    grid-template-columns: 1fr 1.35fr;
-    gap: 56px;
-    max-width: 1100px;
+    grid-template-columns: 260px 1fr;
+    gap: 40px;
+    max-width: 1000px;
     margin: 0 auto;
   }
 }
 
-/* Left context column */
-.admission-context {
-  position: sticky;
-  top: 100px;
+/* Left info strip */
+.admission-info {
+  display: none;
 }
 
-.admission-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #0a2540;
-  margin-bottom: 16px;
+@media (min-width: 960px) {
+  .admission-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 100px;
+  }
 }
 
-.admission-eyebrow-bar {
-  width: 24px;
-  height: 2px;
-  background-color: #0284c7;
-  display: inline-block;
-}
-
-.admission-title {
-  font-size: clamp(26px, 3vw, 36px);
-  font-weight: 800;
-  color: #0a2540;
-  margin-bottom: 16px;
-  line-height: 1.18;
-  letter-spacing: -0.02em;
-}
-
-.admission-subtitle {
-  font-size: 15px;
-  color: #475569;
-  line-height: 1.65;
-  margin-bottom: 28px;
-}
-
-/* Benefits list */
-.admission-benefits-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 28px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.admission-benefit-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.admission-benefit-badge {
-  width: 22px;
-  height: 22px;
-  border-radius: 5px;
-  background-color: #0a2540;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.admission-benefit-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #0f172a;
-  line-height: 1.4;
-}
-
-.admission-benefit-desc {
-  font-size: 13px;
-  color: #64748b;
-  line-height: 1.45;
-  margin-top: 2px;
-}
-
-/* Help card */
-.admission-help-card {
-  background-color: #ffffff;
+.admission-info-block {
+  background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-left: 4px solid #0a2540;
-  border-radius: 8px;
-  padding: 18px 22px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  border-left: 3px solid #0a2540;
+  border-radius: 6px;
+  padding: 18px 20px;
 }
 
-.admission-help-card h4 {
-  font-size: 12px;
+.admission-info-block h4 {
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: #0a2540;
-  margin-bottom: 6px;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin: 0 0 8px 0;
 }
 
-.admission-help-card p {
-  font-size: 13px;
-  color: #475569;
-  margin-bottom: 10px;
-  line-height: 1.5;
+.admission-info-block p {
+  font-size: 14px;
+  color: #0f172a;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.45;
 }
 
-.admission-helpline-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #0284c7;
-  text-decoration: none;
-  transition: color 0.2s;
+.admission-info-block small {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 400;
 }
 
-.admission-helpline-link:hover {
-  color: #0a2540;
+.admission-info-note {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.55;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
 }
 
 /* Form card */
@@ -189,7 +120,7 @@
   }
 }
 
-/* Form groups */
+/* Form Groups */
 .admission-group {
   margin-bottom: 22px;
   padding-bottom: 18px;
@@ -217,6 +148,7 @@
   margin-left: 4px;
 }
 
+/* Rows */
 .admission-row {
   display: grid;
   grid-template-columns: 1fr;
