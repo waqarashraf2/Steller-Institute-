@@ -1314,43 +1314,35 @@
   white-space: nowrap;
 }
 
-/* Status Tag — Clean rectangular badge without pill shape */
-.cert-status-tag {
+/* Status Credential Mark — Clean typographic icon status, no boxes or pills */
+.cert-status-valid {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 11px;
+  gap: 5.5px;
+  font-size: 12.5px;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 2.5px 7px;
-  border-radius: 3px;
-}
-
-.cert-status-active {
-  background: #f0fdf4;
   color: #15803d;
-  border: 1px solid #bbf7d0;
+  letter-spacing: 0.01em;
 }
 
-.cert-status-active .cert-status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #16a34a;
+.cert-status-valid svg {
+  color: #16a34a;
+  flex-shrink: 0;
 }
 
-.cert-status-inactive {
-  background: #fef2f2;
+.cert-status-revoked {
+  display: inline-flex;
+  align-items: center;
+  gap: 5.5px;
+  font-size: 12.5px;
+  font-weight: 600;
   color: #b91c1c;
-  border: 1px solid #fecaca;
+  letter-spacing: 0.01em;
 }
 
-.cert-status-inactive .cert-status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #dc2626;
+.cert-status-revoked svg {
+  color: #dc2626;
+  flex-shrink: 0;
 }
 
 /* Actions Row */

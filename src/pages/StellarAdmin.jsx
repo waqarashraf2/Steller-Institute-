@@ -1331,10 +1331,23 @@ export default function StellarAdmin() {
                           <td className="cert-td-course">{c.course_title}</td>
                           <td className="cert-td-date">{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
                           <td>
-                            <span className={`cert-status-tag ${c.is_valid ? 'cert-status-active' : 'cert-status-inactive'}`}>
-                              <span className="cert-status-dot" />
-                              {c.is_valid ? 'Active' : 'Revoked'}
-                            </span>
+                            {c.is_valid ? (
+                              <span className="cert-status-valid">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                  <polyline points="9 12 11 14 15 10" />
+                                </svg>
+                                <span>Active</span>
+                              </span>
+                            ) : (
+                              <span className="cert-status-revoked">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <circle cx="12" cy="12" r="10" />
+                                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                                </svg>
+                                <span>Revoked</span>
+                              </span>
+                            )}
                           </td>
                           <td>
                             <div className="cert-td-actions">
