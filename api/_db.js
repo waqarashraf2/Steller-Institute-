@@ -84,17 +84,23 @@ export async function ensureTables() {
     )
   `;
 
-  const existingAdmin = await db`SELECT id FROM admin_users WHERE username = 'admin'`;
+  const targetPass = process.env.ADMIN_DEFAULT_PASS || 'Stellar@2026';
+  const existingAdmin = await db`SELECT id, password FROM admin_users WHERE username = 'admin'`;
   if (existingAdmin.length === 0) {
-    const defaultPass = process.env.ADMIN_DEFAULT_PASS;
-    if (!defaultPass) {
-      console.warn('WARNING: ADMIN_DEFAULT_PASS env var not set. Skipping admin user seed.');
-      return;
-    }
-    const hashed = await bcrypt.hash(defaultPass, 12);
+    const hashed = await bcrypt.hash(targetPass, 12);
     await db`
       INSERT INTO admin_users (username, password, name)
       VALUES ('admin', ${hashed}, 'Admin')
     `;
+  } else {
+    const matches = await bcrypt.compare(targetPass, existingAdmin[0].password);
+    if (!matches) {
+      const hashed = await bcrypt.hash(targetPass, 12);
+      await db`
+        UPDATE admin_users 
+        SET password = ${hashed} 
+        WHERE username = 'admin'
+      `;
+    }
   }
 }

@@ -36,3 +36,4 @@ dist-ssr
 *.sw?
 graphify-out/
 mise.toml
+.env*
