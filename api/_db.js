@@ -84,7 +84,10 @@ export async function ensureTables() {
     )
   `;
 
-  const targetPass = process.env.ADMIN_DEFAULT_PASS || 'Stellar@2026';
+  const targetPass = process.env.ADMIN_DEFAULT_PASS;
+  if (!targetPass) {
+    return;
+  }
   const existingAdmin = await db`SELECT id, password FROM admin_users WHERE username = 'admin'`;
   if (existingAdmin.length === 0) {
     const hashed = await bcrypt.hash(targetPass, 12);
