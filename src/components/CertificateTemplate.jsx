@@ -144,8 +144,13 @@ const CertificateTemplate = forwardRef(function CertificateTemplate(
       {/* ─── Right Navy Banner & Accents (Exact Replica) ───────────── */}
       <div className="cert-banner-wrapper">
         <div className="cert-banner-container">
-          {/* Yellow Swallowtail Notch Accent Line along the bottom cut */}
-          <div className="cert-banner-yellow-backing" />
+          {/* Vector Image Background with exact Swallowtail V-cut and Yellow border (100% Canvas & PDF Compatible) */}
+          <img 
+            src="/cert_banner_bg.svg" 
+            alt="Banner Vector" 
+            className="cert-banner-bg-img"
+            crossOrigin="anonymous"
+          />
 
           <div className="cert-banner">
             {/* Top Registration Info */}

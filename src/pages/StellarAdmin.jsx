@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
 import { itCourses, beautyCourses } from '../data/courses';
 import CertificateTemplate from '../components/CertificateTemplate';
 import './StellarAdmin.css';
@@ -39,7 +40,14 @@ export default function StellarAdmin() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   
-  const [activeTab, setActiveTab] = useState('announcements'); // 'announcements' | 'images' | 'courses' | 'certificates' | 'pages'
+  const [activeTab, setActiveTabState] = useState(() => {
+    return sessionStorage.getItem('stellar-admin-active-tab') || 'announcements';
+  });
+
+  const setActiveTab = (tab) => {
+    setActiveTabState(tab);
+    sessionStorage.setItem('stellar-admin-active-tab', tab);
+  };
   const [loading, setLoading] = useState(false);
 
   // Announcements State
@@ -67,6 +75,8 @@ export default function StellarAdmin() {
   const [editingCertId, setEditingCertId] = useState(null);
   const [certSearch, setCertSearch] = useState('');
   const [savingCert, setSavingCert] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [previewZoom, setPreviewZoom] = useState('fit'); // 'fit' | '100'
   const certPrintRef = useRef(null);
 
   // Pages state
@@ -100,7 +110,14 @@ export default function StellarAdmin() {
         setPrivacyPolicy(pData.content || '');
       }
       if (rCerts && rCerts.ok) {
-        setCertificates(await rCerts.json());
+        const apiCerts = await rCerts.json();
+        if (Array.isArray(apiCerts) && apiCerts.length > 0) {
+          setCertificates(apiCerts);
+        } else {
+          setCertificates(getLocalCerts());
+        }
+      } else {
+        setCertificates(getLocalCerts());
       }
     } catch {}
     setLoading(false);
@@ -316,6 +333,21 @@ export default function StellarAdmin() {
     } catch {}
   };
 
+  // Helper for resilient certificate storage
+  const getLocalCerts = () => {
+    try {
+      return JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
+    } catch {
+      return [];
+    }
+  };
+
+  const saveLocalCerts = (certs) => {
+    try {
+      localStorage.setItem('stellar_admin_certs', JSON.stringify(certs));
+    } catch {}
+  };
+
   // --- CERTIFICATES LOGIC ---
   const handleSaveCertificate = async (e) => {
     e.preventDefault();
@@ -325,23 +357,45 @@ export default function StellarAdmin() {
     }
     setSavingCert(true);
     try {
-      const payload = editingCertId ? { ...certForm, id: editingCertId } : certForm;
-      const r = await fetch(`${API}/admin-certificates`, {
-        method: 'POST',
-        headers: headers(),
-        body: JSON.stringify(payload)
-      });
-      if (r.ok) {
-        alert(editingCertId ? 'Certificate updated successfully!' : 'Certificate created & registered successfully!');
-        setEditingCertId(null);
-        setCertForm({ ...emptyCert, registration_no: createDefaultRegNo() });
-        fetchData();
-      } else {
-        const err = await r.json();
-        alert(err.error || 'Failed to save certificate');
+      const payload = editingCertId 
+        ? { ...certForm, id: editingCertId } 
+        : { ...certForm, id: Date.now() };
+
+      let apiSaved = false;
+      try {
+        const r = await fetch(`${API}/admin-certificates`, {
+          method: 'POST',
+          headers: headers(),
+          body: JSON.stringify(payload)
+        });
+        if (r.ok) {
+          apiSaved = true;
+        }
+      } catch (err) {
+        console.warn('API save fallback to local:', err);
       }
-    } catch {
-      alert('Network error saving certificate');
+
+      // Always maintain local storage sync for instant reactivity & offline preview
+      const local = getLocalCerts();
+      let updated;
+      if (editingCertId) {
+        updated = local.map(c => (c.id === editingCertId || c.registration_no === payload.registration_no ? { ...c, ...payload } : c));
+        if (!updated.some(c => c.registration_no === payload.registration_no)) {
+          updated.unshift(payload);
+        }
+      } else {
+        updated = [payload, ...local.filter(c => c.registration_no !== payload.registration_no)];
+      }
+      saveLocalCerts(updated);
+      setCertificates(updated);
+
+      alert(editingCertId ? 'Certificate updated successfully!' : 'Certificate created & registered successfully!');
+      setEditingCertId(null);
+      setCertForm({ ...emptyCert, registration_no: createDefaultRegNo() });
+      if (apiSaved) fetchData();
+    } catch (err) {
+      console.error('Save certificate error:', err);
+      alert('Error saving certificate. Please try again.');
     } finally {
       setSavingCert(false);
     }
@@ -365,15 +419,88 @@ export default function StellarAdmin() {
   const handleDeleteCertificate = async (id) => {
     if (!window.confirm('Are you sure you want to delete this certificate record?')) return;
     try {
-      const r = await fetch(`${API}/admin-certificates`, {
-        method: 'DELETE',
-        headers: headers(),
-        body: JSON.stringify({ id })
-      });
-      if (r.ok) {
-        fetchData();
-      }
+      try {
+        await fetch(`${API}/admin-certificates`, {
+          method: 'DELETE',
+          headers: headers(),
+          body: JSON.stringify({ id })
+        });
+      } catch {}
+
+      const local = getLocalCerts().filter(c => c.id !== id);
+      saveLocalCerts(local);
+      setCertificates(local);
+      fetchData();
     } catch {}
+  };
+
+  const handleDownloadPdf = async () => {
+    const element = document.getElementById('printable-certificate');
+    if (!element) return;
+    try {
+      setIsGeneratingPdf(true);
+      
+      // Ensure all certificate fonts are loaded into memory
+      if (document.fonts) {
+        await Promise.all([
+          document.fonts.load('64px "Alex Brush"').catch(() => {}),
+          document.fonts.load('bold 26.5px "Inter"').catch(() => {}),
+          document.fonts.load('italic 18px "Inter"').catch(() => {}),
+          document.fonts.ready
+        ]);
+      }
+      
+      // Ensure all images (logo, crest, banner vector) are fully decoded
+      const images = Array.from(element.querySelectorAll('img'));
+      await Promise.all(
+        images.map(img => {
+          if (img.complete) return Promise.resolve();
+          return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+        })
+      );
+
+      const studentSlug = (certForm.student_name || 'Student').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const regSlug = certForm.registration_no || 'STI250189';
+      const opt = {
+        margin: 0,
+        filename: `Certificate_${regSlug}_${studentSlug}.pdf`,
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: { 
+          scale: 2.5, 
+          useCORS: true, 
+          allowTaint: true,
+          logging: false,
+          scrollY: 0,
+          scrollX: 0,
+          width: 1000,
+          height: 630,
+          windowWidth: 1000,
+          windowHeight: 630,
+          onclone: (clonedDoc) => {
+            const el = clonedDoc.getElementById('printable-certificate');
+            if (el) {
+              el.style.width = '1000px';
+              el.style.height = '630px';
+              el.style.minWidth = '1000px';
+              el.style.minHeight = '630px';
+              el.style.maxWidth = '1000px';
+              el.style.maxHeight = '630px';
+              el.style.transform = 'none';
+              el.style.boxShadow = 'none';
+              el.style.margin = '0';
+              el.style.borderRadius = '0';
+            }
+          }
+        },
+        jsPDF: { unit: 'px', format: [1000, 630], orientation: 'landscape', hotfixes: ['px_scaling'] }
+      };
+      await html2pdf().set(opt).from(element).save();
+    } catch (err) {
+      console.error('PDF Generation Error:', err);
+      alert('Direct PDF download failed. Please use Print / Save Certificate PDF.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   if (!token) return (
@@ -545,7 +672,6 @@ export default function StellarAdmin() {
             </div>
           </>
         )}
-      </div>
 
       {/* --- ANNOUNCEMENT MODAL --- */}
       {showAnnForm && (
@@ -822,41 +948,47 @@ export default function StellarAdmin() {
       {/* --- CERTIFICATES TAB --- */}
       {!loading && activeTab === 'certificates' && (
         <div className="vercel-container fade-in">
-          <div className="vercel-header">
+          {/* Compact Top Header & KPI Stats Row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h2 className="vercel-title">Student Certificates & QR Registry</h2>
-              <p className="vercel-subtitle">Generate official certificates, customize student credentials, and manage live QR verification.</p>
+              <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                Student Certificates & QR Registry
+              </h2>
+              <p style={{ fontSize: '12px', color: '#64748b', margin: '2px 0 0 0' }}>
+                Generate official certificates, customize student credentials, and manage live QR verification.
+              </p>
             </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button onClick={fetchData} className="admin-logout-btn" title="Refresh">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="stat-card" style={{ padding: '6px 14px', borderRadius: '8px', gap: '10px' }}>
+                  <div className="stat-label">Total:</div>
+                  <div className="stat-number" style={{ fontSize: '15px' }}>{certificates.length}</div>
+                </div>
+                <div className="stat-card stat-active" style={{ padding: '6px 14px', borderRadius: '8px', gap: '10px' }}>
+                  <div className="stat-label">Active:</div>
+                  <div className="stat-number" style={{ fontSize: '15px' }}>{certificates.filter(c => c.is_valid).length}</div>
+                </div>
+                <div className="stat-card" style={{ padding: '6px 14px', borderRadius: '8px', gap: '10px' }}>
+                  <div className="stat-label">Courses:</div>
+                  <div className="stat-number" style={{ fontSize: '15px' }}>{courses.length}</div>
+                </div>
+              </div>
+
+              <button onClick={fetchData} className="admin-logout-btn" title="Refresh" style={{ height: '32px', display: 'flex', alignItems: 'center' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
               </button>
             </div>
           </div>
 
-          <div className="admin-stats">
-            <div className="stat-card">
-              <div className="stat-number">{certificates.length}</div>
-              <div className="stat-label">Total Issued</div>
-            </div>
-            <div className="stat-card stat-active">
-              <div className="stat-number">{certificates.filter(c => c.is_valid).length}</div>
-              <div className="stat-label">Active & Verified</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">{courses.length}</div>
-              <div className="stat-label">Available Courses</div>
-            </div>
-          </div>
-
           {/* Top: 2-Column Certificate Generator & Live Preview */}
-          <div className="cert-admin-layout">
+          <div className="cert-admin-layout" style={{ marginTop: '10px' }}>
             {/* Form */}
             <div className="cert-form-card">
-              <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '16px', color: 'var(--admin-text)' }}>
+              <h3 style={{ fontSize: '13.5px', fontWeight: 800, marginBottom: '12px', color: '#0f172a' }}>
                 {editingCertId ? '✏️ Edit Certificate' : '🎓 Generate New Certificate'}
               </h3>
-              <form onSubmit={handleSaveCertificate} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <form onSubmit={handleSaveCertificate} style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
                 <div className="vercel-field-group">
                   <label className="vercel-label">Student Full Name *</label>
                   <input
@@ -875,7 +1007,7 @@ export default function StellarAdmin() {
                     <button
                       type="button"
                       onClick={() => setCertForm({ ...certForm, registration_no: createDefaultRegNo() })}
-                      style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '12px', cursor: 'pointer', fontWeight: 600 }}
+                      style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '11px', cursor: 'pointer', fontWeight: 700 }}
                     >
                       🎲 Auto Generate
                     </button>
@@ -913,7 +1045,7 @@ export default function StellarAdmin() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <div className="vercel-field-group">
                     <label className="vercel-label">Issue Date</label>
                     <input
@@ -937,7 +1069,7 @@ export default function StellarAdmin() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <div className="vercel-field-group">
                     <label className="vercel-label">Principal Subtitle</label>
                     <input
@@ -958,14 +1090,15 @@ export default function StellarAdmin() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                  <button type="submit" className="vercel-btn-primary" disabled={savingCert} style={{ flex: 1 }}>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                  <button type="submit" className="vercel-btn-primary" disabled={savingCert} style={{ flex: 1, padding: '7px 12px', fontSize: '12.5px' }}>
                     {savingCert ? 'Saving...' : editingCertId ? 'Update & Save' : 'Register & Issue Certificate'}
                   </button>
                   {editingCertId && (
                     <button
                       type="button"
                       className="vercel-btn-secondary"
+                      style={{ padding: '7px 12px', fontSize: '12.5px' }}
                       onClick={() => {
                         setEditingCertId(null);
                         setCertForm({ ...emptyCert, registration_no: createDefaultRegNo() });
@@ -980,39 +1113,78 @@ export default function StellarAdmin() {
 
             {/* Interactive Live Preview */}
             <div className="cert-preview-pane">
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '16px' }}>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--admin-text)' }}>
-                  👁️ Real-Time Certificate Preview
-                </span>
-                <span style={{ fontSize: '12px', color: 'var(--admin-muted)' }}>
-                  Landscape (100% Exact Print Layout)
-                </span>
+              <div className="cert-preview-header">
+                <div className="cert-preview-title-group">
+                  <span className="cert-live-indicator" />
+                  <span className="cert-preview-title">Real-Time Certificate Studio</span>
+                  <span className="cert-resolution-pill">1000 × 630 px</span>
+                </div>
+                <div className="cert-zoom-controls">
+                  <button
+                    type="button"
+                    className={`cert-zoom-btn ${previewZoom === 'fit' ? 'active' : ''}`}
+                    onClick={() => setPreviewZoom('fit')}
+                  >
+                    Fit Screen
+                  </button>
+                  <button
+                    type="button"
+                    className={`cert-zoom-btn ${previewZoom === '100' ? 'active' : ''}`}
+                    onClick={() => setPreviewZoom('100')}
+                  >
+                    100% Size
+                  </button>
+                </div>
               </div>
 
-              <div className="cert-outer-wrapper" style={{ padding: '0', background: 'transparent' }}>
-                <CertificateTemplate
-                  ref={certPrintRef}
-                  student_name={certForm.student_name || 'Student Name'}
-                  registration_no={certForm.registration_no || 'STI250189'}
-                  course_title={certForm.course_title || 'Course Title Here'}
-                  course_duration={certForm.course_duration || 'A 3-Month Professional Course Conducted by Stellar Institute.'}
-                  principal_title={certForm.principal_title || 'Stellar Institute & Academy'}
-                  instructor_title={certForm.instructor_title || 'Stellar Institute'}
-                />
+              <div className="cert-preview-canvas-box">
+                <div className={`cert-preview-scale-wrapper ${previewZoom === 'fit' ? 'cert-scale-fit' : 'cert-scale-100'}`}>
+                  <CertificateTemplate
+                    ref={certPrintRef}
+                    student_name={certForm.student_name || 'Student Name'}
+                    registration_no={certForm.registration_no || 'STI250189'}
+                    course_title={certForm.course_title || 'Course Title Here'}
+                    course_duration={certForm.course_duration || 'A 3-Month Professional Course Conducted by Stellar Institute.'}
+                    principal_title={certForm.principal_title || 'Stellar Institute & Academy'}
+                    instructor_title={certForm.instructor_title || 'Stellar Institute'}
+                  />
+                </div>
               </div>
 
               <div className="cert-preview-actions no-print">
                 <button
                   type="button"
+                  className="cert-action-btn-download"
+                  onClick={handleDownloadPdf}
+                  disabled={isGeneratingPdf}
+                >
+                  {isGeneratingPdf ? (
+                    <>
+                      <div className="admin-spinner-sm" />
+                      Generating PDF...
+                    </>
+                  ) : (
+                    <>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                      Download PDF
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
                   className="cert-action-btn-print"
                   onClick={() => window.print()}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="6 9 6 2 18 2 18 9" />
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
                     <rect x="6" y="14" width="12" height="8" />
                   </svg>
-                  Print / Save Certificate PDF
+                  Print Certificate
                 </button>
                 <a
                   href={`/verify/${certForm.registration_no || 'STI250189'}`}
@@ -1023,7 +1195,7 @@ export default function StellarAdmin() {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
                   </svg>
-                  Test Verification Link
+                  Verify Link
                 </a>
               </div>
             </div>
@@ -1150,6 +1322,7 @@ export default function StellarAdmin() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

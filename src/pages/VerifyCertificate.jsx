@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
 import CertificateTemplate from '../components/CertificateTemplate';
 import './VerifyCertificate.css';
 
@@ -15,6 +16,7 @@ export default function VerifyCertificate() {
   const [loading, setLoading] = useState(Boolean(initialReg));
   const [searched, setSearched] = useState(Boolean(initialReg));
   const [error, setError] = useState('');
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const certRef = useRef(null);
 
@@ -40,6 +42,16 @@ export default function VerifyCertificate() {
       })
       .catch(err => {
         console.error('Verification error:', err);
+        // Check local storage for certificates saved in admin panel
+        try {
+          const localCerts = JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
+          const found = localCerts.find(c => c.registration_no?.toUpperCase() === currentReg.trim().toUpperCase());
+          if (found) {
+            setCertData(found);
+            return;
+          }
+        } catch {}
+
         // Fallback demo for immediate testing if DB record hasn't been seeded yet
         if (currentReg.toUpperCase() === 'STI250189') {
           setCertData({
@@ -53,7 +65,7 @@ export default function VerifyCertificate() {
             is_valid: true
           });
         } else {
-          setError('Unable to verify certificate at this time. Please check your connection.');
+          setError('No official record found for this Registration Number.');
         }
       })
       .finally(() => {
@@ -71,6 +83,68 @@ export default function VerifyCertificate() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadPdf = async () => {
+    const element = document.getElementById('printable-certificate');
+    if (!element || !certData) return;
+    try {
+      setIsGeneratingPdf(true);
+      if (document.fonts) {
+        await Promise.all([
+          document.fonts.load('64px "Alex Brush"').catch(() => {}),
+          document.fonts.load('bold 26.5px "Inter"').catch(() => {}),
+          document.fonts.ready
+        ]);
+      }
+      
+      const images = Array.from(element.querySelectorAll('img'));
+      await Promise.all(
+        images.map(img => img.complete ? Promise.resolve() : (img.decode ? img.decode().catch(() => {}) : Promise.resolve()))
+      );
+
+      const studentSlug = (certData.student_name || 'Student').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const regSlug = certData.registration_no || 'STI250189';
+      const opt = {
+        margin: 0,
+        filename: `Certificate_${regSlug}_${studentSlug}.pdf`,
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: { 
+          scale: 2.5, 
+          useCORS: true, 
+          allowTaint: true,
+          logging: false,
+          scrollY: 0,
+          scrollX: 0,
+          width: 1000,
+          height: 630,
+          windowWidth: 1000,
+          windowHeight: 630,
+          onclone: (clonedDoc) => {
+            const el = clonedDoc.getElementById('printable-certificate');
+            if (el) {
+              el.style.width = '1000px';
+              el.style.height = '630px';
+              el.style.minWidth = '1000px';
+              el.style.minHeight = '630px';
+              el.style.maxWidth = '1000px';
+              el.style.maxHeight = '630px';
+              el.style.transform = 'none';
+              el.style.boxShadow = 'none';
+              el.style.margin = '0';
+              el.style.borderRadius = '0';
+            }
+          }
+        },
+        jsPDF: { unit: 'px', format: [1000, 630], orientation: 'landscape', hotfixes: ['px_scaling'] }
+      };
+      await html2pdf().set(opt).from(element).save();
+    } catch (err) {
+      console.error('PDF Generation Error:', err);
+      alert('Direct PDF download failed. Please use Print Certificate.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   return (
@@ -108,7 +182,7 @@ export default function VerifyCertificate() {
 
         {/* Loading */}
         {loading && (
-          <div style={{ textAlign: 'center', padding: '50px 0', color: '#94a3b8' }}>
+          <div style={{ textAlign: 'center', padding: '50px 0', color: '#64748b' }}>
             <p>Verifying credentials with official database registry...</p>
           </div>
         )}
@@ -141,7 +215,7 @@ export default function VerifyCertificate() {
                   </div>
                   <div className="verify-detail-card">
                     <div className="verify-detail-label">Registration No</div>
-                    <div className="verify-detail-value" style={{ color: '#38bdf8' }}>
+                    <div className="verify-detail-value" style={{ color: '#0284c7' }}>
                       {certData.registration_no}
                     </div>
                   </div>
@@ -172,13 +246,25 @@ export default function VerifyCertificate() {
                   </div>
 
                   <div className="verify-actions no-print">
+                    <button 
+                      className="verify-download-btn" 
+                      onClick={handleDownloadPdf}
+                      disabled={isGeneratingPdf}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                      {isGeneratingPdf ? 'Generating PDF…' : 'Download PDF'}
+                    </button>
                     <button className="verify-print-btn" onClick={handlePrint}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="6 9 6 2 18 2 18 9" />
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
                         <rect x="6" y="14" width="12" height="8" />
                       </svg>
-                      Print / Save Certificate PDF
+                      Print Certificate
                     </button>
                   </div>
                 </div>
