@@ -36,6 +36,16 @@ export default function VerifyCertificate() {
         if (data.found && data.certificate) {
           setCertData(data.certificate);
         } else {
+          // Check local storage for certificates saved in admin panel
+          try {
+            const localCerts = JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
+            const found = localCerts.find(c => c.registration_no?.toUpperCase() === currentReg.trim().toUpperCase());
+            if (found) {
+              setCertData(found);
+              return;
+            }
+          } catch {}
+
           setCertData(null);
           setError('No official record found for this Registration Number.');
         }
