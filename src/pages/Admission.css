@@ -1,0 +1,253 @@
+/* =====================
+   ADMISSION FORM STYLES
+   ===================== */
+
+/* Form card wrapper */
+.adm-form {
+  background: #ffffff;
+  border: 1px solid #dde3ec;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Navy top bar — session badge */
+.adm-form-topbar {
+  background: #0a2540;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.adm-form-topbar-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.adm-form-topbar-session {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.04em;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 3px 10px;
+  border-radius: 3px;
+}
+
+/* Form body */
+.adm-form-body {
+  padding: 32px;
+}
+
+@media (max-width: 600px) {
+  .adm-form-body {
+    padding: 20px 18px;
+  }
+  .adm-form-topbar {
+    padding: 12px 18px;
+  }
+}
+
+/* Fieldsets */
+.adm-fieldset {
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.adm-fieldset:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.adm-fieldset-legend {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #0a2540;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adm-fieldset-legend::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e8edf3;
+}
+
+/* Grid row */
+.adm-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 520px) {
+  .adm-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.adm-row-single {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+/* Field */
+.adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.adm-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.adm-label .req {
+  color: #c0392b;
+  margin-left: 2px;
+}
+
+.adm-input,
+.adm-select,
+.adm-textarea {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1px solid #c8d4e0;
+  border-radius: 4px;
+  background: #fafbfc;
+  color: #0f172a;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.adm-input::placeholder,
+.adm-textarea::placeholder {
+  color: #a0aec0;
+  font-style: normal;
+}
+
+.adm-input:focus,
+.adm-select:focus,
+.adm-textarea:focus {
+  outline: none;
+  border-color: #0a2540;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.08);
+}
+
+.adm-input:hover:not(:focus),
+.adm-select:hover:not(:focus),
+.adm-textarea:hover:not(:focus) {
+  border-color: #94a3b8;
+  background: #ffffff;
+}
+
+.adm-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.adm-textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+/* Error alert */
+.adm-error {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-left: 3px solid #ef4444;
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #b91c1c;
+  margin-bottom: 24px;
+}
+
+/* Submit */
+.adm-submit {
+  width: 100%;
+  background: #0a2540;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 13px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s ease, transform 0.1s ease;
+  margin-top: 24px;
+}
+
+.adm-submit:hover:not(:disabled) {
+  background: #1e3a8a;
+}
+
+.adm-submit:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.adm-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+@keyframes adm-spin {
+  to { transform: rotate(360deg); }
+}
+.adm-spinner {
+  animation: adm-spin 0.75s linear infinite;
+}
+
+/* Left context — override pill badge to plain text label */
+.adm-eyebrow-plain {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #0a2540;
+  margin-bottom: 18px;
+}
+
+.adm-eyebrow-plain::before {
+  content: '';
+  display: inline-block;
+  width: 22px;
+  height: 2px;
+  background: #0284c7;
+  flex-shrink: 0;
+}

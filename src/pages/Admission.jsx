@@ -4,6 +4,7 @@ import FloatingShapes from '../components/FloatingShapes';
 import ScrollReveal from '../components/ScrollReveal';
 import { itCourses, beautyCourses } from '../data/courses';
 import './Pages.css';
+import './Admission.css';
 
 export default function Admission() {
   const [formData, setFormData] = useState({
@@ -23,7 +24,6 @@ export default function Admission() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // If the main course category changes, reset the specific course
     if (name === 'classCourse') {
       setFormData({ ...formData, [name]: value, specificCourse: '' });
     } else {
@@ -71,10 +71,8 @@ export default function Admission() {
         </div>
       </section>
 
-      {/* ===== FORM SECTION (moved up) ===== */}
       <section style={{ padding: '100px 0', backgroundColor: '#ffffff' }}>
         <div className="container">
-          {/* Split Layout */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '60px', alignItems: 'start' }} className="split-layout">
             <style>{`
               @media (min-width: 992px) {
@@ -82,18 +80,16 @@ export default function Admission() {
               }
             `}</style>
 
-            {/* Left side: Context */}
+            {/* ── LEFT: context column (unchanged) ── */}
             <div style={{ position: 'sticky', top: '100px' }}>
-              <div style={{ display: 'inline-block', backgroundColor: 'var(--primary-50)', color: 'var(--primary-light)', padding: '6px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', marginBottom: '20px', fontFamily: 'var(--font-main)' }}>
-                Apply for Admission
-              </div>
+              <div className="adm-eyebrow-plain">Apply for Admission</div>
               <h2 style={{ fontSize: 'clamp(32px, 4vw, 42px)', fontWeight: '700', color: '#0f172a', marginBottom: '24px', lineHeight: 1.1 }}>
                 Tell Us About Your Child
               </h2>
               <p style={{ fontSize: '16px', color: '#475569', lineHeight: 1.6, marginBottom: '40px' }}>
                 Share a few details below and our admissions team will get in touch to guide you through the rest — class placement, fee structure, and available seats.
               </p>
-              
+
               <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <li className="benefit-item">
                   <div className="benefit-icon">
@@ -122,149 +118,176 @@ export default function Admission() {
               </ul>
             </div>
 
-            {/* Right side: Form */}
+            {/* ── RIGHT: structured admission form ── */}
             <div>
               <ScrollReveal>
-                <form className="contact-form" onSubmit={handleSubmit} style={{ padding: '48px', border: '1px solid #e2e8f0', boxShadow: '0 20px 40px rgba(15, 23, 42, 0.04)', borderRadius: '24px' }}>
-                  
-                  {status === 'success' && (
-                    <div className="form-alert form-alert-success">
-                      Admission form submitted successfully. We will contact you soon!
-                    </div>
-                  )}
+                <div className="adm-form">
 
-                  {status === 'error' && (
-                    <div className="form-alert form-alert-error">
-                      {errorMsg}
-                    </div>
-                  )}
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="fullName">Student Name <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="text" id="fullName" name="fullName" placeholder="Full name" value={formData.fullName} onChange={handleChange} required />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="mobileNumber">Mobile Number <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="+92-300-0000000" value={formData.mobileNumber} onChange={handleChange} required />
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="parentName">Parent/Guardian Name <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="text" id="parentName" name="parentName" placeholder="Parent's name" value={formData.parentName} onChange={handleChange} required />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="parentMobile">Parent Mobile <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="tel" id="parentMobile" name="parentMobile" placeholder="+92-300-0000000" value={formData.parentMobile} onChange={handleChange} required />
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="your@email.com" value={formData.email} onChange={handleChange} />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="classCourse">Select Class / Course <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="classCourse" name="classCourse" value={formData.classCourse} onChange={handleChange} required>
-                          <option value="">Select an option</option>
-                          <option value="5th - 8th Classes">5th - 8th Classes</option>
-                          <option value="9th Class">9th Class</option>
-                          <option value="10th Class">10th Class</option>
-                          <option value="First Year - I">First Year - I</option>
-                          <option value="Second Year - II">Second Year - II</option>
-                          <option value="IT Courses">IT Courses</option>
-                          <option value="Beauty Courses">Beauty Courses</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* CONDITIONAL SUB-COURSE DROPDOWNS */}
-                    {formData.classCourse === 'IT Courses' && (
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="specificCourse">Select IT Course <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
-                          <option value="">Select IT Course</option>
-                          {itCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
-                        </select>
-                      </div>
-                    )}
-
-                    {formData.classCourse === 'Beauty Courses' && (
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="specificCourse">Select Beauty Course <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
-                          <option value="">Select Beauty Course</option>
-                          {beautyCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
-                        </select>
-                      </div>
-                    )}
-
-                    {formData.classCourse === '5th - 8th Classes' && (
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="specificCourse">Select Class <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
-                          <option value="">Select Class</option>
-                          <option value="5th Class">5th Class</option>
-                          <option value="6th Class">6th Class</option>
-                          <option value="7th Class">7th Class</option>
-                          <option value="8th Class">8th Class</option>
-                        </select>
-                      </div>
-                    )}
-
-                    {(formData.classCourse === 'First Year - I' || formData.classCourse === 'Second Year - II') && (
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="specificCourse">Select Program / Type <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
-                          <option value="">Select Option</option>
-                          <option value="FSc Pre-Medical">FSc Pre-Medical</option>
-                          <option value="FSc Pre-Engineering">FSc Pre-Engineering</option>
-                          <option value="ICS (Mathematics, Computer Science, and Physics)">ICS (Mathematics, Computer Science, and Physics)</option>
-                          <option value="ICS (Mathematics, Computer Science, and Statistics)">ICS (Mathematics, Computer Science, and Statistics)</option>
-                          <option value="ICS (Mathematics, Computer Science, and Economics)">ICS (Mathematics, Computer Science, and Economics)</option>
-                          <option value="I.Com">I.Com</option>
-                          <option value="F.A">F.A</option>
-                        </select>
-                      </div>
-                    )}
-
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label htmlFor="board">Board</label>
-                      <select id="board" name="board" value={formData.board} onChange={handleChange}>
-                        <option value="">Select Board</option>
-                        <option value="Punjab Board">Punjab Board</option>
-                        <option value="Federal Board">Federal Board</option>
-                        <option value="Cambridge/O-Level">Cambridge / O-Level</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label htmlFor="message">Message / Questions (Optional)</label>
-                      <textarea id="message" name="message" placeholder="Any additional information..." value={formData.message} onChange={handleChange} style={{ minHeight: '120px' }} />
-                    </div>
+                  {/* Navy top bar */}
+                  <div className="adm-form-topbar">
+                    <span className="adm-form-topbar-label">Admission Application</span>
+                    <span className="adm-form-topbar-session">Session 2025 – 2026</span>
                   </div>
 
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary btn-lg" 
-                    style={{ width: '100%', opacity: status === 'sending' ? 0.7 : 1, marginTop: '24px' }}
-                    disabled={status === 'sending'}
-                  >
-                    {status === 'sending' ? 'Submitting...' : 'Submit Application →'}
-                  </button>
-                </form>
+                  <form className="adm-form-body" onSubmit={handleSubmit}>
+
+                    {status === 'error' && (
+                      <div className="adm-error">{errorMsg}</div>
+                    )}
+
+                    {/* Student Details */}
+                    <div className="adm-fieldset">
+                      <div className="adm-fieldset-legend">Student Details</div>
+                      <div className="adm-row">
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="fullName">Full Name <span className="req">*</span></label>
+                          <input className="adm-input" type="text" id="fullName" name="fullName" placeholder="Student's full name" value={formData.fullName} onChange={handleChange} required />
+                        </div>
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="mobileNumber">Mobile Number <span className="req">*</span></label>
+                          <input className="adm-input" type="tel" id="mobileNumber" name="mobileNumber" placeholder="+92-300-0000000" value={formData.mobileNumber} onChange={handleChange} required />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Parent / Guardian */}
+                    <div className="adm-fieldset">
+                      <div className="adm-fieldset-legend">Parent / Guardian</div>
+                      <div className="adm-row">
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="parentName">Father / Guardian Name <span className="req">*</span></label>
+                          <input className="adm-input" type="text" id="parentName" name="parentName" placeholder="Guardian's full name" value={formData.parentName} onChange={handleChange} required />
+                        </div>
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="parentMobile">Contact Number <span className="req">*</span></label>
+                          <input className="adm-input" type="tel" id="parentMobile" name="parentMobile" placeholder="+92-300-0000000" value={formData.parentMobile} onChange={handleChange} required />
+                        </div>
+                      </div>
+                      <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="email">Email Address <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#94a3b8', fontSize: '11px' }}>(Optional)</span></label>
+                          <input className="adm-input" type="email" id="email" name="email" placeholder="your@email.com" value={formData.email} onChange={handleChange} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Program of Study */}
+                    <div className="adm-fieldset">
+                      <div className="adm-fieldset-legend">Program of Study</div>
+                      <div className="adm-row">
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="classCourse">Class / Course <span className="req">*</span></label>
+                          <select className="adm-select" id="classCourse" name="classCourse" value={formData.classCourse} onChange={handleChange} required>
+                            <option value="">Select an option</option>
+                            <option value="5th - 8th Classes">5th – 8th Classes</option>
+                            <option value="9th Class">9th Class</option>
+                            <option value="10th Class">10th Class</option>
+                            <option value="First Year - I">First Year (11th)</option>
+                            <option value="Second Year - II">Second Year (12th)</option>
+                            <option value="IT Courses">IT Courses</option>
+                            <option value="Beauty Courses">Beauty Courses</option>
+                          </select>
+                        </div>
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="board">Board <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#94a3b8', fontSize: '11px' }}>(Optional)</span></label>
+                          <select className="adm-select" id="board" name="board" value={formData.board} onChange={handleChange}>
+                            <option value="">Select Board</option>
+                            <option value="Punjab Board">Punjab Board</option>
+                            <option value="Federal Board">Federal Board</option>
+                            <option value="Cambridge/O-Level">Cambridge / O-Level</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Conditional sub-selections */}
+                      {formData.classCourse === 'IT Courses' && (
+                        <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                          <div className="adm-field">
+                            <label className="adm-label" htmlFor="specificCourse">Select IT Course <span className="req">*</span></label>
+                            <select className="adm-select" id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
+                              <option value="">Select IT Course</option>
+                              {itCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
+                      {formData.classCourse === 'Beauty Courses' && (
+                        <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                          <div className="adm-field">
+                            <label className="adm-label" htmlFor="specificCourse">Select Beauty Course <span className="req">*</span></label>
+                            <select className="adm-select" id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
+                              <option value="">Select Beauty Course</option>
+                              {beautyCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
+                      {formData.classCourse === '5th - 8th Classes' && (
+                        <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                          <div className="adm-field">
+                            <label className="adm-label" htmlFor="specificCourse">Select Class <span className="req">*</span></label>
+                            <select className="adm-select" id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
+                              <option value="">Select Class</option>
+                              <option value="5th Class">Class 5</option>
+                              <option value="6th Class">Class 6</option>
+                              <option value="7th Class">Class 7</option>
+                              <option value="8th Class">Class 8</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
+                      {(formData.classCourse === 'First Year - I' || formData.classCourse === 'Second Year - II') && (
+                        <div className="adm-row-single" style={{ marginTop: '14px' }}>
+                          <div className="adm-field">
+                            <label className="adm-label" htmlFor="specificCourse">Select Program / Stream <span className="req">*</span></label>
+                            <select className="adm-select" id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
+                              <option value="">Select Option</option>
+                              <option value="FSc Pre-Medical">FSc Pre-Medical</option>
+                              <option value="FSc Pre-Engineering">FSc Pre-Engineering</option>
+                              <option value="ICS (Mathematics, Computer Science, and Physics)">ICS (Math, Computer, Physics)</option>
+                              <option value="ICS (Mathematics, Computer Science, and Statistics)">ICS (Math, Computer, Statistics)</option>
+                              <option value="ICS (Mathematics, Computer Science, and Economics)">ICS (Math, Computer, Economics)</option>
+                              <option value="I.Com">I.Com</option>
+                              <option value="F.A">F.A</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Remarks */}
+                    <div className="adm-fieldset">
+                      <div className="adm-fieldset-legend">Remarks <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#94a3b8', fontSize: '11px' }}>(Optional)</span></div>
+                      <div className="adm-field">
+                        <textarea className="adm-textarea" id="message" name="message" placeholder="Any questions, additional information..." value={formData.message} onChange={handleChange} />
+                      </div>
+                    </div>
+
+                    <button type="submit" className="adm-submit" disabled={status === 'sending'}>
+                      {status === 'sending' ? (
+                        <>
+                          <svg className="adm-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" strokeOpacity="0.2"/><path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/></svg>
+                          <span>Submitting...</span>
+                        </>
+                      ) : (
+                        <span>Submit Application</span>
+                      )}
+                    </button>
+
+                  </form>
+                </div>
               </ScrollReveal>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* ===== PROCESS SECTION (moved below form) ===== */}
+      {/* ===== PROCESS SECTION ===== */}
       <section style={{ padding: '80px 0', backgroundColor: '#f8fafc' }}>
         <div className="container">
           <div style={{ maxWidth: '800px', margin: '0 auto 60px', textAlign: 'center' }}>
@@ -275,30 +298,26 @@ export default function Admission() {
               Our counsellors are here to help you pick the right class — from Nursery through Intermediate and O/A Level.
             </p>
           </div>
-          
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '30px' }}>
-            {/* Step 1 */}
             <div className="process-card">
               <div className="process-number">01</div>
               <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', marginBottom: '12px' }}>Submit the Form</h3>
               <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6 }}>Fill out the application form above with your child's details.</p>
             </div>
-            {/* Step 2 */}
             <div className="process-card">
               <div className="process-number">02</div>
               <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', marginBottom: '12px' }}>Counsellor Call</h3>
               <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6 }}>Our academic counsellor calls within 24–48 hours to discuss the right class.</p>
             </div>
-            {/* Step 3 */}
             <div className="process-card">
               <div className="process-number">03</div>
               <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', marginBottom: '12px' }}>Assessment / Interview</h3>
               <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6 }}>A short, friendly assessment to confirm placement (where applicable).</p>
             </div>
-            {/* Step 4 */}
             <div className="process-card">
               <div className="process-number">04</div>
-              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', marginBottom: '12px' }}>Confirm & Enroll</h3>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', marginBottom: '12px' }}>Confirm &amp; Enroll</h3>
               <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6 }}>Complete documentation and fee submission to secure the seat.</p>
             </div>
           </div>
