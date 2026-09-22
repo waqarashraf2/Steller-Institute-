@@ -3,8 +3,9 @@ set -euo pipefail
 
 TARGET_HOST="${CPANEL_HOST:-stellarinstitute}"
 TARGET_PATH="public_html"
+export VITE_API_URL="${VITE_API_URL:-https://stellar-institute-frontend.vercel.app/api}"
 
-echo "=== Building project ==="
+echo "=== Building project with API URL: $VITE_API_URL ==="
 npm run build
 
 echo "=== Verifying SSH connection to $TARGET_HOST ==="
