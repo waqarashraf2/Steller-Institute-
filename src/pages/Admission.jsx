@@ -76,26 +76,66 @@ export default function Admission() {
         <div className="container">
           <div className="admission-wrapper">
 
-            {/* Left info strip — visible on wide screens */}
-            <div className="admission-info">
-              <div className="admission-info-block">
-                <h4>Session</h4>
-                <p>2025 – 2026</p>
-                <small>Admissions open now</small>
+            {/* Left side: Context & Institutional Trust */}
+            <div className="admission-context">
+              <div className="admission-eyebrow">
+                <span className="admission-eyebrow-bar"></span>
+                <span>Official Admissions Office</span>
               </div>
-              <div className="admission-info-block">
-                <h4>Admissions Office</h4>
-                <p>+92 300 0000000</p>
-                <small>Mon – Sat, 9am – 5pm</small>
-              </div>
-              <div className="admission-info-block">
-                <h4>Response Time</h4>
-                <p>24 – 48 hours</p>
-                <small>A counsellor will call to confirm</small>
-              </div>
-              <p className="admission-info-note">
-                Submitting this form is free. No registration fee is charged at the application stage.
+              <h2 className="admission-title">
+                Enroll at Stellar Institute &amp; Academy
+              </h2>
+              <p className="admission-subtitle">
+                Submit your child's admission details below. Our admissions board reviews every submission to confirm class placement and seat availability.
               </p>
+
+              <ul className="admission-benefits-list">
+                <li className="admission-benefit-row">
+                  <div className="admission-benefit-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div>
+                    <div className="admission-benefit-title">No Application or Registration Fee</div>
+                    <div className="admission-benefit-desc">Submitting an admission inquiry is completely free of charge.</div>
+                  </div>
+                </li>
+                <li className="admission-benefit-row">
+                  <div className="admission-benefit-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div>
+                    <div className="admission-benefit-title">Personalized Academic Counseling</div>
+                    <div className="admission-benefit-desc">Our counsellors help you select the right subject combinations and board.</div>
+                  </div>
+                </li>
+                <li className="admission-benefit-row">
+                  <div className="admission-benefit-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div>
+                    <div className="admission-benefit-title">Structured Learning &amp; Board Prep</div>
+                    <div className="admission-benefit-desc">Matric, Intermediate, O/A Levels, and technical certification programs.</div>
+                  </div>
+                </li>
+                <li className="admission-benefit-row">
+                  <div className="admission-benefit-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div>
+                    <div className="admission-benefit-title">Confirmation Within 24–48 Hours</div>
+                    <div className="admission-benefit-desc">Our admissions officer will call to confirm scheduling and seat availability.</div>
+                  </div>
+                </li>
+              </ul>
+
+              <div className="admission-help-card">
+                <h4>Admissions Help Desk</h4>
+                <p>Questions about fee structures, timings, or transport? Contact us directly.</p>
+                <a href="tel:+923000000000" className="admission-helpline-link">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  <span>+92 300 0000000</span>
+                </a>
+              </div>
             </div>
 
             <ScrollReveal>
