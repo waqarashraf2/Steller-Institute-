@@ -185,30 +185,6 @@ export default function StellarAdmin() {
     sessionStorage.removeItem('stellar-admin-user');
   };
 
-  const handleChangePasswordPrompt = async () => {
-    const newPass = window.prompt('Enter new admin password (minimum 8 characters):');
-    if (!newPass) return;
-    if (newPass.length < 8) {
-      alert('Password must be at least 8 characters.');
-      return;
-    }
-    try {
-      const res = await fetch(`${API}/admin-seed`, {
-        method: 'PUT',
-        headers: headers(),
-        body: JSON.stringify({ password: newPass })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        alert('Password updated successfully! Please remember your new password.');
-      } else {
-        alert(`Failed to update password: ${data.error || 'Unknown error'}`);
-      }
-    } catch (err) {
-      alert('Network error while updating password.');
-    }
-  };
-
   // --- ANNOUNCEMENTS LOGIC ---
   const handleSaveAnn = async (e) => {
     e.preventDefault();
@@ -632,15 +608,6 @@ export default function StellarAdmin() {
         <div className="admin-topbar-right">
           <Link to="/" className="admin-back-link">← Back to Site</Link>
           <span className="admin-user-name">{user?.name || user?.username}</span>
-          <button 
-            type="button" 
-            onClick={handleChangePasswordPrompt} 
-            className="admin-edit-btn" 
-            style={{ fontSize: '12px', padding: '5px 10px' }}
-            title="Change your admin password"
-          >
-            Change Password
-          </button>
           <button onClick={logout} className="admin-logout-btn">Log out</button>
         </div>
       </div>
