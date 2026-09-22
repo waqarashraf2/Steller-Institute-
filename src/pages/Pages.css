@@ -315,6 +315,191 @@
   box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.08);
 }
 
+/* ==========================================================================
+   ADMISSION & REGISTRATION PORTAL (Professional Redesign)
+   ========================================================================== */
+.admission-portal-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.08), 0 4px 16px rgba(15, 23, 42, 0.03);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.admission-portal-header {
+  background: linear-gradient(135deg, #1f1b4c 0%, #2e235c 60%, #1e1b4b 100%);
+  padding: 24px 32px;
+  color: #ffffff;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 3px solid #ffd000;
+}
+
+.admission-header-content h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admission-header-content p {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.admission-session-badge {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffd000;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 30px;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admission-portal-body {
+  padding: 36px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.admission-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admission-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid #f1f5f9;
+}
+
+.admission-step-pill {
+  background: #2e235c;
+  color: #ffd000;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.admission-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admission-field label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admission-input,
+.admission-select,
+.admission-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-size: 14px;
+  font-family: var(--font-main);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.admission-input:focus,
+.admission-select:focus,
+.admission-textarea:focus {
+  outline: none;
+  border-color: #2e235c;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(46, 35, 92, 0.08);
+}
+
+.admission-input::placeholder,
+.admission-textarea::placeholder {
+  color: #94a3b8;
+  font-size: 13.5px;
+}
+
+.admission-submit-btn {
+  background: linear-gradient(135deg, #1f1b4c 0%, #2e235c 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  box-shadow: 0 10px 24px -4px rgba(31, 27, 76, 0.28);
+}
+
+.admission-submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2e235c 0%, #3e317c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -4px rgba(31, 27, 76, 0.38);
+}
+
+.admission-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admission-trust-strip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: -12px;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.admission-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 /* Contact Info Cards */
 .contact-info-side {
   display: flex;

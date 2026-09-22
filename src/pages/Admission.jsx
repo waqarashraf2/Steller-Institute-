@@ -122,142 +122,324 @@ export default function Admission() {
               </ul>
             </div>
 
-            {/* Right side: Form */}
+            {/* Right side: Modern Admission Portal */}
             <div>
               <ScrollReveal>
-                <form className="contact-form" onSubmit={handleSubmit} style={{ padding: '48px', border: '1px solid #e2e8f0', boxShadow: '0 20px 40px rgba(15, 23, 42, 0.04)', borderRadius: '24px' }}>
-                  
-                  {status === 'success' && (
-                    <div className="form-alert form-alert-success">
-                      Admission form submitted successfully. We will contact you soon!
+                <div className="admission-portal-card">
+                  {/* Top Branding Accent Header */}
+                  <div className="admission-portal-header">
+                    <div className="admission-header-content">
+                      <h3>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffd000" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                          <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
+                        Student Registration Portal
+                      </h3>
+                      <p>Fill in the accredited details below to apply for admission</p>
                     </div>
-                  )}
-
-                  {status === 'error' && (
-                    <div className="form-alert form-alert-error">
-                      {errorMsg}
-                    </div>
-                  )}
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="fullName">Student Name <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="text" id="fullName" name="fullName" placeholder="Full name" value={formData.fullName} onChange={handleChange} required />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="mobileNumber">Mobile Number <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="+92-300-0000000" value={formData.mobileNumber} onChange={handleChange} required />
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="parentName">Parent/Guardian Name <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="text" id="parentName" name="parentName" placeholder="Parent's name" value={formData.parentName} onChange={handleChange} required />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="parentMobile">Parent Mobile <span style={{ color: '#ef4444' }}>*</span></label>
-                        <input type="tel" id="parentMobile" name="parentMobile" placeholder="+92-300-0000000" value={formData.parentMobile} onChange={handleChange} required />
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="your@email.com" value={formData.email} onChange={handleChange} />
-                      </div>
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="classCourse">Select Class / Course <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="classCourse" name="classCourse" value={formData.classCourse} onChange={handleChange} required>
-                          <option value="">Select an option</option>
-                          <option value="5th - 8th Classes">5th - 8th Classes</option>
-                          <option value="9th Class">9th Class</option>
-                          <option value="10th Class">10th Class</option>
-                          <option value="First Year - I">First Year - I</option>
-                          <option value="Second Year - II">Second Year - II</option>
-                          <option value="IT Courses">IT Courses</option>
-                          <option value="Beauty Courses">Beauty Courses</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* CONDITIONAL SUB-COURSE DROPDOWNS */}
-                    {formData.classCourse === 'IT Courses' && (
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="specificCourse">Select IT Course <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
-                          <option value="">Select IT Course</option>
-                          {itCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
-                        </select>
-                      </div>
-                    )}
-
-                    {formData.classCourse === 'Beauty Courses' && (
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="specificCourse">Select Beauty Course <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
-                          <option value="">Select Beauty Course</option>
-                          {beautyCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
-                        </select>
-                      </div>
-                    )}
-
-                    {formData.classCourse === '5th - 8th Classes' && (
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="specificCourse">Select Class <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
-                          <option value="">Select Class</option>
-                          <option value="5th Class">5th Class</option>
-                          <option value="6th Class">6th Class</option>
-                          <option value="7th Class">7th Class</option>
-                          <option value="8th Class">8th Class</option>
-                        </select>
-                      </div>
-                    )}
-
-                    {(formData.classCourse === 'First Year - I' || formData.classCourse === 'Second Year - II') && (
-                      <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label htmlFor="specificCourse">Select Program / Type <span style={{ color: '#ef4444' }}>*</span></label>
-                        <select id="specificCourse" name="specificCourse" value={formData.specificCourse} onChange={handleChange} required>
-                          <option value="">Select Option</option>
-                          <option value="FSc Pre-Medical">FSc Pre-Medical</option>
-                          <option value="FSc Pre-Engineering">FSc Pre-Engineering</option>
-                          <option value="ICS (Mathematics, Computer Science, and Physics)">ICS (Mathematics, Computer Science, and Physics)</option>
-                          <option value="ICS (Mathematics, Computer Science, and Statistics)">ICS (Mathematics, Computer Science, and Statistics)</option>
-                          <option value="ICS (Mathematics, Computer Science, and Economics)">ICS (Mathematics, Computer Science, and Economics)</option>
-                          <option value="I.Com">I.Com</option>
-                          <option value="F.A">F.A</option>
-                        </select>
-                      </div>
-                    )}
-
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label htmlFor="board">Board</label>
-                      <select id="board" name="board" value={formData.board} onChange={handleChange}>
-                        <option value="">Select Board</option>
-                        <option value="Punjab Board">Punjab Board</option>
-                        <option value="Federal Board">Federal Board</option>
-                        <option value="Cambridge/O-Level">Cambridge / O-Level</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label htmlFor="message">Message / Questions (Optional)</label>
-                      <textarea id="message" name="message" placeholder="Any additional information..." value={formData.message} onChange={handleChange} style={{ minHeight: '120px' }} />
+                    <div className="admission-session-badge">
+                      <span>●</span> Academic Session 2025–26
                     </div>
                   </div>
 
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary btn-lg" 
-                    style={{ width: '100%', opacity: status === 'sending' ? 0.7 : 1, marginTop: '24px' }}
-                    disabled={status === 'sending'}
-                  >
-                    {status === 'sending' ? 'Submitting...' : 'Submit Application →'}
-                  </button>
-                </form>
+                  <form className="admission-portal-body" onSubmit={handleSubmit}>
+                    {status === 'success' && (
+                      <div className="form-alert form-alert-success">
+                        ✓ Admission form submitted successfully. We will contact you soon!
+                      </div>
+                    )}
+
+                    {status === 'error' && (
+                      <div className="form-alert form-alert-error">
+                        ✕ {errorMsg}
+                      </div>
+                    )}
+
+                    {/* SECTION 1: Student Profile */}
+                    <div className="admission-section-block">
+                      <div className="admission-section-title">
+                        <span className="admission-step-pill">01</span>
+                        <span>Student Information</span>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                        <div className="admission-field">
+                          <label htmlFor="fullName">
+                            Student Full Name <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="fullName"
+                            name="fullName"
+                            className="admission-input"
+                            placeholder="e.g. Muhammad Ali"
+                            value={formData.fullName}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
+                        <div className="admission-field">
+                          <label htmlFor="mobileNumber">
+                            Student / Contact Mobile <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <input
+                            type="tel"
+                            id="mobileNumber"
+                            name="mobileNumber"
+                            className="admission-input"
+                            placeholder="0300 1234567"
+                            value={formData.mobileNumber}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* SECTION 2: Parent / Guardian Details */}
+                    <div className="admission-section-block">
+                      <div className="admission-section-title">
+                        <span className="admission-step-pill">02</span>
+                        <span>Parent / Guardian Details</span>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                        <div className="admission-field">
+                          <label htmlFor="parentName">
+                            Parent / Guardian Name <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="parentName"
+                            name="parentName"
+                            className="admission-input"
+                            placeholder="e.g. Tariq Mehmood"
+                            value={formData.parentName}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
+                        <div className="admission-field">
+                          <label htmlFor="parentMobile">
+                            Parent Mobile Number <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <input
+                            type="tel"
+                            id="parentMobile"
+                            name="parentMobile"
+                            className="admission-input"
+                            placeholder="0321 7654321"
+                            value={formData.parentMobile}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* SECTION 3: Academic Program Selection */}
+                    <div className="admission-section-block">
+                      <div className="admission-section-title">
+                        <span className="admission-step-pill">03</span>
+                        <span>Program & Academic Stream</span>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                        <div className="admission-field">
+                          <label htmlFor="email">Email Address (Optional)</label>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            className="admission-input"
+                            placeholder="student@example.com"
+                            value={formData.email}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="admission-field">
+                          <label htmlFor="classCourse">
+                            Select Class / Course <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <select
+                            id="classCourse"
+                            name="classCourse"
+                            className="admission-select"
+                            value={formData.classCourse}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="">Select an option</option>
+                            <option value="5th - 8th Classes">5th - 8th Classes</option>
+                            <option value="9th Class">9th Class</option>
+                            <option value="10th Class">10th Class</option>
+                            <option value="First Year - I">First Year - I</option>
+                            <option value="Second Year - II">Second Year - II</option>
+                            <option value="IT Courses">IT Courses</option>
+                            <option value="Beauty Courses">Beauty Courses</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Dynamic Sub-Course Dropdowns */}
+                      {formData.classCourse === 'IT Courses' && (
+                        <div className="admission-field">
+                          <label htmlFor="specificCourse">
+                            Select IT Specialization <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <select
+                            id="specificCourse"
+                            name="specificCourse"
+                            className="admission-select"
+                            value={formData.specificCourse}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="">Choose IT Course...</option>
+                            {itCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
+                          </select>
+                        </div>
+                      )}
+
+                      {formData.classCourse === 'Beauty Courses' && (
+                        <div className="admission-field">
+                          <label htmlFor="specificCourse">
+                            Select Beauty Specialization <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <select
+                            id="specificCourse"
+                            name="specificCourse"
+                            className="admission-select"
+                            value={formData.specificCourse}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="">Choose Beauty Course...</option>
+                            {beautyCourses.map(c => <option key={c.id} value={c.title}>{c.title}</option>)}
+                          </select>
+                        </div>
+                      )}
+
+                      {formData.classCourse === '5th - 8th Classes' && (
+                        <div className="admission-field">
+                          <label htmlFor="specificCourse">
+                            Select Class Level <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <select
+                            id="specificCourse"
+                            name="specificCourse"
+                            className="admission-select"
+                            value={formData.specificCourse}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="">Select Class</option>
+                            <option value="5th Class">5th Class</option>
+                            <option value="6th Class">6th Class</option>
+                            <option value="7th Class">7th Class</option>
+                            <option value="8th Class">8th Class</option>
+                          </select>
+                        </div>
+                      )}
+
+                      {(formData.classCourse === 'First Year - I' || formData.classCourse === 'Second Year - II') && (
+                        <div className="admission-field">
+                          <label htmlFor="specificCourse">
+                            Select Intermediate Discipline <span style={{ color: '#ef4444' }}>*</span>
+                          </label>
+                          <select
+                            id="specificCourse"
+                            name="specificCourse"
+                            className="admission-select"
+                            value={formData.specificCourse}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="">Select Option</option>
+                            <option value="FSc Pre-Medical">FSc Pre-Medical</option>
+                            <option value="FSc Pre-Engineering">FSc Pre-Engineering</option>
+                            <option value="ICS (Mathematics, Computer Science, and Physics)">ICS (Mathematics, Computer Science, and Physics)</option>
+                            <option value="ICS (Mathematics, Computer Science, and Statistics)">ICS (Mathematics, Computer Science, and Statistics)</option>
+                            <option value="ICS (Mathematics, Computer Science, and Economics)">ICS (Mathematics, Computer Science, and Economics)</option>
+                            <option value="I.Com">I.Com</option>
+                            <option value="F.A">F.A</option>
+                          </select>
+                        </div>
+                      )}
+
+                      <div className="admission-field">
+                        <label htmlFor="board">Examination Board (Optional)</label>
+                        <select
+                          id="board"
+                          name="board"
+                          className="admission-select"
+                          value={formData.board}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Board</option>
+                          <option value="Punjab Board">Punjab Board (BISE Lahore)</option>
+                          <option value="Federal Board">Federal Board (FBISE)</option>
+                          <option value="Cambridge/O-Level">Cambridge / O-Level</option>
+                          <option value="Other">Other / Technical Board</option>
+                        </select>
+                      </div>
+
+                      <div className="admission-field">
+                        <label htmlFor="message">Questions / Special Notes (Optional)</label>
+                        <textarea
+                          id="message"
+                          name="message"
+                          className="admission-textarea"
+                          placeholder="Tell us about previous school, timing preferences, or specific queries..."
+                          value={formData.message}
+                          onChange={handleChange}
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Action & Trust Bar */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <button 
+                        type="submit" 
+                        className="admission-submit-btn" 
+                        disabled={status === 'sending'}
+                      >
+                        {status === 'sending' ? (
+                          <>
+                            <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25"></circle>
+                              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor"></path>
+                            </svg>
+                            Submitting Registration...
+                          </>
+                        ) : (
+                          <>
+                            <span>Submit Official Application</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                              <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                          </>
+                        )}
+                      </button>
+
+                      <div className="admission-trust-strip">
+                        <span className="admission-trust-item">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                          Accredited Institution
+                        </span>
+                        <span>•</span>
+                        <span className="admission-trust-item">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                          256-Bit Encrypted
+                        </span>
+                        <span>•</span>
+                        <span className="admission-trust-item">
+                          Free Counselling
+                        </span>
+                      </div>
+                    </div>
+                  </form>
+                </div>
               </ScrollReveal>
             </div>
           </div>
