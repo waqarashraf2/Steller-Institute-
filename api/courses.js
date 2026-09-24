@@ -1,5 +1,5 @@
-import { getDb, ensureTables } from './db.js';
-import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './security.js';
+import { getDb, ensureTables } from './_db.js';
+import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './_security.js';
 import jwt from 'jsonwebtoken';
 
 function verifyToken(req) {

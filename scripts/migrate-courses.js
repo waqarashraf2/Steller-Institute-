@@ -1,4 +1,4 @@
-import { getDb, ensureTables } from './db.js';
+import { getDb, ensureTables } from '../api/_db.js';
 import { itCourses, beautyCourses } from '../src/data/courses.js';
 
 export default async function handler(req, res) {

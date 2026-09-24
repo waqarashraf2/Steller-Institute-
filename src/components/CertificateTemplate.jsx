@@ -34,35 +34,13 @@ const CertificateTemplate = forwardRef(function CertificateTemplate(
       {/* ─── Far-Right Yellow Curved Bar Accent ─────────────────────── */}
       <div className="cert-far-right-yellow" />
 
-      {/* ─── Center Background Watermark (Exact Emblem Icon) ──────── */}
-      <svg className="cert-watermark-svg" viewBox="0 0 200 240" fill="none">
-        <g opacity="0.05" transform="translate(10, 10)">
-          {/* Graduation Cap */}
-          <polygon points="100,10 185,50 100,90 15,50" fill="#1f1b4c" />
-          {/* Tassel */}
-          <path d="M26,56 L26,110" stroke="#1f1b4c" strokeWidth="4" strokeLinecap="round" />
-          <circle cx="26" cy="114" r="5" fill="#1f1b4c" />
-          {/* Head Circle */}
-          <circle cx="100" cy="78" r="30" fill="#1f1b4c" />
-          {/* Interlocking S / Link Structure */}
-          <path 
-            d="M72,130 C72,108 128,108 128,130 L128,175 C128,197 72,197 72,175 Z" 
-            stroke="#1f1b4c" 
-            strokeWidth="18" 
-            fill="none" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-          />
-          <path 
-            d="M100,150 C100,128 156,128 156,150 L156,195 C156,217 100,217 100,195 Z" 
-            stroke="#1f1b4c" 
-            strokeWidth="18" 
-            fill="none" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-          />
-        </g>
-      </svg>
+      {/* ─── Center Background Watermark (Official Logo Emblem) ──────── */}
+      <img 
+        src="/cert_watermark.png" 
+        alt="Stellar Watermark" 
+        className="cert-watermark-img"
+        crossOrigin="anonymous"
+      />
 
       {/* ─── Left Main Content (White Canvas) ──────────────────────── */}
       <div className="cert-main">

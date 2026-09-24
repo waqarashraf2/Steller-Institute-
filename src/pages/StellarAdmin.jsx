@@ -88,9 +88,9 @@ export default function StellarAdmin() {
     'Authorization': `Bearer ${token}`
   }), [token]);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (showLoading = false) => {
     if (!token) return;
-    setLoading(true);
+    if (showLoading) setLoading(true);
     try {
       const [rAnns, rImgs, rCourses, rPages, rCerts] = await Promise.all([
         fetch(`${API}/admin-announcements`, { headers: headers() }),
@@ -111,7 +111,29 @@ export default function StellarAdmin() {
       }
       if (rCerts && rCerts.ok) {
         const apiCerts = await rCerts.json();
-        if (Array.isArray(apiCerts) && apiCerts.length > 0) {
+        if (Array.isArray(apiCerts)) {
+          const local = getLocalCerts();
+          const unSynced = local.filter(lc => lc.registration_no && !apiCerts.some(ac => ac.registration_no?.toUpperCase() === lc.registration_no?.toUpperCase()));
+          if (unSynced.length > 0) {
+            for (const cert of unSynced) {
+              const { id, ...certData } = cert;
+              const validIntId = id && Number.isInteger(Number(id)) && Number(id) < 2147483647 ? Number(id) : null;
+              try {
+                const syncRes = await fetch(`${API}/admin-certificates`, {
+                  method: 'POST',
+                  headers: headers(),
+                  body: JSON.stringify(validIntId ? { ...certData, id: validIntId } : certData)
+                });
+                if (syncRes.ok) {
+                  const saved = await syncRes.json();
+                  apiCerts.unshift(saved);
+                }
+              } catch (e) {
+                console.warn('Auto-sync local cert failed:', e);
+              }
+            }
+          }
+          saveLocalCerts(apiCerts);
           setCertificates(apiCerts);
         } else {
           setCertificates(getLocalCerts());
@@ -120,14 +142,14 @@ export default function StellarAdmin() {
         setCertificates(getLocalCerts());
       }
     } catch {}
-    setLoading(false);
+    if (showLoading) setLoading(false);
   }, [token, headers]);
 
   useEffect(() => {
     if (token) {
       const s = sessionStorage.getItem('stellar-admin-user');
       if (s) setUser(JSON.parse(s));
-      fetchData();
+      fetchData(true);
     }
   }, [token, fetchData]);
 
@@ -357,11 +379,13 @@ export default function StellarAdmin() {
     }
     setSavingCert(true);
     try {
-      const payload = editingCertId 
-        ? { ...certForm, id: editingCertId } 
-        : { ...certForm, id: Date.now() };
+      const validEditId = editingCertId && Number.isInteger(Number(editingCertId)) && Number(editingCertId) < 2147483647 ? Number(editingCertId) : null;
+      const payload = validEditId 
+        ? { ...certForm, id: validEditId } 
+        : { ...certForm };
 
-      let apiSaved = false;
+      let savedCert = null;
+      let apiError = null;
       try {
         const r = await fetch(`${API}/admin-certificates`, {
           method: 'POST',
@@ -369,36 +393,75 @@ export default function StellarAdmin() {
           body: JSON.stringify(payload)
         });
         if (r.ok) {
-          apiSaved = true;
+          savedCert = await r.json();
+        } else {
+          const errData = await r.json().catch(() => ({}));
+          apiError = errData.error || 'Server error';
+          console.warn('Server save warning:', errData);
         }
       } catch (err) {
+        apiError = err.message || 'Network error';
         console.warn('API save fallback to local:', err);
       }
+
+      if (apiError && !savedCert) {
+        alert(`Warning: Cloud database save failed (${apiError}). Saved to local browser storage only.`);
+      }
+
+      const finalRecord = savedCert || (editingCertId ? { ...certForm, id: editingCertId } : { ...certForm, id: Date.now() });
 
       // Always maintain local storage sync for instant reactivity & offline preview
       const local = getLocalCerts();
       let updated;
       if (editingCertId) {
-        updated = local.map(c => (c.id === editingCertId || c.registration_no === payload.registration_no ? { ...c, ...payload } : c));
-        if (!updated.some(c => c.registration_no === payload.registration_no)) {
-          updated.unshift(payload);
+        updated = local.map(c => (c.id === editingCertId || c.registration_no === finalRecord.registration_no ? { ...c, ...finalRecord } : c));
+        if (!updated.some(c => c.registration_no === finalRecord.registration_no)) {
+          updated.unshift(finalRecord);
         }
       } else {
-        updated = [payload, ...local.filter(c => c.registration_no !== payload.registration_no)];
+        updated = [finalRecord, ...local.filter(c => c.registration_no !== finalRecord.registration_no)];
       }
       saveLocalCerts(updated);
       setCertificates(updated);
 
-      alert(editingCertId ? 'Certificate updated successfully!' : 'Certificate created & registered successfully!');
+      if (!apiError) {
+        alert(editingCertId ? 'Certificate updated successfully in database!' : 'Certificate created & saved in database!');
+      }
       setEditingCertId(null);
       setCertForm({ ...emptyCert, registration_no: createDefaultRegNo() });
-      if (apiSaved) fetchData();
+      if (savedCert) fetchData();
     } catch (err) {
       console.error('Save certificate error:', err);
       alert('Error saving certificate. Please try again.');
     } finally {
       setSavingCert(false);
     }
+  };
+
+  const syncCertificatesToCloud = async () => {
+    const local = getLocalCerts();
+    if (local.length === 0) {
+      alert('No local certificates found to sync.');
+      return;
+    }
+    setLoading(true);
+    let syncedCount = 0;
+    for (const cert of local) {
+      const { id, ...certData } = cert;
+      const validIntId = id && Number.isInteger(Number(id)) && Number(id) < 2147483647 ? Number(id) : null;
+      try {
+        const res = await fetch(`${API}/admin-certificates`, {
+          method: 'POST',
+          headers: headers(),
+          body: JSON.stringify(validIntId ? { ...certData, id: validIntId } : certData)
+        });
+        if (res.ok) syncedCount++;
+      } catch (err) {
+        console.warn('Manual sync failed for:', cert.registration_no, err);
+      }
+    }
+    await fetchData();
+    alert(`Sync complete! ${syncedCount} certificate(s) uploaded to cloud database.`);
   };
 
   const handleEditCertificate = (c) => {
@@ -416,22 +479,32 @@ export default function StellarAdmin() {
     });
   };
 
-  const handleDeleteCertificate = async (id) => {
+  const handleDeleteCertificate = async (id, registrationNo) => {
     if (!window.confirm('Are you sure you want to delete this certificate record?')) return;
     try {
-      try {
-        await fetch(`${API}/admin-certificates`, {
-          method: 'DELETE',
-          headers: headers(),
-          body: JSON.stringify({ id })
-        });
-      } catch {}
+      const isMatch = (c) => {
+        if (id && c.id && String(c.id) === String(id)) return true;
+        if (registrationNo && c.registration_no && c.registration_no.trim().toUpperCase() === registrationNo.trim().toUpperCase()) return true;
+        return false;
+      };
 
-      const local = getLocalCerts().filter(c => c.id !== id);
+      setCertificates(prev => prev.filter(c => !isMatch(c)));
+      const local = getLocalCerts().filter(c => !isMatch(c));
       saveLocalCerts(local);
-      setCertificates(local);
-      fetchData();
-    } catch {}
+
+      if (editingCertId === id || (registrationNo && certForm.registration_no === registrationNo)) {
+        setEditingCertId(null);
+        setCertForm({ ...emptyCert, registration_no: createDefaultRegNo() });
+      }
+
+      await fetch(`${API}/admin-certificates`, {
+        method: 'DELETE',
+        headers: headers(),
+        body: JSON.stringify({ id, registration_no: registrationNo })
+      });
+    } catch (err) {
+      console.warn('Error deleting certificate:', err);
+    }
   };
 
   const handleDownloadPdf = async () => {
@@ -1179,10 +1252,20 @@ export default function StellarAdmin() {
             </div>
           </div>
 
-          {/* Bottom: All Issued Certificates Table & Search */}
-          <div style={{ marginTop: '40px' }}>
-            <div className="admin-actions-bar">
-              <h2>Registered Certificates Registry ({certificates.length})</h2>
+          {/* Bottom: Registered Certificates Registry & Search */}
+          <div style={{ marginTop: '36px' }}>
+            <div className="cert-registry-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <h2 className="cert-registry-title">Registered Certificates ({certificates.length})</h2>
+                <button
+                  type="button"
+                  onClick={syncCertificatesToCloud}
+                  className="cert-table-btn"
+                  title="Upload all local certificates to cloud database"
+                >
+                  Sync to Cloud DB
+                </button>
+              </div>
               <div style={{ width: '280px' }}>
                 <input
                   type="text"
@@ -1196,10 +1279,10 @@ export default function StellarAdmin() {
             </div>
 
             {certificates.length === 0 ? (
-              <div className="admin-empty">No certificates issued yet. Fill the form above to register your first student!</div>
+              <div className="admin-empty">No certificates issued yet. Fill the form above to register your first student.</div>
             ) : (
-              <div className="admin-table-wrapper">
-                <table className="admin-table">
+              <div className="cert-table-card">
+                <table className="cert-table">
                   <thead>
                     <tr>
                       <th>Reg No.</th>
@@ -1207,7 +1290,7 @@ export default function StellarAdmin() {
                       <th>Course</th>
                       <th>Issue Date</th>
                       <th>Status</th>
-                      <th>Actions</th>
+                      <th style={{ textAlign: 'right', paddingRight: '20px' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1219,20 +1302,35 @@ export default function StellarAdmin() {
                         (c.course_title && c.course_title.toLowerCase().includes(certSearch.toLowerCase()))
                       )
                       .map(c => (
-                        <tr key={c.id}>
-                          <td style={{ fontWeight: 800, color: '#0284c7' }}>{c.registration_no}</td>
-                          <td style={{ fontWeight: 600 }}>{c.student_name}</td>
-                          <td>{c.course_title}</td>
-                          <td>{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
+                        <tr key={c.id || c.registration_no}>
+                          <td className="cert-td-reg">{c.registration_no}</td>
+                          <td className="cert-td-name">{c.student_name}</td>
+                          <td className="cert-td-course">{c.course_title}</td>
+                          <td className="cert-td-date">{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
                           <td>
-                            <span className={`cert-badge-status ${c.is_valid ? 'cert-badge-active' : 'cert-badge-inactive'}`}>
-                              {c.is_valid ? 'Active' : 'Revoked'}
-                            </span>
+                            {c.is_valid ? (
+                              <span className="cert-status-valid">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                  <polyline points="9 12 11 14 15 10" />
+                                </svg>
+                                <span>Active</span>
+                              </span>
+                            ) : (
+                              <span className="cert-status-revoked">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <circle cx="12" cy="12" r="10" />
+                                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                                </svg>
+                                <span>Revoked</span>
+                              </span>
+                            )}
                           </td>
                           <td>
-                            <div style={{ display: 'flex', gap: '8px' }}>
+                            <div className="cert-td-actions">
                               <button
-                                className="admin-edit-btn"
+                                type="button"
+                                className="cert-action-btn"
                                 onClick={() => {
                                   handleEditCertificate(c);
                                   window.scrollTo({ top: 120, behavior: 'smooth' });
@@ -1244,14 +1342,14 @@ export default function StellarAdmin() {
                                 href={`/verify/${c.registration_no}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="admin-edit-btn"
-                                style={{ textDecoration: 'none', color: '#0284c7' }}
+                                className="cert-action-btn"
                               >
                                 Verify
                               </a>
                               <button
-                                className="admin-del-btn"
-                                onClick={() => handleDeleteCertificate(c.id)}
+                                type="button"
+                                className="cert-action-btn cert-action-btn-danger"
+                                onClick={() => handleDeleteCertificate(c.id, c.registration_no)}
                               >
                                 Delete
                               </button>

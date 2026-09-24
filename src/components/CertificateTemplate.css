@@ -117,15 +117,17 @@
 }
 
 /* ─── Watermark Background (Official Logo Emblem) ───────────────── */
-.cert-watermark-svg {
+.cert-watermark-img {
   position: absolute;
-  top: 48%;
-  left: 48%;
+  top: 50%;
+  left: 47%;
   transform: translate(-50%, -50%) rotate(-6deg);
-  width: 340px;
-  height: 390px;
+  height: 380px;
+  width: auto;
   pointer-events: none;
   z-index: 1;
+  opacity: 0.055;
+  user-select: none;
 }
 
 /* ─── Left Main Content (White Canvas) ────────────────────────────── */

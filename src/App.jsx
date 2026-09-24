@@ -22,7 +22,6 @@ const StellarAdmin = React.lazy(() => import('./pages/StellarAdmin'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
 const VerifyCertificate = React.lazy(() => import('./pages/VerifyCertificate'));
 
-import CursorTrail from './components/CursorTrail';
 import AnnouncementPopup from './components/AnnouncementPopup';
 import PageTransition from './components/PageTransition';
 import { WebsiteImagesProvider } from './components/WebsiteImagesProvider';
@@ -102,7 +101,6 @@ function App() {
       <CoursesProvider>
         <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
         <Router>
-          <CursorTrail />
           <ScrollToTop />
           <AnnouncementPopup />
           <Routes>

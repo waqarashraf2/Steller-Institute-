@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { setCorsHeaders, setSecurityHeaders, rateLimit, isValidEmail, getClientIp } from './security.js';
+import { setCorsHeaders, setSecurityHeaders, rateLimit, isValidEmail, getClientIp } from './_security.js';
 
 function escapeHtml(str) {
   if (!str) return '';
