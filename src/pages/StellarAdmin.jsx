@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import html2pdf from 'html2pdf.js';
 import { itCourses, beautyCourses } from '../data/courses';
 import CertificateTemplate from '../components/CertificateTemplate';
 import './StellarAdmin.css';

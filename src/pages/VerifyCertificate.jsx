@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import html2pdf from 'html2pdf.js';
 import CertificateTemplate from '../components/CertificateTemplate';
 import './VerifyCertificate.css';
 
@@ -16,7 +15,6 @@ export default function VerifyCertificate() {
   const [loading, setLoading] = useState(Boolean(initialReg));
   const [searched, setSearched] = useState(Boolean(initialReg));
   const [error, setError] = useState('');
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const certRef = useRef(null);
 
@@ -93,68 +91,6 @@ export default function VerifyCertificate() {
 
   const handlePrint = () => {
     window.print();
-  };
-
-  const handleDownloadPdf = async () => {
-    const element = document.getElementById('printable-certificate');
-    if (!element || !certData) return;
-    try {
-      setIsGeneratingPdf(true);
-      if (document.fonts) {
-        await Promise.all([
-          document.fonts.load('64px "Alex Brush"').catch(() => {}),
-          document.fonts.load('bold 26.5px "Inter"').catch(() => {}),
-          document.fonts.ready
-        ]);
-      }
-      
-      const images = Array.from(element.querySelectorAll('img'));
-      await Promise.all(
-        images.map(img => img.complete ? Promise.resolve() : (img.decode ? img.decode().catch(() => {}) : Promise.resolve()))
-      );
-
-      const studentSlug = (certData.student_name || 'Student').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const regSlug = certData.registration_no || 'STI250189';
-      const opt = {
-        margin: 0,
-        filename: `Certificate_${regSlug}_${studentSlug}.pdf`,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { 
-          scale: 2.5, 
-          useCORS: true, 
-          allowTaint: true,
-          logging: false,
-          scrollY: 0,
-          scrollX: 0,
-          width: 1000,
-          height: 630,
-          windowWidth: 1000,
-          windowHeight: 630,
-          onclone: (clonedDoc) => {
-            const el = clonedDoc.getElementById('printable-certificate');
-            if (el) {
-              el.style.width = '1000px';
-              el.style.height = '630px';
-              el.style.minWidth = '1000px';
-              el.style.minHeight = '630px';
-              el.style.maxWidth = '1000px';
-              el.style.maxHeight = '630px';
-              el.style.transform = 'none';
-              el.style.boxShadow = 'none';
-              el.style.margin = '0';
-              el.style.borderRadius = '0';
-            }
-          }
-        },
-        jsPDF: { unit: 'px', format: [1000, 630], orientation: 'landscape', hotfixes: ['px_scaling'] }
-      };
-      await html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      console.error('PDF Generation Error:', err);
-      alert('Direct PDF download failed. Please use Print Certificate.');
-    } finally {
-      setIsGeneratingPdf(false);
-    }
   };
 
   return (
@@ -276,25 +212,13 @@ export default function VerifyCertificate() {
                   </div>
 
                   <div className="verify-actions no-print">
-                    <button 
-                      className="verify-download-btn" 
-                      onClick={handleDownloadPdf}
-                      disabled={isGeneratingPdf}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                      </svg>
-                      {isGeneratingPdf ? 'Generating PDF…' : 'Download PDF'}
-                    </button>
                     <button className="verify-print-btn" onClick={handlePrint}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="6 9 6 2 18 2 18 9" />
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
                         <rect x="6" y="14" width="12" height="8" />
                       </svg>
-                      Print Certificate
+                      Print / Save Certificate
                     </button>
                   </div>
                 </div>
