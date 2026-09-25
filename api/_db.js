@@ -73,8 +73,11 @@ export async function ensureTables() {
       id SERIAL PRIMARY KEY,
       registration_no VARCHAR(100) NOT NULL UNIQUE,
       student_name VARCHAR(255) NOT NULL,
+      cnic VARCHAR(50),
       course_title VARCHAR(255) NOT NULL,
       course_duration VARCHAR(255) DEFAULT 'A 3-Month Professional Course Conducted by Stellar Institute.',
+      duration_from DATE,
+      duration_to DATE,
       conducted_by VARCHAR(255) DEFAULT 'Stellar Institute.',
       issue_date DATE DEFAULT CURRENT_DATE,
       principal_title VARCHAR(255) DEFAULT 'Stellar Institute & Academy',
@@ -83,6 +86,13 @@ export async function ensureTables() {
       created_at TIMESTAMP DEFAULT NOW()
     )
   `;
+
+  // Safely ensure columns exist on existing databases
+  try {
+    await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS cnic VARCHAR(50)`;
+    await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS duration_from DATE`;
+    await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS duration_to DATE`;
+  } catch {}
 
   const targetPass = process.env.ADMIN_DEFAULT_PASS;
   if (!targetPass) {

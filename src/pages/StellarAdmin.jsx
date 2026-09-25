@@ -24,11 +24,14 @@ const createDefaultRegNo = () => {
 const emptyCert = {
   registration_no: '',
   student_name: '',
+  cnic: '',
   course_title: 'Digital Marketing and Website Development',
   course_duration: 'A 3-Month Professional Course Conducted by Stellar Institute.',
+  duration_from: '',
+  duration_to: '',
   conducted_by: 'Stellar Institute.',
   issue_date: new Date().toISOString().split('T')[0],
-  principal_title: 'Stellar Institute & Academy',
+  principal_title: 'Stellar Institute',
   instructor_title: 'Stellar Institute',
   is_valid: true
 };
@@ -469,8 +472,11 @@ export default function StellarAdmin() {
     setCertForm({
       registration_no: c.registration_no || '',
       student_name: c.student_name || '',
+      cnic: c.cnic || '',
       course_title: c.course_title || '',
       course_duration: c.course_duration || 'A 3-Month Professional Course Conducted by Stellar Institute.',
+      duration_from: c.duration_from ? c.duration_from.split('T')[0] : '',
+      duration_to: c.duration_to ? c.duration_to.split('T')[0] : '',
       conducted_by: c.conducted_by || 'Stellar Institute.',
       issue_date: c.issue_date ? c.issue_date.split('T')[0] : new Date().toISOString().split('T')[0],
       principal_title: c.principal_title || 'Stellar Institute & Academy',
@@ -1062,16 +1068,28 @@ export default function StellarAdmin() {
                 {editingCertId ? '✏️ Edit Certificate' : '🎓 Generate New Certificate'}
               </h3>
               <form onSubmit={handleSaveCertificate} style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
-                <div className="vercel-field-group">
-                  <label className="vercel-label">Student Full Name *</label>
-                  <input
-                    type="text"
-                    className="vercel-input"
-                    value={certForm.student_name}
-                    onChange={e => setCertForm({ ...certForm, student_name: e.target.value })}
-                    placeholder="e.g. Anas Ali"
-                    required
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '8px' }}>
+                  <div className="vercel-field-group">
+                    <label className="vercel-label">Student Full Name *</label>
+                    <input
+                      type="text"
+                      className="vercel-input"
+                      value={certForm.student_name}
+                      onChange={e => setCertForm({ ...certForm, student_name: e.target.value })}
+                      placeholder="e.g. Anas Ali"
+                      required
+                    />
+                  </div>
+                  <div className="vercel-field-group">
+                    <label className="vercel-label">Student CNIC</label>
+                    <input
+                      type="text"
+                      className="vercel-input"
+                      value={certForm.cnic}
+                      onChange={e => setCertForm({ ...certForm, cnic: e.target.value })}
+                      placeholder="35201-1234567-1"
+                    />
+                  </div>
                 </div>
 
                 <div className="vercel-field-group">
@@ -1116,6 +1134,27 @@ export default function StellarAdmin() {
                     onChange={e => setCertForm({ ...certForm, course_duration: e.target.value })}
                     placeholder="e.g. A 3-Month Professional Course Conducted by Stellar Institute."
                   />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div className="vercel-field-group">
+                    <label className="vercel-label">From Date (Start)</label>
+                    <input
+                      type="date"
+                      className="vercel-input"
+                      value={certForm.duration_from}
+                      onChange={e => setCertForm({ ...certForm, duration_from: e.target.value })}
+                    />
+                  </div>
+                  <div className="vercel-field-group">
+                    <label className="vercel-label">To Date (End)</label>
+                    <input
+                      type="date"
+                      className="vercel-input"
+                      value={certForm.duration_to}
+                      onChange={e => setCertForm({ ...certForm, duration_to: e.target.value })}
+                    />
+                  </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -1216,8 +1255,12 @@ export default function StellarAdmin() {
                     ref={certPrintRef}
                     student_name={certForm.student_name || 'Student Name'}
                     registration_no={certForm.registration_no || 'STI250189'}
+                    cnic={certForm.cnic || ''}
                     course_title={certForm.course_title || 'Course Title Here'}
                     course_duration={certForm.course_duration || 'A 3-Month Professional Course Conducted by Stellar Institute.'}
+                    duration_from={certForm.duration_from || ''}
+                    duration_to={certForm.duration_to || ''}
+                    issue_date={certForm.issue_date || ''}
                     principal_title={certForm.principal_title || 'Stellar Institute & Academy'}
                     instructor_title={certForm.instructor_title || 'Stellar Institute'}
                   />
@@ -1270,7 +1313,7 @@ export default function StellarAdmin() {
                 <input
                   type="text"
                   className="vercel-input"
-                  placeholder="Search by student or reg no..."
+                  placeholder="Search by student, CNIC or reg no..."
                   value={certSearch}
                   onChange={e => setCertSearch(e.target.value)}
                   style={{ padding: '8px 12px', fontSize: '13px' }}
@@ -1287,6 +1330,7 @@ export default function StellarAdmin() {
                     <tr>
                       <th>Reg No.</th>
                       <th>Student Name</th>
+                      <th>CNIC</th>
                       <th>Course</th>
                       <th>Issue Date</th>
                       <th>Status</th>
@@ -1299,14 +1343,17 @@ export default function StellarAdmin() {
                         !certSearch ||
                         (c.student_name && c.student_name.toLowerCase().includes(certSearch.toLowerCase())) ||
                         (c.registration_no && c.registration_no.toLowerCase().includes(certSearch.toLowerCase())) ||
+                        (c.cnic && c.cnic.toLowerCase().includes(certSearch.toLowerCase())) ||
                         (c.course_title && c.course_title.toLowerCase().includes(certSearch.toLowerCase()))
                       )
                       .map(c => (
                         <tr key={c.id || c.registration_no}>
-                          <td className="cert-td-reg">{c.registration_no}</td>
-                          <td className="cert-td-name">{c.student_name}</td>
-                          <td className="cert-td-course">{c.course_title}</td>
-                          <td className="cert-td-date">{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
+                          <td style={{ fontWeight: 800, color: '#0284c7' }}>{c.registration_no}</td>
+                          <td style={{ fontWeight: 600 }}>{c.student_name}</td>
+                          <td style={{ color: '#475569', fontSize: '13px' }}>{c.cnic || '—'}</td>
+                          <td>{c.course_title}</td>
+                          <td>{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
+
                           <td>
                             {c.is_valid ? (
                               <span className="cert-status-valid">

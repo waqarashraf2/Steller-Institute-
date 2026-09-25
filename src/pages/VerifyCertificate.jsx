@@ -229,6 +229,14 @@ export default function VerifyCertificate() {
                       {certData.registration_no}
                     </div>
                   </div>
+                  {certData.cnic && (
+                    <div className="verify-detail-card">
+                      <div className="verify-detail-label">Student CNIC</div>
+                      <div className="verify-detail-value" style={{ color: '#0f172a' }}>
+                        {certData.cnic}
+                      </div>
+                    </div>
+                  )}
                   <div className="verify-detail-card">
                     <div className="verify-detail-label">Course Completed</div>
                     <div className="verify-detail-value">{certData.course_title}</div>
@@ -248,8 +256,12 @@ export default function VerifyCertificate() {
                       ref={certRef}
                       student_name={certData.student_name}
                       registration_no={certData.registration_no}
+                      cnic={certData.cnic || ''}
                       course_title={certData.course_title}
                       course_duration={certData.course_duration}
+                      duration_from={certData.duration_from || ''}
+                      duration_to={certData.duration_to || ''}
+                      issue_date={certData.issue_date || ''}
                       principal_title={certData.principal_title}
                       instructor_title={certData.instructor_title}
                     />

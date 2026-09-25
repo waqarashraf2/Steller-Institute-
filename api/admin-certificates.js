@@ -38,8 +38,11 @@ export default async function handler(req, res) {
         id,
         registration_no,
         student_name,
+        cnic,
         course_title,
         course_duration,
+        duration_from,
+        duration_to,
         conducted_by,
         issue_date,
         principal_title,
@@ -58,8 +61,11 @@ export default async function handler(req, res) {
           SET 
             registration_no = ${registration_no.trim()},
             student_name = ${student_name.trim()},
+            cnic = ${cnic ? cnic.trim() : null},
             course_title = ${course_title.trim()},
             course_duration = ${course_duration || 'A 3-Month Professional Course Conducted by Stellar Institute.'},
+            duration_from = ${duration_from || null},
+            duration_to = ${duration_to || null},
             conducted_by = ${conducted_by || 'Stellar Institute.'},
             issue_date = ${issue_date || new Date().toISOString().split('T')[0]},
             principal_title = ${principal_title || 'Stellar Institute & Academy'},
@@ -76,13 +82,17 @@ export default async function handler(req, res) {
       // Insert new certificate or update existing by registration_no
       const rows = await db`
         INSERT INTO certificates (
-          registration_no, student_name, course_title, course_duration, conducted_by,
-          issue_date, principal_title, instructor_title, is_valid
+          registration_no, student_name, cnic, course_title, course_duration,
+          duration_from, duration_to, conducted_by, issue_date,
+          principal_title, instructor_title, is_valid
         ) VALUES (
           ${registration_no.trim()},
           ${student_name.trim()},
+          ${cnic ? cnic.trim() : null},
           ${course_title.trim()},
           ${course_duration || 'A 3-Month Professional Course Conducted by Stellar Institute.'},
+          ${duration_from || null},
+          ${duration_to || null},
           ${conducted_by || 'Stellar Institute.'},
           ${issue_date || new Date().toISOString().split('T')[0]},
           ${principal_title || 'Stellar Institute & Academy'},
@@ -92,8 +102,11 @@ export default async function handler(req, res) {
         ON CONFLICT (registration_no) DO UPDATE
         SET
           student_name = EXCLUDED.student_name,
+          cnic = EXCLUDED.cnic,
           course_title = EXCLUDED.course_title,
           course_duration = EXCLUDED.course_duration,
+          duration_from = EXCLUDED.duration_from,
+          duration_to = EXCLUDED.duration_to,
           conducted_by = EXCLUDED.conducted_by,
           issue_date = EXCLUDED.issue_date,
           principal_title = EXCLUDED.principal_title,

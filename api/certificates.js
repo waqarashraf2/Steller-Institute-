@@ -18,8 +18,8 @@ export default async function handler(req, res) {
       }
 
       const rows = await db`
-        SELECT id, registration_no, student_name, course_title, course_duration, conducted_by, 
-               issue_date, principal_title, instructor_title, is_valid, created_at
+        SELECT id, registration_no, student_name, cnic, course_title, course_duration, conducted_by,
+               duration_from, duration_to, issue_date, principal_title, instructor_title, is_valid, created_at
         FROM certificates
         WHERE UPPER(registration_no) = UPPER(${reg.trim()})
       `;
