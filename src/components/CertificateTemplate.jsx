@@ -112,7 +112,7 @@ const CertificateTemplate = forwardRef(function CertificateTemplate(
             {duration_from && duration_to && (
               <div className="cert-meta-item">
                 <span className="cert-meta-label">Duration: </span>
-                <span className="cert-meta-val">{formatDate(duration_from)} – {formatDate(duration_to)}</span>
+                <span className="cert-meta-val">{formatDate(duration_from)} to {formatDate(duration_to)}</span>
               </div>
             )}
           </div>

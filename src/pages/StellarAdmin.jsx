@@ -78,7 +78,6 @@ export default function StellarAdmin() {
   const [editingCertId, setEditingCertId] = useState(null);
   const [certSearch, setCertSearch] = useState('');
   const [savingCert, setSavingCert] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [previewZoom, setPreviewZoom] = useState('fit'); // 'fit' | '100'
   const certPrintRef = useRef(null);
 
@@ -510,75 +509,6 @@ export default function StellarAdmin() {
       });
     } catch (err) {
       console.warn('Error deleting certificate:', err);
-    }
-  };
-
-  const handleDownloadPdf = async () => {
-    const element = document.getElementById('printable-certificate');
-    if (!element) return;
-    try {
-      setIsGeneratingPdf(true);
-      
-      // Ensure all certificate fonts are loaded into memory
-      if (document.fonts) {
-        await Promise.all([
-          document.fonts.load('64px "Alex Brush"').catch(() => {}),
-          document.fonts.load('bold 26.5px "Inter"').catch(() => {}),
-          document.fonts.load('italic 18px "Inter"').catch(() => {}),
-          document.fonts.ready
-        ]);
-      }
-      
-      // Ensure all images (logo, crest, banner vector) are fully decoded
-      const images = Array.from(element.querySelectorAll('img'));
-      await Promise.all(
-        images.map(img => {
-          if (img.complete) return Promise.resolve();
-          return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
-        })
-      );
-
-      const studentSlug = (certForm.student_name || 'Student').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const regSlug = certForm.registration_no || 'STI250189';
-      const opt = {
-        margin: 0,
-        filename: `Certificate_${regSlug}_${studentSlug}.pdf`,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { 
-          scale: 2.5, 
-          useCORS: true, 
-          allowTaint: true,
-          logging: false,
-          scrollY: 0,
-          scrollX: 0,
-          width: 1000,
-          height: 630,
-          windowWidth: 1000,
-          windowHeight: 630,
-          onclone: (clonedDoc) => {
-            const el = clonedDoc.getElementById('printable-certificate');
-            if (el) {
-              el.style.width = '1000px';
-              el.style.height = '630px';
-              el.style.minWidth = '1000px';
-              el.style.minHeight = '630px';
-              el.style.maxWidth = '1000px';
-              el.style.maxHeight = '630px';
-              el.style.transform = 'none';
-              el.style.boxShadow = 'none';
-              el.style.margin = '0';
-              el.style.borderRadius = '0';
-            }
-          }
-        },
-        jsPDF: { unit: 'px', format: [1000, 630], orientation: 'landscape', hotfixes: ['px_scaling'] }
-      };
-      await html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      console.error('PDF Generation Error:', err);
-      alert('Direct PDF download failed. Please use Print / Save Certificate PDF.');
-    } finally {
-      setIsGeneratingPdf(false);
     }
   };
 
@@ -1348,11 +1278,11 @@ export default function StellarAdmin() {
                       )
                       .map(c => (
                         <tr key={c.id || c.registration_no}>
-                          <td style={{ fontWeight: 800, color: '#0284c7' }}>{c.registration_no}</td>
-                          <td style={{ fontWeight: 600 }}>{c.student_name}</td>
-                          <td style={{ color: '#475569', fontSize: '13px' }}>{c.cnic || '—'}</td>
-                          <td>{c.course_title}</td>
-                          <td>{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
+                          <td className="cert-td-reg">{c.registration_no}</td>
+                          <td className="cert-td-name">{c.student_name}</td>
+                          <td className="cert-td-cnic">{c.cnic || '-'}</td>
+                          <td className="cert-td-course">{c.course_title}</td>
+                          <td className="cert-td-date">{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
 
                           <td>
                             {c.is_valid ? (
