@@ -180,49 +180,6 @@
   color: var(--primary-light);
 }
 
-.sidebar-trust-box {
-  padding: 20px;
-  border-radius: 8px;
-  background: var(--primary);
-  color: #fff;
-}
-
-.sidebar-trust-box::before {
-  content: none;
-}
-
-.sidebar-trust-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 9px;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.sidebar-trust-desc {
-  margin-bottom: 14px;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.sidebar-trust-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.sidebar-trust-link:hover {
-  color: #dbeafe;
-}
-
 .skilled-content {
   flex: 1;
   min-width: 0;
@@ -509,10 +466,6 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
-  }
-
-  .sidebar-trust-box {
-    grid-column: 1 / -1;
   }
 
   .skilled-programs-section .category-list {
