@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import './AnnouncementPopup.css';
 
 export default function AnnouncementPopup() {
@@ -46,7 +47,7 @@ export default function AnnouncementPopup() {
 
   if (!visible || !announcement) return null;
 
-  return (
+  return createPortal((
     <div className="popup-overlay" onClick={dismiss}>
       <div className="popup-card" onClick={(e) => e.stopPropagation()}>
         {/* Close button — small circle top-right */}
@@ -94,5 +95,5 @@ export default function AnnouncementPopup() {
         </a>
       </div>
     </div>
-  );
+  ), document.body);
 }
