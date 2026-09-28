@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Link } from 'react
 import React, { useEffect, useState, Suspense } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import AnnouncementTicker from './components/AnnouncementTicker';
+import AnnouncementPopup from './components/AnnouncementPopup';
 
 // Lazy load pages for better performance (code splitting)
 const Home = React.lazy(() => import('./pages/Home'));
@@ -52,7 +52,7 @@ function AppLayout() {
   const location = useLocation();
   return (
     <>
-      <AnnouncementTicker />
+      <AnnouncementPopup />
       <Navbar />
       <main>
         <PageTransition>
