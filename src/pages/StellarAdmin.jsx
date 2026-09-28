@@ -102,16 +102,24 @@ export default function StellarAdmin() {
       ]);
       
       if (rAnns.status === 401 || rCourses.status === 401) { logout(); return; }
-      
-      if (rAnns.ok) setAnns(await rAnns.json());
-      if (rImgs.ok) setWebsiteImages(await rImgs.json());
-      if (rCourses.ok) setCourses(await rCourses.json());
-      if (rPages.ok) {
-        const pData = await rPages.json();
-        setPrivacyPolicy(pData.content || '');
-      }
+
+      const readJson = (response) => response?.ok
+        ? response.json().catch(() => null)
+        : Promise.resolve(null);
+      const [announcementsData, imagesData, coursesData, pagesData, certificatesData] = await Promise.all([
+        readJson(rAnns),
+        readJson(rImgs),
+        readJson(rCourses),
+        readJson(rPages),
+        readJson(rCerts)
+      ]);
+
+      if (rAnns.ok && announcementsData !== null) setAnns(announcementsData);
+      if (rImgs.ok && imagesData !== null) setWebsiteImages(imagesData);
+      if (rCourses.ok && coursesData !== null) setCourses(coursesData);
+      if (rPages.ok) setPrivacyPolicy(pagesData?.content || '');
       if (rCerts && rCerts.ok) {
-        const apiCerts = await rCerts.json();
+        const apiCerts = certificatesData;
         if (Array.isArray(apiCerts)) {
           const local = getLocalCerts();
           const unSynced = local.filter(lc => lc.registration_no && !apiCerts.some(ac => ac.registration_no?.toUpperCase() === lc.registration_no?.toUpperCase()));
@@ -142,8 +150,9 @@ export default function StellarAdmin() {
       } else {
         setCertificates(getLocalCerts());
       }
-    } catch {}
-    if (showLoading) setLoading(false);
+    } catch {} finally {
+      if (showLoading) setLoading(false);
+    }
   }, [token, headers]);
 
   useEffect(() => {
@@ -542,13 +551,17 @@ export default function StellarAdmin() {
       <div className="admin-topbar">
         <div className="admin-topbar-left">
           <img src="/stellar_logo.png" alt="Stellar" className="admin-topbar-logo" />
-          <div className="admin-tabs">
-            <button className={`admin-tab-btn ${activeTab === 'announcements' ? 'active' : ''}`} onClick={() => setActiveTab('announcements')}>Announcements</button>
-            <button className={`admin-tab-btn ${activeTab === 'images' ? 'active' : ''}`} onClick={() => setActiveTab('images')}>Website Images</button>
-            <button className={`admin-tab-btn ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => setActiveTab('courses')}>Course Manager</button>
-            <button className={`admin-tab-btn ${activeTab === 'certificates' ? 'active' : ''}`} onClick={() => setActiveTab('certificates')}>Certificates</button>
-            <button className={`admin-tab-btn ${activeTab === 'pages' ? 'active' : ''}`} onClick={() => setActiveTab('pages')}>Pages</button>
+          <div className="admin-brand-copy">
+            <span className="admin-topbar-title">Stellar Institute</span>
+            <span className="admin-brand-caption">Content management</span>
           </div>
+          <nav className="admin-tabs" aria-label="Admin sections" role="tablist">
+            <button type="button" role="tab" aria-selected={activeTab === 'announcements'} className={`admin-tab-btn ${activeTab === 'announcements' ? 'active' : ''}`} onClick={() => setActiveTab('announcements')}>Announcements</button>
+            <button type="button" role="tab" aria-selected={activeTab === 'images'} className={`admin-tab-btn ${activeTab === 'images' ? 'active' : ''}`} onClick={() => setActiveTab('images')}>Website Images</button>
+            <button type="button" role="tab" aria-selected={activeTab === 'courses'} className={`admin-tab-btn ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => setActiveTab('courses')}>Course Manager</button>
+            <button type="button" role="tab" aria-selected={activeTab === 'certificates'} className={`admin-tab-btn ${activeTab === 'certificates' ? 'active' : ''}`} onClick={() => setActiveTab('certificates')}>Certificates</button>
+            <button type="button" role="tab" aria-selected={activeTab === 'pages'} className={`admin-tab-btn ${activeTab === 'pages' ? 'active' : ''}`} onClick={() => setActiveTab('pages')}>Pages</button>
+          </nav>
         </div>
         <div className="admin-topbar-right">
           <Link to="/" className="admin-back-link">← Back to Site</Link>
@@ -580,8 +593,8 @@ export default function StellarAdmin() {
 
             <div className="admin-actions-bar">
               <h2>All Announcements</h2>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={fetchData} className="admin-logout-btn" title="Refresh">
+              <div className="admin-action-controls">
+                <button onClick={fetchData} className="admin-logout-btn admin-refresh-btn" title="Refresh content" aria-label="Refresh content">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
                 </button>
                 <button onClick={() => { setAnnForm(emptyAnn); setEditingAnn(null); setShowAnnForm(true); }} className="admin-add-btn">
@@ -644,7 +657,7 @@ export default function StellarAdmin() {
         {/* --- IMAGES TAB --- */}
         {!loading && activeTab === 'images' && (
           <>
-            <div className="admin-actions-bar" style={{ marginTop: '20px' }}>
+            <div className="admin-actions-bar admin-image-actions" style={{ marginTop: '20px' }}>
               <div>
                 <h2>Website Images</h2>
                 <p style={{ color: 'var(--admin-muted)', fontSize: '13px', margin: '4px 0 0 0' }}>Upload high-resolution images. They will be automatically cropped and fitted to placeholders on the website.</p>
@@ -661,7 +674,7 @@ export default function StellarAdmin() {
                 websiteImages.map(img => (
                   <div key={img.id} className="image-card">
                     <div className="image-card-preview">
-                      <img src={img.image_url} alt={img.placeholder_key} />
+                      <img src={img.image_url} alt={img.placeholder_key} loading="lazy" decoding="async" />
                     </div>
                     <div className="image-card-info">
                       <div className="image-card-key" title={img.placeholder_key}>{img.placeholder_key}</div>
@@ -836,7 +849,7 @@ export default function StellarAdmin() {
                   <div className="course-card-img">
                     <span className="course-category-badge">{c.category === 'it' ? 'IT' : 'Beauty'}</span>
                     {c.image_url ? (
-                      <img src={c.image_url} alt={c.title} />
+                      <img src={c.image_url} alt={c.title} loading="lazy" decoding="async" />
                     ) : (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: '13px' }}>No Image</div>
                     )}
