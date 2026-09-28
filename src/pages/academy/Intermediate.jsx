@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom';
 import FloatingShapes from '../../components/FloatingShapes';
 import ScrollReveal from '../../components/ScrollReveal';
+import SEO from '../../components/SEO';
 import '../Pages.css';
 
 export default function Intermediate() {
   return (
     <>
+      <SEO
+        title="FSc & ICS Intermediate (11th & 12th) Coaching — Stellar Academy Lahore"
+        description="FSc Pre-Medical, Pre-Engineering, ICS & I.Com coaching in Lahore. Comprehensive board preparation, test sessions, and entry test foundation."
+        canonical="https://stellarinstitute.pk/academy/intermediate"
+        keywords="fsc coaching lahore, ics academy lahore, intermediate coaching montgomery road, fsc pre-medical tuition"
+      />
       {/* SECTION 1 */}
       <section className="page-hero relative" style={{ overflow: 'hidden' }}>
         <FloatingShapes />

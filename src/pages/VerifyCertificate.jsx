@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import CertificateTemplate from '../components/CertificateTemplate';
+import SEO from '../components/SEO';
 import './VerifyCertificate.css';
 
 export default function VerifyCertificate() {
@@ -80,6 +81,12 @@ export default function VerifyCertificate() {
 
   return (
     <div className="verify-page">
+      <SEO
+        title="Verify Certificate — Official Verification Portal | Stellar Institute"
+        description="Verify the authenticity of Stellar Institute student certificates and diplomas online using registration or roll numbers."
+        canonical="https://stellarinstitute.pk/verify"
+        keywords="stellar certificate verification, verify diploma lahore, online certificate validation, student credential check"
+      />
       <div className="verify-container">
         {/* Header */}
         <div className="verify-header">

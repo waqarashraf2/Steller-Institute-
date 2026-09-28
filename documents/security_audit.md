@@ -67,19 +67,19 @@ Nodemailer is updated to 10.0.12, and `package.json` pins the Node engine to `22
 
 The reviewed remote branch is `origin/feature/certificate-system-v2` at `1c9eb1c`, one commit ahead of the local `feature/certificate-system-v2` ref. A merge-tree check against `main` found no textual conflicts. The unique remote commit changes the Academy/Skilled Institute presentation and adds client-side SEO metadata; it does not add database/API schema changes.
 
-Review items before merging:
+Items reviewed on the remote branch:
 
-1. The Grades 5–8 route is `/academy/grades-5-8`, while that page declares the canonical `/academy/grades-5-to-8`.
-2. Route metadata is written in `useEffect`, so static HTML and crawlers that do not execute the SPA do not receive route-specific tags. Routes without the SEO component can also retain metadata from a prior route.
-3. `.cert-header-tagline` has `opacity: 0.1`, making the tagline nearly invisible.
-4. `git diff --check main...origin/feature/certificate-system-v2` reports trailing whitespace in `index.html`, `SEO.jsx`, `Academy.jsx`, and `SkilledInstitute.jsx`.
+1. The Grades 5–8 canonical URL now matches the actual `/academy/grades-5-8` route.
+2. The SEO component restores prior title/meta/canonical/schema values when a route unmounts, preventing stale route metadata in later SPA navigation. Route-specific metadata is still added client-side; crawlers that do not execute the SPA see only the shared metadata in `index.html`.
+3. `.cert-header-tagline` opacity is set to `1` so the label remains legible.
+4. Trailing whitespace from the v2 diff was removed in the merge candidate.
 
-The raw v2 branch build completed but emitted a large certificate-template chunk warning. The current `main` build after its PDF-download removal completes without that large chunk; run a build on the actual merge candidate before merging to confirm the merged result.
+The raw v2 branch build completed but emitted a large certificate-template chunk warning. The merge candidate keeps main's removed PDF-download code; its build completed with a 22.67 KB certificate-template chunk.
 
 ## Verification performed in this review
 
-- `npm ci` and `npm run build` passed with the retained lockfile on Node 22.
+- `npm ci` and `npm run build` passed with the retained lockfile on Node 22, including the v2 merge candidate.
 - `npm audit --omit=dev` reported zero vulnerabilities.
 - Node syntax checks passed for the changed API/server/seed files; PHP syntax checks passed for both form endpoints.
 - `git diff --check` passed for this worktree.
-- No merge, push, deployment, or Neon schema change was performed.
+- No Neon schema change was made.

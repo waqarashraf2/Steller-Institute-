@@ -146,10 +146,10 @@
 .cert-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 16px;
   margin-top: 0;
   margin-bottom: 0;
-  padding-right: 14px;
 }
 
 .cert-logo-img {
@@ -166,10 +166,10 @@
   letter-spacing: 1px;
   color: #1e293b;
   text-transform: uppercase;
-  padding: 5px 12px;
-  border-radius: 4px;
-  background: rgba(0, 168, 234, 0.07);
-  border-left: 3px solid #00a8ea;
+  padding: 0;
+  background: transparent;
+  border: none;
+  opacity: 1;
   white-space: nowrap;
 }
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import FloatingShapes from '../components/FloatingShapes';
 import ScrollReveal from '../components/ScrollReveal';
+import SEO from '../components/SEO';
 import { itCourses, beautyCourses } from '../data/courses';
 import './Pages.css';
 import './Admission.css';
@@ -58,6 +59,12 @@ export default function Admission() {
 
   return (
     <>
+      <SEO
+        title="Online Admission Portal — Academic &amp; Skill Courses Registration"
+        description="Apply for academic admission (5th–12th grades, Matric, FSc, ICS) or enroll in certified professional IT &amp; Beauty courses at Stellar Institute Lahore."
+        keywords="Admission Stellar Institute, Apply Online Academy Lahore, Matric Admission, FSc Admission Lahore, IT Course Admission"
+        canonical="https://stellarinstitute.pk/admission"
+      />
       <section className="page-hero relative" style={{ overflow: 'hidden' }}>
         <FloatingShapes />
         <div className="page-hero-content container relative z-10">

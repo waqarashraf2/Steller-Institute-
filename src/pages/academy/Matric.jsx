@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom';
 import FloatingShapes from '../../components/FloatingShapes';
 import ScrollReveal from '../../components/ScrollReveal';
+import SEO from '../../components/SEO';
 import '../Pages.css';
 
 export default function Matric() {
   return (
     <>
+      <SEO
+        title="Matric (9th & 10th) Coaching — Science & Arts | Stellar Academy Lahore"
+        description="Comprehensive 9th and 10th Matric coaching in Lahore. BISE Lahore board preparation, regular test series, past paper solutions, and hands-on science practicals."
+        canonical="https://stellarinstitute.pk/academy/matric"
+        keywords="matric coaching lahore, 9th 10th science academy lahore, bise lahore preparation, stellar matric academy"
+      />
       {/* SECTION 1 */}
       <section className="page-hero relative" style={{ overflow: 'hidden' }}>
         <FloatingShapes />

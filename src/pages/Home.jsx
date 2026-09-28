@@ -10,6 +10,7 @@ import ImagePlaceholder from '../components/ImagePlaceholder';
 import LogoMarquee from '../components/LogoMarquee';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import LazyShow from '../components/LazyShow';
+import SEO from '../components/SEO';
 import './Home.css';
 
 const institutes = [
@@ -76,6 +77,12 @@ export default function Home() {
 
   return (
     <div className="lms-home">
+      <SEO
+        title="Quality School, College & Professional IT Courses in Lahore"
+        description="Stellar Institute & Academy offers comprehensive school education, board coaching for Matric & Intermediate, and market-ready IT and Beauty skills courses in Lahore."
+        keywords="Stellar Institute, Stellar Academy Lahore, IT Courses Lahore, Matric Coaching, FSc Pre Medical, ICS Academy, Web Development Course Lahore"
+        canonical="https://stellarinstitute.pk/"
+      />
 
       {/* ===== HERO SLIDER ===== */}
       <HeroSlider />
