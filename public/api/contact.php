@@ -18,6 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_once __DIR__ . '/_rate_limit.php';
+stellar_enforce_form_rate_limit('contact', 5, 900);
+
 // Get JSON body
 $input = json_decode(file_get_contents('php://input'), true);
 
