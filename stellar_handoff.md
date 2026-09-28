@@ -25,11 +25,11 @@ During the revamp, we extensively modified the following frontend elements:
 - **New Design System**: The Navy Blue/Deep Indigo color scheme is fully applied across the application.
 - **Offset Shapes**: The requested layered shadow effect is implemented globally on cards, forms, and floating shapes.
 - **Notice System**: The intrusive popup boxes are gone. The site now exclusively uses the top banner (`AnnouncementTicker`) for notices, which correctly supports clickable links.
-- **Deployment**: Changes to `main` can trigger both the cPanel GitHub workflow and a Vercel deployment. The cPanel workflow copies the `api/` source folder, but cPanel does not execute those Node handlers; the PHP form handlers are separate.
+- **Deployment**: Changes to `main` can trigger both the cPanel GitHub workflow and a Vercel deployment. The cPanel workflow deploys only the static frontend and `public/api/*.php` handlers to `public_html/api`; Vercel owns the Node handlers.
 
 ### Current Review Notes
 - The production build passed during the latest repository review. The project lint command reports existing repository-wide errors, and the full dependency audit still flags development-tooling packages.
-- The PHP form endpoints need server-side abuse controls; the Node in-memory rate limiter does not cover those PHP routes.
+- The PHP contact and admission endpoints enforce five submissions per client IP per 15-minute window. Their file-locked state lives outside `public_html`; the Node in-memory limiter remains separate and per Vercel process.
 - See [`documents/security_audit.md`](documents/security_audit.md) for the current static review and the open deployment/merge findings.
 
 ## Original Design Brief

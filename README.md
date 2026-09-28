@@ -90,9 +90,13 @@ The frontend runs on `http://localhost:5173`. The API routes require Vercel CLI 
 
 Vercel is connected to GitHub, so pushing or merging to `main` can trigger a deployment. Review that branch before merging.
 
-`scripts/deploy_cpanel.sh` builds and uploads static `dist/` files and copies the `api/` source directory.
-The shared cPanel host does not run Node.js, so those copied handlers are not the active API there.
-`.htaccess` rewrites `/api/contact` to the PHP contact handler; the admission form posts directly to
-`/api/admission.php`. Other database-backed browser API calls use Vercel, as the script's default
-`VITE_API_URL` specifies. Keep that split; setting `VITE_API_URL=/api` would send those requests to
-static cPanel paths that cannot execute the Node.js handlers.
+`scripts/deploy_cpanel.sh` builds and uploads static `dist/` files, then copies only `public/api/*.php`
+to the verified cPanel document root at `public_html/api/`. The deploy removes stale Node `.js`
+handlers from that folder and excludes `api/` from the general site-root sync. Vercel deploys the
+Node handlers from the repository; cPanel serves the PHP contact and admission handlers. The PHP
+forms use a file-locked, per-client limit of five submissions per 15 minutes, with its state stored
+outside the document root. `.htaccess` rewrites `/api/contact` to the PHP contact handler; the
+admission form posts directly to `/api/admission.php`. Other database-backed browser API calls use
+Vercel, as the script's default `VITE_API_URL` specifies. Keep that split; setting
+`VITE_API_URL=/api` would send those requests to static cPanel paths that cannot execute the Node.js
+handlers.
