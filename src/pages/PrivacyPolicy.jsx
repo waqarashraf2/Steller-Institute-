@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
-import './Pages.css';
 import './PrivacyPolicy.css';
 import { privacyPolicyHtml } from '../data/privacyPolicyHtml';
 
@@ -31,22 +30,22 @@ export default function PrivacyPolicy() {
   }, []);
 
   return (
-    <div className="page-container page-content-container">
-      <div className="container">
-        <h1 className="page-title text-center">Privacy Policy</h1>
-        <div className="page-content-box" style={{ padding: '0', overflow: 'hidden' }}>
+    <div className="page-container privacy-policy-page">
+      <header className="privacy-policy-hero">
+        <div className="privacy-policy-frame">
+          <span className="privacy-policy-accent" aria-hidden="true" />
+          <h1 className="privacy-policy-title">Privacy Policy</h1>
+        </div>
+      </header>
+      <div className="privacy-policy-frame privacy-policy-body">
+        <article className="privacy-policy-paper">
           <div
-            className="rich-text-content google-doc-container"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
-            style={{ 
-              maxWidth: '100%', 
-              overflowX: 'auto',
-              backgroundColor: '#fff',
-              color: '#000',
-              padding: '20px'
+            className="rich-text-content google-doc-container privacy-policy-copy"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(content, { FORBID_TAGS: ['style'] }),
             }}
           />
-        </div>
+        </article>
       </div>
     </div>
   );
