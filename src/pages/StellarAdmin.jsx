@@ -570,7 +570,7 @@ export default function StellarAdmin() {
         </div>
       </div>
 
-      <div className="admin-content">
+      <div className={`admin-content ${activeTab === 'certificates' ? 'admin-content-wide' : ''}`}>
         {loading && <div className="admin-loading">Loading…</div>}
 
         {/* --- ANNOUNCEMENTS TAB --- */}

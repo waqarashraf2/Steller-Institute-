@@ -2244,3 +2244,51 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Give the certificate workspace room on wide screens without changing other tabs. */
+.admin-content-wide {
+  max-width: 1600px;
+}
+
+.admin-content-wide > .vercel-container {
+  max-width: none;
+}
+
+.cert-preview-pane {
+  container-type: inline-size;
+}
+
+@container (min-width: 760px) {
+  .cert-scale-fit {
+    transform: scale(0.7);
+    margin: -94px 0;
+  }
+}
+
+@container (min-width: 840px) {
+  .cert-scale-fit {
+    transform: scale(0.78);
+    margin: -69px 0;
+  }
+}
+
+@container (min-width: 920px) {
+  .cert-scale-fit {
+    transform: scale(0.86);
+    margin: -44px 0;
+  }
+}
+
+@container (min-width: 1000px) {
+  .cert-scale-fit {
+    transform: scale(0.94);
+    margin: -19px 0;
+  }
+}
+
+@container (min-width: 1020px) {
+  .cert-scale-fit {
+    transform: scale(1);
+    margin: 0;
+  }
+}
