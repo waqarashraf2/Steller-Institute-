@@ -1,11 +1,12 @@
 /**
  * Stellar Institute — Shared Security Utilities
- * Works on both Vercel (serverless) and cPanel (persistent Node.js)
+ * Shared by Vercel Node.js functions and the local Express adapter.
+ * The shared cPanel host serves static files and PHP; it does not run this module.
  */
 
 // ─── Rate Limiter (in-memory, per-process) ───────────────────────
-// On cPanel with persistent Node: works perfectly across requests.
-// On Vercel serverless: best-effort per-instance (still blocks rapid bursts).
+// On Vercel, instances do not share this state, so this is best-effort only.
+// A local Express process shares counters only for that process's lifetime.
 const rateLimitStores = {};
 
 export function rateLimit(key, { maxAttempts = 5, windowMs = 15 * 60 * 1000 } = {}) {
@@ -65,6 +66,18 @@ export function setSecurityHeaders(res) {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 }
 
+// Cache public, shared GET responses at Vercel's CDN without caching them in
+// browsers. This also remains harmless when the same handler runs on cPanel.
+export function setPublicCacheHeaders(res, maxAgeSeconds = 60) {
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Cache-Control', `public, max-age=0, s-maxage=${maxAgeSeconds}`);
+}
+
+// Prevent CNICs, tokens, and other private API responses from being cached.
+export function setNoStoreHeaders(res) {
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+}
+
 // ─── JWT Secret ──────────────────────────────────────────────────
 // Returns the JWT secret or throws if not configured.
 // NEVER falls back to a hardcoded value.
@@ -73,7 +86,7 @@ export function getJwtSecret() {
   if (!secret) {
     throw new Error(
       'FATAL: JWT_SECRET environment variable is not set. ' +
-      'Set it in your Vercel dashboard or cPanel Node.js app environment.'
+      'Set it in the Vercel project environment or local Node.js environment.'
     );
   }
   return secret;

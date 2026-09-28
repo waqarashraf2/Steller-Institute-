@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.production' });
-import { getDb, ensureTables } from './api/db.js';
+import { getDb, ensureTables } from './api/_db.js';
 import { itCourses, beautyCourses } from './src/data/courses.js';
 
 async function seed() {

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { itCourses, beautyCourses } from '../data/courses';
 import './Navbar.css';
 
 export default function Navbar() {

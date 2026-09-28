@@ -1,11 +1,12 @@
 import { getDb, ensureTables } from './_db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { setCorsHeaders, setSecurityHeaders, rateLimit, getJwtSecret, getClientIp } from './_security.js';
+import { setCorsHeaders, setSecurityHeaders, setNoStoreHeaders, rateLimit, getJwtSecret, getClientIp } from './_security.js';
 
 export default async function handler(req, res) {
   setCorsHeaders(res, req);
   setSecurityHeaders(res);
+  setNoStoreHeaders(res);
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

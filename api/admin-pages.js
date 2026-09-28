@@ -1,6 +1,6 @@
 import { getDb, ensureTables } from './_db.js';
 import jwt from 'jsonwebtoken';
-import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './_security.js';
+import { setCorsHeaders, setSecurityHeaders, getJwtSecret, setNoStoreHeaders } from './_security.js';
 
 function verifyToken(req) {
   const auth = req.headers.authorization;
@@ -15,6 +15,7 @@ function verifyToken(req) {
 export default async function handler(req, res) {
   setCorsHeaders(res, req, { isPublic: false });
   setSecurityHeaders(res);
+  setNoStoreHeaders(res);
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 

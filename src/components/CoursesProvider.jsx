@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { itCourses as initialIt, beautyCourses as initialBeauty } from '../data/courses';
 
 const CoursesContext = createContext();
@@ -16,7 +16,7 @@ function getInitialCourses() {
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
       const { ts, data } = JSON.parse(cached);
-      if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
+      if (Date.now() - ts < CACHE_TTL && Array.isArray(data)) {
         return data;
       }
     }
@@ -34,7 +34,7 @@ export function CoursesProvider({ children }) {
       const response = await fetch(`${apiUrl}/courses`);
       if (response.ok) {
         const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setCourses(data);
           try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));

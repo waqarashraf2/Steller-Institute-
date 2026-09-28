@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './AnnouncementTicker.css';
 
 const priorityColor = {
@@ -15,8 +15,7 @@ export default function AnnouncementTicker() {
     fetch(`${API}/announcements`)
       .then(r => r.json())
       .then(data => {
-        const tickerItems = data.filter(a => a.type === 'ticker' || a.type === 'both');
-        setAnnouncements(tickerItems);
+        setAnnouncements(Array.isArray(data) ? data : []);
       })
       .catch(() => {});
   }, []);

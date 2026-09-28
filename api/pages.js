@@ -1,5 +1,5 @@
 import { getDb, ensureTables } from './_db.js';
-import { setCorsHeaders, setSecurityHeaders } from './_security.js';
+import { setCorsHeaders, setSecurityHeaders, setPublicCacheHeaders } from './_security.js';
 
 export default async function handler(req, res) {
   setCorsHeaders(res, req, { isPublic: true });
@@ -12,6 +12,7 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
+      setPublicCacheHeaders(res);
       const slug = req.query?.slug || req.url.split('slug=')[1]?.split('&')[0];
       if (slug) {
         const rows = await db`SELECT * FROM site_pages WHERE slug = ${slug}`;

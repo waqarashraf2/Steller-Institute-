@@ -1,5 +1,5 @@
 import { getDb, ensureTables } from './_db.js';
-import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './_security.js';
+import { setCorsHeaders, setSecurityHeaders, getJwtSecret, setPublicCacheHeaders, setNoStoreHeaders } from './_security.js';
 import jwt from 'jsonwebtoken';
 
 function verifyToken(req) {
@@ -13,8 +13,9 @@ function verifyToken(req) {
 }
 
 export default async function handler(req, res) {
-  setCorsHeaders(res, req);
+  setCorsHeaders(res, req, { isPublic: req.method === 'GET' });
   setSecurityHeaders(res);
+  setNoStoreHeaders(res);
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -24,6 +25,7 @@ export default async function handler(req, res) {
 
     // PUBLIC ENDPOINT: Fetch all courses
     if (req.method === 'GET') {
+      setPublicCacheHeaders(res);
       const courses = await db`SELECT * FROM courses ORDER BY created_at ASC`;
       return res.status(200).json(courses);
     }

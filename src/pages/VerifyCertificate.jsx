@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import CertificateTemplate from '../components/CertificateTemplate';
 import './VerifyCertificate.css';
@@ -21,65 +21,50 @@ export default function VerifyCertificate() {
   useEffect(() => {
     if (!currentReg) {
       setLoading(false);
+      setCertData(null);
       return;
     }
 
+    let active = true;
     setLoading(true);
     setError('');
+    setCertData(null);
     const API = import.meta.env.VITE_API_URL || '/api';
 
-    fetch(`${API}/certificates?reg=${encodeURIComponent(currentReg.trim())}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.found && data.certificate) {
-          setCertData(data.certificate);
-        } else {
-          // Check local storage for certificates saved in admin panel
-          try {
-            const localCerts = JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
-            const found = localCerts.find(c => c.registration_no?.toUpperCase() === currentReg.trim().toUpperCase());
-            if (found) {
-              setCertData(found);
-              return;
-            }
-          } catch {}
-
-          setCertData(null);
-          setError('No official record found for this Registration Number.');
-        }
-      })
-      .catch(err => {
-        console.error('Verification error:', err);
-        // Check local storage for certificates saved in admin panel
+    const verifyCertificate = async () => {
+      try {
+        const response = await fetch(`${API}/certificates?reg=${encodeURIComponent(currentReg.trim())}`);
+        let data = null;
         try {
-          const localCerts = JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
-          const found = localCerts.find(c => c.registration_no?.toUpperCase() === currentReg.trim().toUpperCase());
-          if (found) {
-            setCertData(found);
-            return;
-          }
-        } catch {}
+          data = await response.json();
+        } catch {
+          // Treat a non-JSON response as a service error below.
+        }
 
-        // Fallback demo for immediate testing if DB record hasn't been seeded yet
-        if (currentReg.toUpperCase() === 'STI250189') {
-          setCertData({
-            registration_no: 'STI250189',
-            student_name: 'Anas Ali',
-            course_title: 'Digital Marketing and Website Development',
-            course_duration: 'A 3-Month Professional Course Conducted by Stellar Institute.',
-            principal_title: 'Stellar Institute & Academy',
-            instructor_title: 'Stellar Institute',
-            issue_date: '2026-05-15',
-            is_valid: true
-          });
-        } else {
+        if (response.status === 404 || data?.found === false) {
+          if (active) setError('No official record found for this Registration Number.');
+        } else if (!response.ok) {
+          throw new Error(data?.error || 'Certificate service request failed');
+        } else if (data?.found && data?.certificate) {
+          if (active) setCertData(data.certificate);
+        } else if (active) {
           setError('No official record found for this Registration Number.');
         }
-      })
-      .finally(() => {
-        setLoading(false);
-        setSearched(true);
-      });
+      } catch (err) {
+        console.error('Verification error:', err);
+        if (active) setError('The verification service is unavailable. Please try again later.');
+      } finally {
+        if (active) {
+          setLoading(false);
+          setSearched(true);
+        }
+      }
+    };
+
+    verifyCertificate();
+    return () => {
+      active = false;
+    };
   }, [currentReg]);
 
   const handleSearch = (e) => {

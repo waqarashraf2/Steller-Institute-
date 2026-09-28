@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Link } from 'react
 import React, { useEffect, useState, Suspense } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import AnnouncementTicker from './components/AnnouncementTicker';
 
 // Lazy load pages for better performance (code splitting)
 const Home = React.lazy(() => import('./pages/Home'));
@@ -22,7 +23,6 @@ const StellarAdmin = React.lazy(() => import('./pages/StellarAdmin'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
 const VerifyCertificate = React.lazy(() => import('./pages/VerifyCertificate'));
 
-import AnnouncementPopup from './components/AnnouncementPopup';
 import PageTransition from './components/PageTransition';
 import { WebsiteImagesProvider } from './components/WebsiteImagesProvider';
 import { CoursesProvider } from './components/CoursesProvider';
@@ -52,6 +52,7 @@ function AppLayout() {
   const location = useLocation();
   return (
     <>
+      <AnnouncementTicker />
       <Navbar />
       <main>
         <PageTransition>
@@ -102,7 +103,6 @@ function App() {
         <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
         <Router>
           <ScrollToTop />
-          <AnnouncementPopup />
           <Routes>
             <Route path="/stellar-admin" element={
               <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loading-spinner"></div></div>}>

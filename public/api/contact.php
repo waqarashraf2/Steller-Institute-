@@ -114,8 +114,6 @@ $sent = mail($to, $emailSubject, $emailBody, $headers, "-fnoreply@stellarinstitu
 if ($sent) {
     echo json_encode(['success' => true, 'message' => 'Email sent successfully']);
 } else {
-    $error = error_get_last();
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Failed to send email. Please try again later.', 'debug' => $error]);
+    echo json_encode(['success' => false, 'error' => 'Failed to send email. Please try again later.']);
 }
-

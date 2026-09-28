@@ -1,6 +1,6 @@
 import { getDb, ensureTables } from './_db.js';
 import jwt from 'jsonwebtoken';
-import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './_security.js';
+import { setCorsHeaders, setSecurityHeaders, getJwtSecret, setPublicCacheHeaders, setNoStoreHeaders } from './_security.js';
 
 function verifyToken(req) {
   const auth = req.headers.authorization;
@@ -15,6 +15,7 @@ function verifyToken(req) {
 export default async function handler(req, res) {
   setCorsHeaders(res, req, { isPublic: req.method === 'GET' });
   setSecurityHeaders(res);
+  setNoStoreHeaders(res);
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -24,6 +25,7 @@ export default async function handler(req, res) {
   try {
     // GET is public (frontend needs images) but only returns safe fields
     if (req.method === 'GET') {
+      setPublicCacheHeaders(res);
       const rows = await db`SELECT id, placeholder_key, image_url FROM website_images`;
       return res.status(200).json(rows);
     }
