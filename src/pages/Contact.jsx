@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import FloatingShapes from '../components/FloatingShapes';
 import ScrollReveal from '../components/ScrollReveal';
+import SEO from '../components/SEO';
 import { contactInfo } from '../data/courses';
 import './Pages.css';
 
@@ -49,6 +50,12 @@ export default function Contact() {
 
   return (
     <>
+      <SEO
+        title="Contact Us — Stellar Institute & Academy Lahore"
+        description="Get in touch with Stellar Institute & Academy. Visit our campus at 1-Montgomery Road Lahore, call +92 300 0652124, or send us an inquiry."
+        canonical="https://stellarinstitute.pk/contact"
+        keywords="contact stellar institute, stellar academy lahore contact, montgomery road lahore institute, admission helpline"
+      />
       <section className="page-hero relative" style={{ overflow: 'hidden' }}>
         <FloatingShapes />
         <div className="page-hero-content container relative z-10">

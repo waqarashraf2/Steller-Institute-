@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom';
 import FloatingShapes from '../../components/FloatingShapes';
 import ScrollReveal from '../../components/ScrollReveal';
+import SEO from '../../components/SEO';
 import '../Pages.css';
 
 export default function OALevels() {
   return (
     <>
+      <SEO
+        title="Cambridge O Level & A Level Coaching — Stellar Academy Lahore"
+        description="Top CAIE O Level and A Level coaching in Lahore. Cambridge past paper analysis, ATP science practicals, and customized subject coaching."
+        canonical="https://stellarinstitute.pk/academy/o-a-levels"
+        keywords="o level tuition lahore, a level coaching montgomery road, caie lahore academy, cambridge coaching lahore"
+      />
       {/* SECTION 1 */}
       <section className="page-hero relative" style={{ overflow: 'hidden' }}>
         <FloatingShapes />

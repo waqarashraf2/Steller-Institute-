@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import FloatingShapes from '../components/FloatingShapes';
 import ScrollReveal from '../components/ScrollReveal';
 import { useWebsiteImage } from '../components/WebsiteImagesProvider';
+import SEO from '../components/SEO';
 import './Pages.css';
 
 export default function About() {
@@ -9,6 +10,12 @@ export default function About() {
 
   return (
     <>
+      <SEO
+        title="About Us — Mission, Vision & Faculty | Stellar Institute & Academy"
+        description="Learn about Stellar Institute & Academy Lahore. Dedicated to empowering students through premier academic coaching, technical certifications, and expert mentorship."
+        canonical="https://stellarinstitute.pk/about"
+        keywords="about stellar institute, premier education lahore, stellar faculty, stellar academy vision, montgomery road institute"
+      />
       <section className="page-hero relative" style={{ overflow: 'hidden' }}>
         <FloatingShapes />
         <div className="page-hero-content container relative z-10">
