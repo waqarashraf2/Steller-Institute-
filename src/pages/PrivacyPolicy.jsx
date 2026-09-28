@@ -17,7 +17,9 @@ export default function PrivacyPolicy() {
         return response.json();
       })
       .then(page => {
-        if (active && typeof page?.content === 'string') setContent(page.content);
+        if (active && typeof page?.content === 'string' && page.content.trim()) {
+          setContent(page.content);
+        }
       })
       .catch(() => {
         // Keep the bundled policy available when the CMS cannot be reached.
