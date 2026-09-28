@@ -4,6 +4,7 @@ import './AnnouncementPopup.css';
 export default function AnnouncementPopup() {
   const [announcement, setAnnouncement] = useState(null);
   const [visible, setVisible] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
     // Check if already dismissed this session
@@ -66,11 +67,12 @@ export default function AnnouncementPopup() {
           }}
         >
           {/* If image exists — show as the main content (KIPS-style) */}
-          {announcement.image_url ? (
+          {announcement.image_url && !imageFailed ? (
             <img
               src={announcement.image_url}
               alt={announcement.title}
               className="popup-image"
+              onError={() => setImageFailed(true)}
             />
           ) : (
             /* Fallback if no image — styled text card */
