@@ -2,12 +2,29 @@ import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 
 let sql;
+let courseColumnsPromise;
 
 export function getDb() {
   if (!sql) {
     sql = neon(process.env.DATABASE_URL);
   }
   return sql;
+}
+
+export async function ensureCourseColumns() {
+  if (!courseColumnsPromise) {
+    courseColumnsPromise = getDb()`
+      ALTER TABLE courses
+        ADD COLUMN IF NOT EXISTS base_price INT DEFAULT 0,
+        ADD COLUMN IF NOT EXISTS discount_price INT DEFAULT 0,
+        ADD COLUMN IF NOT EXISTS special_offer_tag VARCHAR(100)
+    `.catch((error) => {
+      courseColumnsPromise = null;
+      throw error;
+    });
+  }
+
+  return courseColumnsPromise;
 }
 
 export async function ensureTables() {
@@ -56,6 +73,9 @@ export async function ensureTables() {
       duration VARCHAR(100),
       image_url TEXT,
       banner_url TEXT,
+      base_price INT DEFAULT 0,
+      discount_price INT DEFAULT 0,
+      special_offer_tag VARCHAR(100),
       created_at TIMESTAMP DEFAULT NOW()
     )
   `;

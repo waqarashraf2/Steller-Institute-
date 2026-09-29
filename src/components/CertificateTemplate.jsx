@@ -76,7 +76,7 @@ const CertificateTemplate = forwardRef(function CertificateTemplate(
             alt="Stellar Institute"
             className="cert-logo-img"
           />
-          <div className="cert-header-tagline">
+          <div className="cert-header-tagline" style={{ opacity: 0.1 }}>
             A Project of Stellar Education System
           </div>
         </div>
