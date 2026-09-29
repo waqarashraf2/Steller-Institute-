@@ -10,7 +10,7 @@ export default function Grades5to8() {
       <SEO
         title="Middle Classes (5th to 8th Grade) Coaching — Stellar Academy Lahore"
         description="Strong academic foundation for 5th to 8th graders in Lahore. Weekly test routines, conceptual clarity in Math & Science, and attentive mentoring."
-        canonical="https://stellarinstitute.pk/academy/grades-5-to-8"
+        canonical="https://stellarinstitute.pk/academy/grades-5-8"
         keywords="middle school coaching lahore, 5th 6th 7th 8th class tuition lahore, foundation coaching, stellar academy middle section"
       />
       {/* SECTION 1 */}

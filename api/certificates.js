@@ -1,9 +1,10 @@
 import { getDb, ensureTables } from './_db.js';
-import { setCorsHeaders, setSecurityHeaders } from './_security.js';
+import { setCorsHeaders, setSecurityHeaders, setNoStoreHeaders } from './_security.js';
 
 export default async function handler(req, res) {
   setCorsHeaders(res, req, { isPublic: true });
   setSecurityHeaders(res);
+  setNoStoreHeaders(res);
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 

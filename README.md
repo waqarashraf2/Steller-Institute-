@@ -5,23 +5,34 @@
 | Layer | Tech |
 |-------|------|
 | Frontend | React 19, Vite 8, Framer Motion |
-| Backend | Vercel Serverless Functions (Node.js) |
+| API | Node.js handlers in `api/`; Vercel runs them as serverless functions |
 | Database | Neon Postgres (Serverless) |
 | Auth | JWT + bcrypt |
 | Email | Nodemailer |
-| Hosting | Vercel (test deployment) |
+| Hosting | Vercel APIs; cPanel static site and PHP form endpoints |
+
+The API files do not opt into Vercel's Edge Runtime. The Vercel deployment uses Node.js functions.
+The cPanel shared host serves the static frontend and PHP forms. Database-backed requests for courses,
+announcements, images, pages, certificates, and admin data continue to use Vercel's Node.js functions and Neon.
 
 ## Project Structure
 
 ```
 stellar_institute/
-├── api/                    # Vercel serverless functions
-│   ├── db.js               # Neon Postgres connection + table setup
+├── api/                    # Vercel Node.js functions / shared Express handlers
+│   ├── _db.js              # Neon Postgres connection + table setup
+│   ├── _security.js        # Shared CORS, auth, rate-limit, and response headers
+│   ├── courses.js          # Public course reads + protected CRUD
+│   ├── certificates.js     # Public certificate verification
+│   ├── admin-certificates.js # Protected certificate CRUD (includes CNIC)
 │   ├── announcements.js    # Public GET for active announcements
 │   ├── admin-login.js      # JWT login endpoint
 │   ├── admin-announcements.js  # Protected CRUD for announcements
 │   ├── admin-seed.js       # One-time admin user seeder
-│   └── contact.js          # Contact form email handler
+│   ├── pages.js            # Public CMS page reads
+│   └── contact.js          # Vercel contact email handler
+├── server.js               # Express adapter for running API handlers on Node.js
+├── public/api/             # cPanel PHP contact and admission handlers
 ├── src/
 │   ├── components/         # Reusable UI components
 │   │   ├── Navbar.jsx      # Multi-level dropdown navigation
@@ -56,6 +67,7 @@ These need to be set in the Vercel dashboard (or `.env` for local dev):
 ```
 DATABASE_URL=postgresql://...          # Neon Postgres connection string
 JWT_SECRET=your-secret-key             # For admin auth tokens
+ADMIN_DEFAULT_PASS=your-initial-password # Seeds the first admin only when no admin exists
 
 # Optional — for contact form emails
 SMTP_HOST=smtp.gmail.com
@@ -76,4 +88,15 @@ The frontend runs on `http://localhost:5173`. The API routes require Vercel CLI 
 
 ## Deployment
 
-Connected to GitHub — every push to `main` triggers an automatic deployment on Vercel. Currently live at the test URL for team review before moving to the production domain on cPanel.
+Vercel is connected to GitHub, so pushing or merging to `main` can trigger a deployment. Review that branch before merging.
+
+`scripts/deploy_cpanel.sh` builds and uploads static `dist/` files, then copies only `public/api/*.php`
+to the verified cPanel document root at `public_html/api/`. The deploy removes stale Node `.js`
+handlers from that folder and excludes `api/` from the general site-root sync. Vercel deploys the
+Node handlers from the repository; cPanel serves the PHP contact and admission handlers. The PHP
+forms use a file-locked, per-client limit of five submissions per 15 minutes, with its state stored
+outside the document root. `.htaccess` rewrites `/api/contact` to the PHP contact handler; the
+admission form posts directly to `/api/admission.php`. Other database-backed browser API calls use
+Vercel, as the script's default `VITE_API_URL` specifies. Keep that split; setting
+`VITE_API_URL=/api` would send those requests to static cPanel paths that cannot execute the Node.js
+handlers.

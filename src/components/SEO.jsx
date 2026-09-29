@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 /**
  * SEO Component for dynamic meta tags, titles, and JSON-LD schema injection.
- * Fully compatible with Vite Single Page Applications (SPA).
+ * Updates browser metadata as SPA routes mount, change, and unmount.
  */
 export default function SEO({
   title,
@@ -14,11 +14,28 @@ export default function SEO({
   schemaData = null,
 }) {
   useEffect(() => {
-    // 1. Set Page Title
+    const previousTitle = document.title;
+    const originalAttributes = new Map();
+    const createdElements = new Set();
+
+    const rememberAttribute = (element, attribute) => {
+      let attributes = originalAttributes.get(element);
+      if (!attributes) {
+        attributes = new Map();
+        originalAttributes.set(element, attributes);
+      }
+      if (!attributes.has(attribute)) {
+        attributes.set(attribute, {
+          hadAttribute: element.hasAttribute(attribute),
+          value: element.getAttribute(attribute),
+        });
+      }
+    };
+
+    // Set the page title and restore the previous route's title on unmount.
     const siteTitle = 'Stellar Institute & Academy — Lahore';
     document.title = title ? `${title} | ${siteTitle}` : 'Stellar Institute — Crafting Careers Through Education';
 
-    // 2. Helper to set or create meta tag
     const setMeta = (nameAttr, nameVal, content) => {
       if (!content) return;
       let el = document.querySelector(`meta[${nameAttr}="${nameVal}"]`);
@@ -26,11 +43,12 @@ export default function SEO({
         el = document.createElement('meta');
         el.setAttribute(nameAttr, nameVal);
         document.head.appendChild(el);
+        createdElements.add(el);
       }
+      rememberAttribute(el, 'content');
       el.setAttribute('content', content);
     };
 
-    // 3. Helper to set or create link tag
     const setLink = (rel, href) => {
       if (!href) return;
       let el = document.querySelector(`link[rel="${rel}"]`);
@@ -38,7 +56,9 @@ export default function SEO({
         el = document.createElement('link');
         el.setAttribute('rel', rel);
         document.head.appendChild(el);
+        createdElements.add(el);
       }
+      rememberAttribute(el, 'href');
       el.setAttribute('href', href);
     };
 
@@ -46,7 +66,7 @@ export default function SEO({
     const defaultDesc = 'Stellar Institute & Academy in Lahore offers premier academic schooling (5th-8th, Matric, Intermediate, O/A Levels) and certified IT & professional short courses.';
     const finalDesc = description || defaultDesc;
     setMeta('name', 'description', finalDesc);
-    
+
     const defaultKeywords = 'Stellar Institute, Stellar Academy, IT Courses Lahore, Web Development Course, Matric Coaching, FSc Pre-Medical, ICS Academy, O A Levels Lahore, Certified Courses';
     setMeta('name', 'keywords', keywords || defaultKeywords);
     setMeta('name', 'robots', 'index, follow, max-image-preview:large');
@@ -69,19 +89,40 @@ export default function SEO({
     setMeta('name', 'twitter:description', finalDesc);
     setMeta('name', 'twitter:image', ogImage);
 
-    // Inject Schema.org JSON-LD if provided
+    // Inject Schema.org JSON-LD if provided.
     let scriptEl = document.getElementById('page-schema-jsonld');
+    const previousSchemaText = scriptEl?.textContent;
     if (schemaData) {
       if (!scriptEl) {
         scriptEl = document.createElement('script');
         scriptEl.id = 'page-schema-jsonld';
         scriptEl.type = 'application/ld+json';
         document.head.appendChild(scriptEl);
+        createdElements.add(scriptEl);
       }
       scriptEl.textContent = JSON.stringify(schemaData);
     } else if (scriptEl) {
       scriptEl.remove();
     }
+
+    return () => {
+      document.title = previousTitle;
+
+      for (const [element, attributes] of originalAttributes) {
+        if (createdElements.has(element)) continue;
+        for (const [attribute, original] of attributes) {
+          if (original.hadAttribute) element.setAttribute(attribute, original.value);
+          else element.removeAttribute(attribute);
+        }
+      }
+
+      for (const element of createdElements) element.remove();
+
+      if (scriptEl && !createdElements.has(scriptEl) && previousSchemaText !== undefined) {
+        scriptEl.textContent = previousSchemaText;
+        if (!scriptEl.isConnected) document.head.appendChild(scriptEl);
+      }
+    };
   }, [title, description, keywords, canonical, ogImage, ogType, schemaData]);
 
   return null;

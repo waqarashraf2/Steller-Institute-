@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import html2pdf from 'html2pdf.js';
 import { itCourses, beautyCourses } from '../data/courses';
 import CertificateTemplate from '../components/CertificateTemplate';
 import './StellarAdmin.css';
@@ -78,7 +77,6 @@ export default function StellarAdmin() {
   const [editingCertId, setEditingCertId] = useState(null);
   const [certSearch, setCertSearch] = useState('');
   const [savingCert, setSavingCert] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [previewZoom, setPreviewZoom] = useState('fit'); // 'fit' | '100'
   const certPrintRef = useRef(null);
 
@@ -103,10 +101,19 @@ export default function StellarAdmin() {
         fetch(`${API}/admin-certificates`, { headers: headers() }).catch(() => ({ ok: false }))
       ]);
       
-      if (rAnns.status === 401 || rCourses.status === 401) { logout(); return; }
-      
-      if (rAnns.ok) setAnns(await rAnns.json());
-      if (rImgs.ok) setWebsiteImages(await rImgs.json());
+      const readJson = (response) => response?.ok
+        ? response.json().catch(() => null)
+        : Promise.resolve(null);
+      const [announcementsData, imagesData, coursesData, pagesData, certificatesData] = await Promise.all([
+        readJson(rAnns),
+        readJson(rImgs),
+        readJson(rCourses),
+        readJson(rPages),
+        readJson(rCerts)
+      ]);
+
+      if (rAnns.ok && announcementsData !== null) setAnns(announcementsData);
+      if (rImgs.ok && imagesData !== null) setWebsiteImages(imagesData);
       
       const localCourses = getLocalCourses();
       const initialDefault = [
@@ -114,34 +121,20 @@ export default function StellarAdmin() {
         ...beautyCourses.map(c => ({ ...c, category: 'beauty', image_url: c.image, banner_url: c.bannerImage }))
       ];
 
-      if (rCourses && rCourses.ok) {
-        const dbCourses = await rCourses.json();
-        const baseList = (Array.isArray(dbCourses) && dbCourses.length > 0) ? dbCourses : initialDefault;
-        const merged = baseList.map(c => {
-          const override = localCourses.find(lc => 
-            (lc.id && c.id && String(lc.id) === String(c.id)) || 
-            (lc.title && c.title && lc.title.trim().toLowerCase() === c.title.trim().toLowerCase())
-          );
-          return override ? { ...c, ...override } : c;
-        });
-        setCourses(merged);
-      } else {
-        const merged = initialDefault.map(c => {
-          const override = localCourses.find(lc => 
-            (lc.id && c.id && String(lc.id) === String(c.id)) || 
-            (lc.title && c.title && lc.title.trim().toLowerCase() === c.title.trim().toLowerCase())
-          );
-          return override ? { ...c, ...override } : c;
-        });
-        setCourses(merged);
-      }
+      const dbCourses = coursesData;
+      const baseList = (Array.isArray(dbCourses) && dbCourses.length > 0) ? dbCourses : initialDefault;
+      const merged = baseList.map(c => {
+        const override = localCourses.find(lc => 
+          (lc.id && c.id && String(lc.id) === String(c.id)) || 
+          (lc.title && c.title && lc.title.trim().toLowerCase() === c.title.trim().toLowerCase())
+        );
+        return override ? { ...c, ...override } : c;
+      });
+      setCourses(merged);
 
-      if (rPages.ok) {
-        const pData = await rPages.json();
-        setPrivacyPolicy(pData.content || '');
-      }
+      if (rPages.ok) setPrivacyPolicy(pagesData?.content || '');
       if (rCerts && rCerts.ok) {
-        const apiCerts = await rCerts.json();
+        const apiCerts = certificatesData;
         if (Array.isArray(apiCerts)) {
           const local = getLocalCerts();
           const unSynced = local.filter(lc => lc.registration_no && !apiCerts.some(ac => ac.registration_no?.toUpperCase() === lc.registration_no?.toUpperCase()));
@@ -172,8 +165,9 @@ export default function StellarAdmin() {
       } else {
         setCertificates(getLocalCerts());
       }
-    } catch {}
-    if (showLoading) setLoading(false);
+    } catch {} finally {
+      if (showLoading) setLoading(false);
+    }
   }, [token, headers]);
 
   useEffect(() => {
@@ -600,75 +594,6 @@ export default function StellarAdmin() {
     }
   };
 
-  const handleDownloadPdf = async () => {
-    const element = document.getElementById('printable-certificate');
-    if (!element) return;
-    try {
-      setIsGeneratingPdf(true);
-      
-      // Ensure all certificate fonts are loaded into memory
-      if (document.fonts) {
-        await Promise.all([
-          document.fonts.load('64px "Alex Brush"').catch(() => {}),
-          document.fonts.load('bold 26.5px "Inter"').catch(() => {}),
-          document.fonts.load('italic 18px "Inter"').catch(() => {}),
-          document.fonts.ready
-        ]);
-      }
-      
-      // Ensure all images (logo, crest, banner vector) are fully decoded
-      const images = Array.from(element.querySelectorAll('img'));
-      await Promise.all(
-        images.map(img => {
-          if (img.complete) return Promise.resolve();
-          return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
-        })
-      );
-
-      const studentSlug = (certForm.student_name || 'Student').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const regSlug = certForm.registration_no || 'STI250189';
-      const opt = {
-        margin: 0,
-        filename: `Certificate_${regSlug}_${studentSlug}.pdf`,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { 
-          scale: 2.5, 
-          useCORS: true, 
-          allowTaint: true,
-          logging: false,
-          scrollY: 0,
-          scrollX: 0,
-          width: 1000,
-          height: 630,
-          windowWidth: 1000,
-          windowHeight: 630,
-          onclone: (clonedDoc) => {
-            const el = clonedDoc.getElementById('printable-certificate');
-            if (el) {
-              el.style.width = '1000px';
-              el.style.height = '630px';
-              el.style.minWidth = '1000px';
-              el.style.minHeight = '630px';
-              el.style.maxWidth = '1000px';
-              el.style.maxHeight = '630px';
-              el.style.transform = 'none';
-              el.style.boxShadow = 'none';
-              el.style.margin = '0';
-              el.style.borderRadius = '0';
-            }
-          }
-        },
-        jsPDF: { unit: 'px', format: [1000, 630], orientation: 'landscape', hotfixes: ['px_scaling'] }
-      };
-      await html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      console.error('PDF Generation Error:', err);
-      alert('Direct PDF download failed. Please use Print / Save Certificate PDF.');
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
-
   if (!token) return (
     <div className="admin-login-wrapper">
       <div className="admin-login-card">
@@ -700,13 +625,17 @@ export default function StellarAdmin() {
       <div className="admin-topbar">
         <div className="admin-topbar-left">
           <img src="/stellar_logo.png" alt="Stellar" className="admin-topbar-logo" />
-          <div className="admin-tabs">
-            <button className={`admin-tab-btn ${activeTab === 'announcements' ? 'active' : ''}`} onClick={() => setActiveTab('announcements')}>Announcements</button>
-            <button className={`admin-tab-btn ${activeTab === 'images' ? 'active' : ''}`} onClick={() => setActiveTab('images')}>Website Images</button>
-            <button className={`admin-tab-btn ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => setActiveTab('courses')}>Course Manager</button>
-            <button className={`admin-tab-btn ${activeTab === 'certificates' ? 'active' : ''}`} onClick={() => setActiveTab('certificates')}>Certificates</button>
-            <button className={`admin-tab-btn ${activeTab === 'pages' ? 'active' : ''}`} onClick={() => setActiveTab('pages')}>Pages</button>
+          <div className="admin-brand-copy">
+            <span className="admin-topbar-title">Stellar Institute</span>
+            <span className="admin-brand-caption">Content management</span>
           </div>
+          <nav className="admin-tabs" aria-label="Admin sections" role="tablist">
+            <button type="button" role="tab" aria-selected={activeTab === 'announcements'} className={`admin-tab-btn ${activeTab === 'announcements' ? 'active' : ''}`} onClick={() => setActiveTab('announcements')}>Announcements</button>
+            <button type="button" role="tab" aria-selected={activeTab === 'images'} className={`admin-tab-btn ${activeTab === 'images' ? 'active' : ''}`} onClick={() => setActiveTab('images')}>Website Images</button>
+            <button type="button" role="tab" aria-selected={activeTab === 'courses'} className={`admin-tab-btn ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => setActiveTab('courses')}>Course Manager</button>
+            <button type="button" role="tab" aria-selected={activeTab === 'certificates'} className={`admin-tab-btn ${activeTab === 'certificates' ? 'active' : ''}`} onClick={() => setActiveTab('certificates')}>Certificates</button>
+            <button type="button" role="tab" aria-selected={activeTab === 'pages'} className={`admin-tab-btn ${activeTab === 'pages' ? 'active' : ''}`} onClick={() => setActiveTab('pages')}>Pages</button>
+          </nav>
         </div>
         <div className="admin-topbar-right">
           <Link to="/" className="admin-back-link">← Back to Site</Link>
@@ -715,7 +644,7 @@ export default function StellarAdmin() {
         </div>
       </div>
 
-      <div className="admin-content">
+      <div className={`admin-content ${activeTab === 'certificates' ? 'admin-content-wide' : ''}`}>
         {loading && <div className="admin-loading">Loading…</div>}
 
         {/* --- ANNOUNCEMENTS TAB --- */}
@@ -738,8 +667,8 @@ export default function StellarAdmin() {
 
             <div className="admin-actions-bar">
               <h2>All Announcements</h2>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={fetchData} className="admin-logout-btn" title="Refresh">
+              <div className="admin-action-controls">
+                <button onClick={fetchData} className="admin-logout-btn admin-refresh-btn" title="Refresh content" aria-label="Refresh content">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
                 </button>
                 <button onClick={() => { setAnnForm(emptyAnn); setEditingAnn(null); setShowAnnForm(true); }} className="admin-add-btn">
@@ -802,7 +731,7 @@ export default function StellarAdmin() {
         {/* --- IMAGES TAB --- */}
         {!loading && activeTab === 'images' && (
           <>
-            <div className="admin-actions-bar" style={{ marginTop: '20px' }}>
+            <div className="admin-actions-bar admin-image-actions" style={{ marginTop: '20px' }}>
               <div>
                 <h2>Website Images</h2>
                 <p style={{ color: 'var(--admin-muted)', fontSize: '13px', margin: '4px 0 0 0' }}>Upload high-resolution images. They will be automatically cropped and fitted to placeholders on the website.</p>
@@ -819,7 +748,7 @@ export default function StellarAdmin() {
                 websiteImages.map(img => (
                   <div key={img.id} className="image-card">
                     <div className="image-card-preview">
-                      <img src={img.image_url} alt={img.placeholder_key} />
+                      <img src={img.image_url} alt={img.placeholder_key} loading="lazy" decoding="async" />
                     </div>
                     <div className="image-card-info">
                       <div className="image-card-key" title={img.placeholder_key}>{img.placeholder_key}</div>
@@ -994,7 +923,7 @@ export default function StellarAdmin() {
                   <div className="course-card-img">
                     <span className="course-category-badge">{c.category === 'it' ? 'IT' : 'Beauty'}</span>
                     {c.image_url ? (
-                      <img src={c.image_url} alt={c.title} />
+                      <img src={c.image_url} alt={c.title} loading="lazy" decoding="async" />
                     ) : (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: '13px' }}>No Image</div>
                     )}
@@ -1506,11 +1435,11 @@ export default function StellarAdmin() {
                       )
                       .map(c => (
                         <tr key={c.id || c.registration_no}>
-                          <td style={{ fontWeight: 800, color: '#0284c7' }}>{c.registration_no}</td>
-                          <td style={{ fontWeight: 600 }}>{c.student_name}</td>
-                          <td style={{ color: '#475569', fontSize: '13px' }}>{c.cnic || '—'}</td>
-                          <td>{c.course_title}</td>
-                          <td>{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
+                          <td className="cert-td-reg">{c.registration_no}</td>
+                          <td className="cert-td-name">{c.student_name}</td>
+                          <td className="cert-td-cnic">{c.cnic || '-'}</td>
+                          <td className="cert-td-course">{c.course_title}</td>
+                          <td className="cert-td-date">{c.issue_date ? new Date(c.issue_date).toLocaleDateString() : '-'}</td>
 
                           <td>
                             {c.is_valid ? (

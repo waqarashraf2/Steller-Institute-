@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { itCourses as initialIt, beautyCourses as initialBeauty } from '../data/courses';
 
 const CoursesContext = createContext();

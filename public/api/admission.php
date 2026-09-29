@@ -18,6 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+require_once __DIR__ . '/_rate_limit.php';
+stellar_enforce_form_rate_limit('admission', 5, 900);
+
 // Get JSON body
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -119,7 +122,6 @@ $sent = mail($to, $emailSubject, $emailBody, $headers, "-fnoreply@stellarinstitu
 if ($sent) {
     echo json_encode(['success' => true, 'message' => 'Admission form submitted successfully']);
 } else {
-    $error = error_get_last();
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Failed to submit admission form. Please try again later.', 'debug' => $error]);
+    echo json_encode(['success' => false, 'error' => 'Failed to submit admission form. Please try again later.']);
 }

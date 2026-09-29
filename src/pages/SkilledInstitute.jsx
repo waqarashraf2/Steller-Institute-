@@ -62,7 +62,7 @@ export default function SkilledInstitute() {
       {/* ─── Main Catalog Section ─────────────────────────────────── */}
       <section className="skilled-programs-section">
         <div className="container skilled-layout-container">
-          
+
           {/* ─── Sticky Sidebar ───────────────────────────────────── */}
           <aside className="skilled-sidebar">
             {/* Search Box */}
@@ -80,9 +80,9 @@ export default function SkilledInstitute() {
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
-                  <input 
-                    type="text" 
-                    placeholder="Search by course name..." 
+                  <input
+                    type="text"
+                    placeholder="Search by course name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="course-search-input"
@@ -106,8 +106,8 @@ export default function SkilledInstitute() {
                 Course Categories
               </h3>
               <div className="category-list">
-                <button 
-                  className={`category-btn ${filter === 'all' ? 'active' : ''}`} 
+                <button
+                  className={`category-btn ${filter === 'all' ? 'active' : ''}`}
                   onClick={() => setFilter('all')}
                 >
                   <div className="cat-left">
@@ -122,8 +122,8 @@ export default function SkilledInstitute() {
                   <span className="cat-count">{allCourses.length}</span>
                 </button>
 
-                <button 
-                  className={`category-btn ${filter === 'it' ? 'active' : ''}`} 
+                <button
+                  className={`category-btn ${filter === 'it' ? 'active' : ''}`}
                   onClick={() => setFilter('it')}
                 >
                   <div className="cat-left">
@@ -138,8 +138,8 @@ export default function SkilledInstitute() {
                   <span className="cat-count">{itCourses.length}</span>
                 </button>
 
-                <button 
-                  className={`category-btn ${filter === 'beauty' ? 'active' : ''}`} 
+                <button
+                  className={`category-btn ${filter === 'beauty' ? 'active' : ''}`}
                   onClick={() => setFilter('beauty')}
                 >
                   <div className="cat-left">
@@ -155,24 +155,6 @@ export default function SkilledInstitute() {
               </div>
             </div>
 
-            {/* Quick Information / Support Card */}
-            <div className="sidebar-trust-box">
-              <div className="sidebar-trust-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
-                </svg>
-                Government Verified
-              </div>
-              <p className="sidebar-trust-desc">
-                All certificates include verifiable QR codes and online authentication issued directly by Stellar Institute.
-              </p>
-              <Link to="/contact" className="sidebar-trust-link">
-                <span>Free Career Counseling</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </Link>
-            </div>
           </aside>
 
           {/* ─── Main Content Grid ─────────────────────────────────── */}
@@ -199,19 +181,19 @@ export default function SkilledInstitute() {
               <div className="courses-grid">
                 <AnimatePresence>
                   {filteredCourses.map((course, i) => (
-                    <motion.div 
-                      key={course.id || course.title} 
+                    <motion.div
+                      key={course.id || course.title}
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ delay: i * 0.03, duration: 0.3 }}
-                      className="lms-course-card" 
+                      className="lms-course-card"
                     >
                       {/* Media Header with Badges */}
                       <div className="course-card-media">
                         {course.banner_url || course.image_url || course.image ? (
-                          <img 
-                            src={course.banner_url || course.image_url || course.image} 
+                          <img
+                            src={course.banner_url || course.image_url || course.image}
                             alt={course.title}
                             loading="lazy"
                             decoding="async"
@@ -221,7 +203,7 @@ export default function SkilledInstitute() {
                           <ImagePlaceholder label={course.title} />
                         )}
                         <div className="course-media-overlay" />
-                        
+
                         {/* Category Floating Pill */}
                         <span className={`course-category-badge ${course.category === 'it' ? 'badge-it' : 'badge-beauty'}`}>
                           {course.category === 'it' ? 'IT Course' : 'Beauty & Wellness'}
@@ -243,7 +225,7 @@ export default function SkilledInstitute() {
                           <h3 className="course-card-title" title={course.title}>
                             {course.title}
                           </h3>
-                          
+
                           {/* Feature Highlights Chips */}
                           <div className="course-features-wrap">
                             <span className="course-feature-chip">
@@ -336,7 +318,7 @@ export default function SkilledInstitute() {
               Real stories and feedback from students who leveled up their technical and creative skills with us.
             </p>
           </div>
-          
+
           <div className="reviews-grid">
             {instituteReviews.map((review, index) => (
               <ScrollReveal key={review.id} delay={index * 0.1}>

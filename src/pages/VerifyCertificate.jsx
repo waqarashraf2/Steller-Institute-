@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import html2pdf from 'html2pdf.js';
 import CertificateTemplate from '../components/CertificateTemplate';
 import SEO from '../components/SEO';
 import './VerifyCertificate.css';
@@ -17,72 +16,56 @@ export default function VerifyCertificate() {
   const [loading, setLoading] = useState(Boolean(initialReg));
   const [searched, setSearched] = useState(Boolean(initialReg));
   const [error, setError] = useState('');
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const certRef = useRef(null);
 
   useEffect(() => {
     if (!currentReg) {
       setLoading(false);
+      setCertData(null);
       return;
     }
 
+    let active = true;
     setLoading(true);
     setError('');
+    setCertData(null);
     const API = import.meta.env.VITE_API_URL || '/api';
 
-    fetch(`${API}/certificates?reg=${encodeURIComponent(currentReg.trim())}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.found && data.certificate) {
-          setCertData(data.certificate);
-        } else {
-          // Check local storage for certificates saved in admin panel
-          try {
-            const localCerts = JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
-            const found = localCerts.find(c => c.registration_no?.toUpperCase() === currentReg.trim().toUpperCase());
-            if (found) {
-              setCertData(found);
-              return;
-            }
-          } catch {}
-
-          setCertData(null);
-          setError('No official record found for this Registration Number.');
-        }
-      })
-      .catch(err => {
-        console.error('Verification error:', err);
-        // Check local storage for certificates saved in admin panel
+    const verifyCertificate = async () => {
+      try {
+        const response = await fetch(`${API}/certificates?reg=${encodeURIComponent(currentReg.trim())}`);
+        let data = null;
         try {
-          const localCerts = JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
-          const found = localCerts.find(c => c.registration_no?.toUpperCase() === currentReg.trim().toUpperCase());
-          if (found) {
-            setCertData(found);
-            return;
-          }
-        } catch {}
+          data = await response.json();
+        } catch {
+          // Treat a non-JSON response as a service error below.
+        }
 
-        // Fallback demo for immediate testing if DB record hasn't been seeded yet
-        if (currentReg.toUpperCase() === 'STI250189') {
-          setCertData({
-            registration_no: 'STI250189',
-            student_name: 'Anas Ali',
-            course_title: 'Digital Marketing and Website Development',
-            course_duration: 'A 3-Month Professional Course Conducted by Stellar Institute.',
-            principal_title: 'Stellar Institute & Academy',
-            instructor_title: 'Stellar Institute',
-            issue_date: '2026-05-15',
-            is_valid: true
-          });
-        } else {
+        if (response.status === 404 || data?.found === false) {
+          if (active) setError('No official record found for this Registration Number.');
+        } else if (!response.ok) {
+          throw new Error(data?.error || 'Certificate service request failed');
+        } else if (data?.found && data?.certificate) {
+          if (active) setCertData(data.certificate);
+        } else if (active) {
           setError('No official record found for this Registration Number.');
         }
-      })
-      .finally(() => {
-        setLoading(false);
-        setSearched(true);
-      });
+      } catch (err) {
+        console.error('Verification error:', err);
+        if (active) setError('The verification service is unavailable. Please try again later.');
+      } finally {
+        if (active) {
+          setLoading(false);
+          setSearched(true);
+        }
+      }
+    };
+
+    verifyCertificate();
+    return () => {
+      active = false;
+    };
   }, [currentReg]);
 
   const handleSearch = (e) => {
@@ -94,68 +77,6 @@ export default function VerifyCertificate() {
 
   const handlePrint = () => {
     window.print();
-  };
-
-  const handleDownloadPdf = async () => {
-    const element = document.getElementById('printable-certificate');
-    if (!element || !certData) return;
-    try {
-      setIsGeneratingPdf(true);
-      if (document.fonts) {
-        await Promise.all([
-          document.fonts.load('64px "Alex Brush"').catch(() => {}),
-          document.fonts.load('bold 26.5px "Inter"').catch(() => {}),
-          document.fonts.ready
-        ]);
-      }
-      
-      const images = Array.from(element.querySelectorAll('img'));
-      await Promise.all(
-        images.map(img => img.complete ? Promise.resolve() : (img.decode ? img.decode().catch(() => {}) : Promise.resolve()))
-      );
-
-      const studentSlug = (certData.student_name || 'Student').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const regSlug = certData.registration_no || 'STI250189';
-      const opt = {
-        margin: 0,
-        filename: `Certificate_${regSlug}_${studentSlug}.pdf`,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { 
-          scale: 2.5, 
-          useCORS: true, 
-          allowTaint: true,
-          logging: false,
-          scrollY: 0,
-          scrollX: 0,
-          width: 1000,
-          height: 630,
-          windowWidth: 1000,
-          windowHeight: 630,
-          onclone: (clonedDoc) => {
-            const el = clonedDoc.getElementById('printable-certificate');
-            if (el) {
-              el.style.width = '1000px';
-              el.style.height = '630px';
-              el.style.minWidth = '1000px';
-              el.style.minHeight = '630px';
-              el.style.maxWidth = '1000px';
-              el.style.maxHeight = '630px';
-              el.style.transform = 'none';
-              el.style.boxShadow = 'none';
-              el.style.margin = '0';
-              el.style.borderRadius = '0';
-            }
-          }
-        },
-        jsPDF: { unit: 'px', format: [1000, 630], orientation: 'landscape', hotfixes: ['px_scaling'] }
-      };
-      await html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      console.error('PDF Generation Error:', err);
-      alert('Direct PDF download failed. Please use Print Certificate.');
-    } finally {
-      setIsGeneratingPdf(false);
-    }
   };
 
   return (
@@ -241,6 +162,14 @@ export default function VerifyCertificate() {
                       <div className="verify-detail-label">Student CNIC</div>
                       <div className="verify-detail-value" style={{ color: '#0f172a' }}>
                         {certData.cnic}
+                      </div>
+                    </div>
+                  )}
+                  {certData.duration_from && certData.duration_to && (
+                    <div className="verify-detail-card">
+                      <div className="verify-detail-label">Course Duration</div>
+                      <div className="verify-detail-value">
+                        {new Date(certData.duration_from).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} to {new Date(certData.duration_to).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </div>
                     </div>
                   )}

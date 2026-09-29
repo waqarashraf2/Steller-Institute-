@@ -1,39 +1,324 @@
-.page-content-container {
-  padding: 120px 0 80px;
-  background-color: var(--surface-default);
+.privacy-policy-page {
+  --policy-ink: #122a43;
+  --policy-copy: #40536a;
+  --policy-muted: #6f8094;
+  --policy-line: #e3eaf1;
+
   min-height: 100vh;
+  padding: 0 0 clamp(72px, 9vw, 112px);
+  background:
+    radial-gradient(ellipse at 88% 42%, rgba(0, 180, 216, 0.045), transparent 34rem),
+    #f3f7fb;
 }
 
-.page-content-box {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-default);
-  border-radius: 16px;
-  padding: 40px;
-  max-width: 900px;
-  margin: 40px auto 0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+.privacy-policy-frame {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
 }
 
-.rich-text-content {
-  font-size: 16px;
-  line-height: 1.8;
-  color: var(--text-secondary);
+.privacy-policy-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(58px, 7vw, 88px) 0 clamp(76px, 8vw, 108px);
+  color: #fff;
+  background: linear-gradient(112deg, #0a2540 0%, #0d3150 68%, #10415d 100%);
 }
 
-.rich-text-content h1,
-.rich-text-content h2,
-.rich-text-content h3 {
-  color: var(--text-primary);
-  margin-top: 32px;
-  margin-bottom: 16px;
+.privacy-policy-hero::before,
+.privacy-policy-hero::after {
+  position: absolute;
+  z-index: -1;
+  content: '';
+  pointer-events: none;
 }
 
-.rich-text-content p {
+.privacy-policy-hero::before {
+  top: -215px;
+  right: max(-90px, calc((100vw - 1320px) / 2));
+  width: 430px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(172, 225, 238, 0.15);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 38px rgba(172, 225, 238, 0.035),
+    0 0 0 78px rgba(172, 225, 238, 0.025);
+}
+
+.privacy-policy-hero::after {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 180, 216, 0.8), transparent);
+}
+
+.privacy-policy-hero .privacy-policy-frame {
+  position: relative;
+  z-index: 1;
+}
+
+.privacy-policy-accent {
+  display: block;
+  width: 44px;
+  height: 3px;
   margin-bottom: 24px;
+  border-radius: 3px;
+  background: #35c0d8;
+  box-shadow: 0 0 22px rgba(53, 192, 216, 0.28);
 }
 
-.empty-policy-state {
-  padding: 40px 20px;
-  color: var(--text-muted);
-  font-style: italic;
+.privacy-policy-title {
+  max-width: 760px;
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.2vw, 62px);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.privacy-policy-body {
+  position: relative;
+  z-index: 2;
+  margin-top: -38px;
+}
+
+.privacy-policy-paper {
+  position: relative;
+  width: min(100%, 940px);
+  margin: 0 auto;
+  padding: clamp(30px, 5.5vw, 76px);
+  overflow: hidden;
+  border: 1px solid rgba(206, 218, 229, 0.82);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow:
+    0 30px 70px rgba(16, 42, 67, 0.09),
+    0 4px 14px rgba(16, 42, 67, 0.035);
+}
+
+.privacy-policy-paper::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0a2540, #27b9d3 56%, #0a2540);
+  content: '';
+}
+
+.privacy-policy-copy {
+  width: 100%;
+  max-width: none;
+  overflow: visible;
+  padding: 0;
+  color: var(--policy-copy);
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.82;
+}
+
+.privacy-policy-copy .google-doc-wrapper {
+  width: 100%;
+  max-width: none;
+  color: var(--policy-copy);
+  font-family: var(--font-main);
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body,
+.privacy-policy-copy .google-doc-wrapper .google-doc-body.c36 {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body > strong:first-child {
+  display: block !important;
+  margin: 0 0 18px !important;
+  padding: 0 0 18px !important;
+  border-bottom: 1px solid var(--policy-line);
+  color: #17617a !important;
+  font-family: var(--font-main) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.11em;
+  line-height: 1.4 !important;
+  text-transform: uppercase;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body p,
+.privacy-policy-copy .google-doc-wrapper .google-doc-body li {
+  color: var(--policy-copy) !important;
+  font-family: var(--font-main) !important;
+  font-size: 15.5px !important;
+  font-weight: 400;
+  line-height: 1.82 !important;
+  text-align: left !important;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body p {
+  max-width: 72ch;
+  margin: 0 0 20px !important;
+  padding: 0 !important;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body p.c7 {
+  display: table;
+  max-width: 100%;
+  margin: 0 0 30px !important;
+  padding: 8px 12px !important;
+  border: 1px solid #e1ebf1;
+  border-radius: 5px;
+  background: #f5f9fc;
+  color: var(--policy-muted) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.015em;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body h2,
+.privacy-policy-copy .google-doc-wrapper .google-doc-body h3 {
+  max-width: 72ch;
+  color: var(--policy-ink) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  text-align: left !important;
+  text-wrap: pretty;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body h2 {
+  margin: 44px 0 14px !important;
+  padding-top: 24px !important;
+  border-top: 1px solid var(--policy-line);
+  font-size: clamp(21px, 2.6vw, 25px) !important;
+  letter-spacing: -0.035em;
+  line-height: 1.28 !important;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body h3 {
+  margin: 28px 0 10px !important;
+  font-size: 17px !important;
+  letter-spacing: -0.015em;
+  line-height: 1.4 !important;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body > p:has(> span.c6) {
+  max-width: 72ch;
+  margin: 42px 0 14px !important;
+  padding: 24px 0 0 !important;
+  border-top: 1px solid var(--policy-line);
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body > p:has(> span.c6) > span.c6 {
+  display: block;
+  color: var(--policy-ink) !important;
+  font-family: var(--font-display) !important;
+  font-size: clamp(21px, 2.6vw, 25px) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.035em;
+  line-height: 1.28 !important;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body ul,
+.privacy-policy-copy .google-doc-wrapper .google-doc-body ol {
+  max-width: 72ch;
+  margin: 0 0 28px !important;
+  padding: 0 0 0 20px !important;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body ul {
+  list-style: disc;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body ol {
+  list-style: decimal;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body li::marker {
+  color: #1786a0;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body li {
+  margin: 0 0 8px !important;
+  padding: 0 !important;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body a {
+  color: #08718e !important;
+  font-weight: 600;
+  text-decoration-color: rgba(8, 113, 142, 0.4);
+  text-decoration-line: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body a:hover {
+  color: #064e67 !important;
+  text-decoration-color: currentColor;
+}
+
+.privacy-policy-copy .google-doc-wrapper .google-doc-body strong,
+.privacy-policy-copy .google-doc-wrapper .google-doc-body b {
+  color: #243d58;
+  font-weight: 650;
+}
+
+@media (max-width: 640px) {
+  .privacy-policy-page {
+    padding-bottom: 56px;
+  }
+
+  .privacy-policy-frame {
+    width: min(100% - 32px, 1120px);
+  }
+
+  .privacy-policy-hero {
+    padding: 52px 0 76px;
+  }
+
+  .privacy-policy-hero::before {
+    top: -210px;
+    right: -230px;
+    width: 360px;
+  }
+
+  .privacy-policy-accent {
+    margin-bottom: 20px;
+  }
+
+  .privacy-policy-body {
+    margin-top: -28px;
+  }
+
+  .privacy-policy-paper {
+    padding: 30px 22px 36px;
+    border-radius: 13px;
+  }
+
+  .privacy-policy-copy,
+  .privacy-policy-copy .google-doc-wrapper .google-doc-body p,
+  .privacy-policy-copy .google-doc-wrapper .google-doc-body li {
+    font-size: 15px !important;
+    line-height: 1.78 !important;
+  }
+
+  .privacy-policy-copy .google-doc-wrapper .google-doc-body h2 {
+    margin-top: 36px !important;
+    padding-top: 20px !important;
+  }
+
+  .privacy-policy-copy .google-doc-wrapper .google-doc-body h3 {
+    margin-top: 24px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .privacy-policy-copy .google-doc-wrapper .google-doc-body a {
+    transition: none;
+  }
 }

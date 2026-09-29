@@ -1301,6 +1301,13 @@
   color: #0f172a;
 }
 
+.cert-td-cnic {
+  font-family: 'SF Mono', 'Geist Mono', monospace;
+  font-size: 12px;
+  color: #475569;
+  letter-spacing: 0.02em;
+}
+
 .cert-td-course {
   color: #475569;
   font-size: 13px;
@@ -1418,4 +1425,870 @@
   }
 }
 
+/* Consistent admin workspace */
+:root {
+  --admin-bg: #f3f6f9;
+  --admin-border: #dfe6ed;
+  --admin-text: #142b42;
+  --admin-muted: #5e7185;
+  --admin-subtle: #8190a0;
+  --admin-surface: #ffffff;
+  --admin-hover: #f4f8fb;
+  --admin-accent: #103a59;
+  --admin-danger: #b43d43;
+  --admin-success: #247253;
+  --admin-warning: #996417;
+  --admin-radius: 7px;
+}
 
+.admin-wrapper,
+.admin-login-wrapper {
+  color: var(--admin-text);
+  font-family: var(--font-main, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+}
+
+.admin-wrapper {
+  background: var(--admin-bg);
+}
+
+.admin-login-wrapper {
+  background:
+    radial-gradient(ellipse at 80% 12%, rgba(24, 153, 181, 0.08), transparent 32rem),
+    var(--admin-bg);
+}
+
+.admin-login-card {
+  padding: 40px 36px;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 16px 46px rgba(17, 42, 66, 0.08);
+}
+
+.admin-logo {
+  max-height: 66px;
+  margin-bottom: 24px;
+}
+
+.admin-login-header h2 {
+  color: var(--admin-text);
+  font-size: 23px;
+  letter-spacing: -0.035em;
+}
+
+.admin-topbar {
+  height: auto;
+  min-height: 76px;
+  padding: 10px clamp(18px, 3.2vw, 44px);
+  gap: 24px;
+  background: #fff;
+  border-bottom-color: var(--admin-border);
+  box-shadow: 0 2px 8px rgba(20, 43, 66, 0.035);
+}
+
+.admin-topbar-left {
+  min-width: 0;
+  gap: 14px;
+}
+
+.admin-topbar-logo {
+  max-height: 40px;
+}
+
+.admin-brand-copy {
+  display: flex;
+  min-width: 126px;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 16px;
+  border-right: 1px solid var(--admin-border);
+}
+
+.admin-topbar-title {
+  color: var(--admin-text);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.admin-brand-caption {
+  color: var(--admin-subtle);
+  font-size: 10px;
+  letter-spacing: 0.025em;
+}
+
+.admin-tabs {
+  min-width: 0;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.admin-tab-btn {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 12px 11px;
+  border-radius: 4px 4px 0 0;
+  color: #607287;
+  font-size: 12px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.admin-tab-btn:hover {
+  color: var(--admin-accent);
+  background: #f7f9fb;
+}
+
+.admin-tab-btn.active {
+  color: var(--admin-accent);
+  background: transparent;
+  box-shadow: inset 0 -2px 0 #168da8;
+}
+
+.admin-topbar-right {
+  flex: 0 0 auto;
+  gap: 12px;
+}
+
+.admin-user-name {
+  color: #53677c;
+  font-size: 12px;
+}
+
+.admin-back-link {
+  color: #4d6277;
+  font-size: 12px;
+}
+
+.admin-logout-btn {
+  border-color: #d6dfe7;
+  border-radius: 5px;
+  color: #43586c;
+  background: #fff;
+}
+
+.admin-logout-btn:hover {
+  border-color: #b43d43;
+  color: #a53239;
+  background: #fff8f8;
+}
+
+.admin-refresh-btn {
+  width: 34px;
+  justify-content: center;
+  padding: 0;
+}
+
+.admin-content {
+  width: 100%;
+  max-width: 1360px;
+  padding: 30px clamp(18px, 3.5vw, 48px) 56px;
+}
+
+.admin-stats {
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  min-height: 74px;
+  padding: 16px 20px;
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+.stat-number {
+  color: var(--admin-text);
+  font-size: 25px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  color: var(--admin-muted);
+  font-size: 10px;
+  letter-spacing: 0.07em;
+}
+
+.stat-active .stat-number {
+  color: var(--admin-success);
+}
+
+.stat-urgent .stat-number {
+  color: var(--admin-danger);
+}
+
+.admin-actions-bar {
+  min-height: 40px;
+  margin: 0 0 14px;
+  gap: 14px;
+}
+
+.admin-actions-bar h2,
+.course-manager-header h3,
+.vercel-header .vercel-title,
+.vercel-title {
+  margin: 0;
+  color: var(--admin-text);
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.admin-action-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-add-btn,
+.vercel-btn-primary,
+.admin-login-btn {
+  border: 1px solid var(--admin-accent);
+  border-radius: 5px;
+  background: var(--admin-accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.admin-add-btn:hover,
+.vercel-btn-primary:hover,
+.admin-login-btn:hover {
+  border-color: #0a2c47;
+  background: #0a2c47;
+  opacity: 1;
+}
+
+.admin-add-btn,
+.vercel-btn-primary,
+.vercel-btn-secondary,
+.vercel-btn-danger {
+  min-height: 36px;
+  border-radius: 5px;
+}
+
+.vercel-btn-secondary,
+.vercel-btn-danger {
+  background: #fff;
+}
+
+.vercel-btn-secondary:hover {
+  border-color: #9dafbf;
+  color: var(--admin-accent);
+  background: #f8fafc;
+}
+
+.vercel-btn-danger:hover {
+  background: var(--admin-danger);
+}
+
+.admin-table-wrapper,
+.image-card,
+.course-card,
+.cert-form-card,
+.cert-preview-pane,
+.cert-table-card,
+.vercel-card {
+  border: 1px solid var(--admin-border);
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(20, 43, 66, 0.035);
+  backdrop-filter: none;
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-table {
+  min-width: 660px;
+}
+
+.admin-table th {
+  padding: 12px 16px;
+  color: #61758a;
+  background: #f7f9fb;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.admin-table td {
+  padding: 14px 16px;
+  color: #42586d;
+  font-size: 13px;
+}
+
+.admin-table tr:hover td {
+  background: #fafcfd;
+}
+
+.row-inactive {
+  opacity: 0.62;
+}
+
+.td-title strong {
+  color: var(--admin-text);
+  font-weight: 600;
+}
+
+.badge {
+  padding: 3px 7px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge-type-both,
+.badge-priority-normal {
+  border-color: #dce4ea;
+  color: #52677b;
+  background: #f6f8fa;
+}
+
+.badge-type-popup {
+  border-color: #eedde6;
+  color: #8b4969;
+  background: #fbf5f8;
+}
+
+.badge-type-ticker {
+  border-color: #d7e7e0;
+  color: #3a6c55;
+  background: #f3f8f5;
+}
+
+.badge-priority-important {
+  border-color: #ebdfc9;
+  color: #85632a;
+  background: #faf7f0;
+}
+
+.badge-priority-urgent {
+  border-color: #edd6d8;
+  color: #963b42;
+  background: #fbf4f4;
+}
+
+.action-btn {
+  border-radius: 5px;
+  color: #50657a;
+  background: #fff;
+}
+
+.action-edit:hover {
+  border-color: #c2dce3;
+  color: #14768b;
+  background: #f2f9fa;
+}
+
+.action-delete:hover {
+  background: #fff8f8;
+}
+
+.admin-modal-overlay,
+.vercel-modal-overlay {
+  background: rgba(10, 30, 48, 0.42);
+  backdrop-filter: none;
+}
+
+.admin-modal,
+.vercel-modal {
+  border: 1px solid #d9e1e8;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 24px 64px rgba(10, 30, 48, 0.2);
+  backdrop-filter: none;
+}
+
+.admin-modal-header,
+.vercel-modal-header {
+  border-color: var(--admin-border);
+}
+
+.admin-field input,
+.admin-field select,
+.admin-field textarea,
+.vercel-input,
+.vercel-select {
+  border-color: #ccd7e1;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--admin-text);
+}
+
+.admin-field input:focus,
+.admin-field select:focus,
+.admin-field textarea:focus,
+.vercel-input:focus,
+.vercel-select:focus {
+  border-color: #17849a;
+  box-shadow: 0 0 0 3px rgba(23, 132, 154, 0.12);
+}
+
+.admin-field label,
+.vercel-label {
+  color: #40566b;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.course-manager-header {
+  align-items: center;
+  margin: 0 0 20px;
+  padding: 0 0 18px;
+  border-color: var(--admin-border);
+}
+
+.course-manager-header h3 {
+  font-size: 20px;
+}
+
+.course-manager-header p,
+.vercel-subtitle {
+  margin: 5px 0 0;
+  color: var(--admin-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.course-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: 16px;
+}
+
+.course-card {
+  overflow: hidden;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.course-card:hover {
+  transform: none;
+  border-color: #c3d1dc;
+  box-shadow: 0 7px 18px rgba(20, 43, 66, 0.07);
+}
+
+.course-card-img {
+  height: 164px;
+  background: #edf2f5;
+}
+
+.course-category-badge {
+  top: 10px;
+  left: 10px;
+  padding: 4px 7px;
+  border: 1px solid rgba(210, 221, 229, 0.9);
+  border-radius: 3px;
+  color: #355269;
+  background: rgba(255, 255, 255, 0.94);
+  font-size: 10px;
+  letter-spacing: 0.045em;
+  backdrop-filter: none;
+}
+
+.course-card-content {
+  padding: 17px;
+}
+
+.course-card-title {
+  color: var(--admin-text);
+  font-size: 15px;
+}
+
+.course-card-actions {
+  gap: 8px;
+  padding-top: 13px;
+}
+
+.vercel-container {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.vercel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 0 18px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.vercel-title {
+  font-size: 21px;
+}
+
+.vercel-card-body {
+  padding: 22px;
+}
+
+.vercel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vercel-field .vercel-input {
+  min-height: 400px;
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.image-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 14px;
+}
+
+.image-card {
+  overflow: hidden;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.image-card:hover {
+  border-color: #c3d1dc;
+  box-shadow: 0 7px 18px rgba(20, 43, 66, 0.07);
+}
+
+.image-card-preview {
+  background: #edf2f5;
+}
+
+.image-card-info {
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.image-card-key {
+  color: #395168;
+  font-size: 11px;
+}
+
+.cert-admin-layout {
+  grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 14px;
+}
+
+.cert-form-card,
+.cert-preview-pane {
+  padding: 19px;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(20, 43, 66, 0.035);
+}
+
+.cert-form-card h3,
+.cert-preview-title {
+  color: var(--admin-text);
+}
+
+.cert-preview-canvas-box {
+  border-radius: 6px;
+  background: #f2f5f7;
+}
+
+.cert-resolution-pill {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--admin-subtle);
+  background: transparent;
+}
+
+.cert-zoom-controls {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--admin-border);
+  border-radius: 0;
+  background: transparent;
+}
+
+.cert-zoom-btn {
+  border-radius: 0;
+}
+
+.cert-zoom-btn.active {
+  color: var(--admin-accent);
+  background: transparent;
+  box-shadow: inset 0 -2px 0 #168da8;
+}
+
+.cert-table-card {
+  overflow-x: auto;
+}
+
+.cert-table {
+  min-width: 760px;
+}
+
+.cert-table th {
+  background: #f7f9fb;
+}
+
+.cert-preview-actions {
+  gap: 8px;
+}
+
+.cert-action-btn-print,
+.cert-action-btn-verify,
+.cert-table-btn {
+  border-radius: 5px;
+  box-shadow: none;
+}
+
+.admin-empty {
+  border: 1px solid var(--admin-border);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--admin-muted);
+}
+
+.admin-loading {
+  display: flex;
+  min-height: 220px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--admin-muted);
+}
+
+.admin-loading::before {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #d5e0e8;
+  border-top-color: #17849a;
+  border-radius: 50%;
+  content: '';
+  animation: admin-loading-spin 700ms linear infinite;
+}
+
+@keyframes admin-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+.admin-wrapper button:focus-visible,
+.admin-login-wrapper button:focus-visible,
+.admin-wrapper a:focus-visible,
+.admin-wrapper input:focus-visible,
+.admin-wrapper select:focus-visible,
+.admin-wrapper textarea:focus-visible {
+  outline: 2px solid #168da8;
+  outline-offset: 2px;
+}
+
+@media (max-width: 1050px) {
+  .admin-topbar {
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding-bottom: 0;
+  }
+
+  .admin-topbar-left {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+
+  .admin-tabs {
+    flex: 1 1 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .admin-topbar-right {
+    position: absolute;
+    top: 18px;
+    right: clamp(18px, 3.2vw, 44px);
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-topbar {
+    position: sticky;
+    gap: 0;
+    padding: 10px 14px 0;
+  }
+
+  .admin-topbar-left {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px 10px;
+  }
+
+  .admin-topbar-logo {
+    max-height: 34px;
+  }
+
+  .admin-brand-copy {
+    min-width: 0;
+    justify-content: center;
+    border-right: 0;
+  }
+
+  .admin-tabs {
+    grid-column: 1 / -1;
+    margin: 0;
+    flex-wrap: nowrap;
+  }
+
+  .admin-tab-btn {
+    padding: 10px 9px;
+    font-size: 11px;
+  }
+
+  .admin-topbar-right {
+    position: static;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 9px 0;
+    border-top: 1px solid var(--admin-border);
+  }
+
+  .admin-content {
+    padding: 22px 14px 40px;
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 23px;
+  }
+
+  .stat-card {
+    min-height: 64px;
+    gap: 5px;
+    padding: 11px 10px;
+  }
+
+  .stat-number {
+    font-size: 21px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .admin-actions-bar {
+    align-items: flex-start;
+  }
+
+  .admin-image-actions > .admin-add-btn {
+    align-self: flex-end;
+  }
+
+  .admin-action-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .admin-add-btn {
+    white-space: nowrap;
+  }
+
+  .vercel-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .vercel-card-body {
+    padding: 15px;
+  }
+
+  .cert-admin-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cert-preview-pane,
+  .cert-form-card {
+    padding: 14px;
+  }
+
+  .cert-preview-header,
+  .cert-registry-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .cert-registry-header > div:last-child {
+    width: 100% !important;
+  }
+
+  .cert-registry-header .vercel-input {
+    width: 100%;
+  }
+
+  .admin-modal-overlay,
+  .vercel-modal-overlay {
+    padding: 10px;
+  }
+
+  .admin-modal-form {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-wrapper *,
+  .admin-login-wrapper * {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Give the certificate workspace room on wide screens without changing other tabs. */
+.admin-content-wide {
+  max-width: 1600px;
+}
+
+.admin-content-wide > .vercel-container {
+  max-width: none;
+}
+
+.cert-preview-pane {
+  container-type: inline-size;
+}
+
+@container (min-width: 760px) {
+  .cert-scale-fit {
+    transform: scale(0.7);
+    margin: -94px 0;
+  }
+}
+
+@container (min-width: 840px) {
+  .cert-scale-fit {
+    transform: scale(0.78);
+    margin: -69px 0;
+  }
+}
+
+@container (min-width: 920px) {
+  .cert-scale-fit {
+    transform: scale(0.86);
+    margin: -44px 0;
+  }
+}
+
+@container (min-width: 1000px) {
+  .cert-scale-fit {
+    transform: scale(0.94);
+    margin: -19px 0;
+  }
+}
+
+@container (min-width: 1020px) {
+  .cert-scale-fit {
+    transform: scale(1);
+    margin: 0;
+  }
+}

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import './AnnouncementPopup.css';
 
 export default function AnnouncementPopup() {
   const [announcement, setAnnouncement] = useState(null);
   const [visible, setVisible] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
     // Check if already dismissed this session
@@ -45,7 +47,7 @@ export default function AnnouncementPopup() {
 
   if (!visible || !announcement) return null;
 
-  return (
+  return createPortal((
     <div className="popup-overlay" onClick={dismiss}>
       <div className="popup-card" onClick={(e) => e.stopPropagation()}>
         {/* Close button — small circle top-right */}
@@ -66,11 +68,12 @@ export default function AnnouncementPopup() {
           }}
         >
           {/* If image exists — show as the main content (KIPS-style) */}
-          {announcement.image_url ? (
+          {announcement.image_url && !imageFailed ? (
             <img
               src={announcement.image_url}
               alt={announcement.title}
               className="popup-image"
+              onError={() => setImageFailed(true)}
             />
           ) : (
             /* Fallback if no image — styled text card */
@@ -92,5 +95,5 @@ export default function AnnouncementPopup() {
         </a>
       </div>
     </div>
-  );
+  ), document.body);
 }

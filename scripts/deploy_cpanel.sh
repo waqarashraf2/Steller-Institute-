@@ -14,10 +14,13 @@ ssh -o BatchMode=yes -o ConnectTimeout=5 "$TARGET_HOST" "echo Connected to cPane
 echo "=== 1. Deploying compiled assets (replacing stale hashes) ==="
 rsync -avz --delete dist/assets/ "$TARGET_HOST":"$TARGET_PATH/assets/"
 
-echo "=== 2. Deploying API handlers ==="
-rsync -avz api/ "$TARGET_HOST":"$TARGET_PATH/api/"
+echo "=== 2. Deploying PHP form handlers to $TARGET_PATH/api ==="
+rsync -avz public/api/ "$TARGET_HOST":"$TARGET_PATH/api/"
+
+echo "=== Removing Node handlers from the shared cPanel account ==="
+ssh "$TARGET_HOST" 'find public_html/api -maxdepth 1 -type f -name "*.js" -delete'
 
 echo "=== 3. Deploying root website files (preserving all subdomains) ==="
-rsync -avz --exclude='assets' dist/ "$TARGET_HOST":"$TARGET_PATH/"
+rsync -avz --exclude='assets' --exclude='api' dist/ "$TARGET_HOST":"$TARGET_PATH/"
 
 echo "=== Deployment to $TARGET_HOST completed successfully ==="

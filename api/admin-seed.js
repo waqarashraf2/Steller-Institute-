@@ -1,7 +1,7 @@
 import { getDb, ensureTables } from './_db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { setCorsHeaders, setSecurityHeaders, getJwtSecret } from './_security.js';
+import { setCorsHeaders, setSecurityHeaders, getJwtSecret, setNoStoreHeaders } from './_security.js';
 
 // This endpoint now REQUIRES a valid admin JWT token.
 // Only an existing admin can create new admin users.
@@ -18,6 +18,7 @@ function verifyToken(req) {
 export default async function handler(req, res) {
   setCorsHeaders(res, req);
   setSecurityHeaders(res);
+  setNoStoreHeaders(res);
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST' && req.method !== 'PUT') return res.status(405).json({ error: 'Method not allowed' });
