@@ -11,17 +11,32 @@ const defaultFallbackCourses = [
   ...initialBeauty.map(c => ({ ...c, category: 'beauty', image_url: c.image, banner_url: c.bannerImage }))
 ];
 
+function mergeWithLocalOverrides(rawCourses) {
+  let local = [];
+  try {
+    local = JSON.parse(localStorage.getItem('stellar_custom_courses') || '[]');
+  } catch {}
+  if (!Array.isArray(local) || local.length === 0) return rawCourses;
+  return rawCourses.map(c => {
+    const override = local.find(lc => 
+      (lc.id && c.id && String(lc.id) === String(c.id)) ||
+      (lc.title && c.title && lc.title.trim().toLowerCase() === c.title.trim().toLowerCase())
+    );
+    return override ? { ...c, ...override } : c;
+  });
+}
+
 function getInitialCourses() {
   try {
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
       const { ts, data } = JSON.parse(cached);
       if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
-        return data;
+        return mergeWithLocalOverrides(data);
       }
     }
   } catch {}
-  return defaultFallbackCourses;
+  return mergeWithLocalOverrides(defaultFallbackCourses);
 }
 
 export function CoursesProvider({ children }) {
@@ -35,7 +50,8 @@ export function CoursesProvider({ children }) {
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
-          setCourses(data);
+          const merged = mergeWithLocalOverrides(data);
+          setCourses(merged);
           try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
           } catch {}
@@ -50,6 +66,16 @@ export function CoursesProvider({ children }) {
 
   useEffect(() => {
     fetchCourses();
+
+    const handleLocalUpdate = () => {
+      setCourses(prev => mergeWithLocalOverrides(prev));
+    };
+    window.addEventListener('stellar_courses_updated', handleLocalUpdate);
+    window.addEventListener('storage', handleLocalUpdate);
+    return () => {
+      window.removeEventListener('stellar_courses_updated', handleLocalUpdate);
+      window.removeEventListener('storage', handleLocalUpdate);
+    };
   }, []);
 
   const itCourses = courses.filter(c => c.category === 'it');

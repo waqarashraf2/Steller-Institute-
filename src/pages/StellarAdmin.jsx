@@ -66,7 +66,7 @@ export default function StellarAdmin() {
   const [imgForm, setImgForm] = useState(emptyImg);
 
   // Courses State
-  const emptyCourse = { category: 'it', title: '', duration: '', image_url: '', banner_url: '' };
+  const emptyCourse = { category: 'it', title: '', duration: '', image_url: '', banner_url: '', base_price: '', discount_price: '', special_offer_tag: '' };
   const [courses, setCourses] = useState([]);
   const [showCourseForm, setShowCourseForm] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
@@ -107,7 +107,35 @@ export default function StellarAdmin() {
       
       if (rAnns.ok) setAnns(await rAnns.json());
       if (rImgs.ok) setWebsiteImages(await rImgs.json());
-      if (rCourses.ok) setCourses(await rCourses.json());
+      
+      const localCourses = getLocalCourses();
+      const initialDefault = [
+        ...itCourses.map(c => ({ ...c, category: 'it', image_url: c.image, banner_url: c.bannerImage })),
+        ...beautyCourses.map(c => ({ ...c, category: 'beauty', image_url: c.image, banner_url: c.bannerImage }))
+      ];
+
+      if (rCourses && rCourses.ok) {
+        const dbCourses = await rCourses.json();
+        const baseList = (Array.isArray(dbCourses) && dbCourses.length > 0) ? dbCourses : initialDefault;
+        const merged = baseList.map(c => {
+          const override = localCourses.find(lc => 
+            (lc.id && c.id && String(lc.id) === String(c.id)) || 
+            (lc.title && c.title && lc.title.trim().toLowerCase() === c.title.trim().toLowerCase())
+          );
+          return override ? { ...c, ...override } : c;
+        });
+        setCourses(merged);
+      } else {
+        const merged = initialDefault.map(c => {
+          const override = localCourses.find(lc => 
+            (lc.id && c.id && String(lc.id) === String(c.id)) || 
+            (lc.title && c.title && lc.title.trim().toLowerCase() === c.title.trim().toLowerCase())
+          );
+          return override ? { ...c, ...override } : c;
+        });
+        setCourses(merged);
+      }
+
       if (rPages.ok) {
         const pData = await rPages.json();
         setPrivacyPolicy(pData.content || '');
@@ -324,37 +352,96 @@ export default function StellarAdmin() {
     reader.readAsDataURL(file);
   };
 
+  // Helpers for resilient course storage
+  const getLocalCourses = () => {
+    try {
+      return JSON.parse(localStorage.getItem('stellar_custom_courses') || '[]');
+    } catch {
+      return [];
+    }
+  };
+
+  const saveLocalCourses = (data) => {
+    try {
+      localStorage.setItem('stellar_custom_courses', JSON.stringify(data));
+      window.dispatchEvent(new Event('stellar_courses_updated'));
+    } catch {}
+  };
+
   // --- COURSES LOGIC ---
   const handleSaveCourse = async (e) => {
     e.preventDefault();
-    const method = editingCourse ? 'PUT' : 'POST';
-    const payload = editingCourse ? { ...courseForm, id: editingCourse.id } : courseForm;
-    try {
-      const r = await fetch(`${API}/courses`, {
-        method, headers: headers(), body: JSON.stringify(payload)
-      });
-      if (r.ok) {
-        setShowCourseForm(false);
-        setEditingCourse(null);
-        setCourseForm(emptyCourse);
-        fetchData();
-      } else {
-        alert('Failed to save course');
+    const isEdit = Boolean(editingCourse);
+    const targetCourse = { 
+      ...(editingCourse || {}), 
+      ...courseForm,
+      base_price: courseForm.base_price ? Number(courseForm.base_price) : 0,
+      discount_price: courseForm.discount_price ? Number(courseForm.discount_price) : 0,
+      special_offer_tag: courseForm.special_offer_tag || '',
+      id: editingCourse?.id || Date.now()
+    };
+
+    // 1. Immediately save to LocalStorage for instant persistence & reactive update
+    const local = getLocalCourses();
+    let updatedLocal;
+    const matchIdx = local.findIndex(c => 
+      (c.id && targetCourse.id && String(c.id) === String(targetCourse.id)) ||
+      (c.title && targetCourse.title && c.title.trim().toLowerCase() === targetCourse.title.trim().toLowerCase())
+    );
+    if (matchIdx !== -1) {
+      updatedLocal = [...local];
+      updatedLocal[matchIdx] = { ...updatedLocal[matchIdx], ...targetCourse };
+    } else {
+      updatedLocal = [...local, targetCourse];
+    }
+    saveLocalCourses(updatedLocal);
+
+    // 2. Update state in Admin UI immediately
+    setCourses(prev => {
+      const exists = prev.some(c => 
+        (c.id && targetCourse.id && String(c.id) === String(targetCourse.id)) ||
+        (c.title && targetCourse.title && c.title.trim().toLowerCase() === targetCourse.title.trim().toLowerCase())
+      );
+      if (exists) {
+        return prev.map(c => 
+          ((c.id && targetCourse.id && String(c.id) === String(targetCourse.id)) ||
+           (c.title && targetCourse.title && c.title.trim().toLowerCase() === targetCourse.title.trim().toLowerCase()))
+            ? { ...c, ...targetCourse }
+            : c
+        );
       }
-    } catch {
-      alert('Error saving course');
+      return [targetCourse, ...prev];
+    });
+
+    setShowCourseForm(false);
+    setEditingCourse(null);
+    setCourseForm(emptyCourse);
+
+    // 3. Save to backend database API
+    try {
+      const method = isEdit ? 'PUT' : 'POST';
+      await fetch(`${API}/courses`, {
+        method, headers: headers(), body: JSON.stringify(targetCourse)
+      });
+    } catch (err) {
+      console.warn('API course sync warning:', err);
     }
   };
 
   const handleDeleteCourse = async (id) => {
     if (!window.confirm('Are you sure you want to delete this course?')) return;
+    
+    // Remove from local storage
+    const local = getLocalCourses();
+    const updatedLocal = local.filter(c => String(c.id) !== String(id));
+    saveLocalCourses(updatedLocal);
+
+    setCourses(prev => prev.filter(c => String(c.id) !== String(id)));
+
     try {
-      const r = await fetch(`${API}/courses`, {
+      await fetch(`${API}/courses`, {
         method: 'DELETE', headers: headers(), body: JSON.stringify({ id })
       });
-      if (r.ok) {
-        fetchData();
-      }
     } catch {}
   };
 
@@ -918,8 +1005,29 @@ export default function StellarAdmin() {
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                       {c.duration || 'Duration not set'}
                     </div>
-                    <div className="course-card-actions">
-                      <button className="vercel-btn-secondary" style={{ flex: 1 }} onClick={() => { setEditingCourse(c); setCourseForm(c); setShowCourseForm(true); }}>Edit</button>
+                    <div style={{ marginTop: '8px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      {c.base_price && Number(c.base_price) > 0 ? (
+                        <>
+                          {c.discount_price && Number(c.discount_price) > 0 && Number(c.discount_price) < Number(c.base_price) ? (
+                            <>
+                              <span style={{ fontWeight: '700', color: '#16a34a' }}>PKR {Number(c.discount_price).toLocaleString()}</span>
+                              <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '12px' }}>PKR {Number(c.base_price).toLocaleString()}</span>
+                            </>
+                          ) : (
+                            <span style={{ fontWeight: '700', color: '#0f172a' }}>PKR {Number(c.base_price).toLocaleString()}</span>
+                          )}
+                          {c.special_offer_tag && (
+                            <span style={{ background: '#fef2f2', color: '#e11d48', fontSize: '11px', fontWeight: '700', padding: '2px 6px', borderRadius: '4px' }}>
+                              {c.special_offer_tag}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span style={{ color: '#94a3b8', fontSize: '12px', fontStyle: 'italic' }}>No price set (Hidden on frontend)</span>
+                      )}
+                    </div>
+                    <div className="course-card-actions" style={{ marginTop: '12px' }}>
+                      <button className="vercel-btn-secondary" style={{ flex: 1 }} onClick={() => { setEditingCourse(c); setCourseForm({ ...emptyCourse, ...c }); setShowCourseForm(true); }}>Edit</button>
                       <button className="vercel-btn-danger" style={{ flex: 1 }} onClick={() => handleDeleteCourse(c.id)}>Delete</button>
                     </div>
                   </div>
@@ -950,13 +1058,63 @@ export default function StellarAdmin() {
                   </div>
                   <div className="vercel-field-group">
                     <label className="vercel-label">Duration</label>
-                    <input className="vercel-input" type="text" value={courseForm.duration} onChange={e => setCourseForm({...courseForm, duration: e.target.value})} placeholder="e.g. 3 Months" />
+                    <input className="vercel-input" type="text" value={courseForm.duration || ''} onChange={e => setCourseForm({...courseForm, duration: e.target.value})} placeholder="e.g. 3 Months" />
                   </div>
                 </div>
                 
                 <div className="vercel-field-group">
                   <label className="vercel-label">Course Title</label>
-                  <input className="vercel-input" type="text" value={courseForm.title} onChange={e => setCourseForm({...courseForm, title: e.target.value})} placeholder="e.g. Graphic Design Masterclass" required />
+                  <input className="vercel-input" type="text" value={courseForm.title || ''} onChange={e => setCourseForm({...courseForm, title: e.target.value})} placeholder="e.g. Graphic Design Masterclass" required />
+                </div>
+
+                {/* --- Pricing & Discount Fields in PKR --- */}
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '14px', marginTop: '6px', marginBottom: '14px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#0f172a', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M15 9.5H9.5a2.5 2.5 0 0 0 0 5h5a2.5 2.5 0 0 1 0 5H9"></path></svg>
+                    Course Pricing & Special Offer (PKR)
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="vercel-field-group" style={{ margin: 0 }}>
+                      <label className="vercel-label">Base Course Price (PKR)</label>
+                      <input 
+                        className="vercel-input" 
+                        type="number" 
+                        min="0"
+                        value={courseForm.base_price || ''} 
+                        onChange={e => setCourseForm({...courseForm, base_price: e.target.value})} 
+                        placeholder="e.g. 25000 (Leave blank if hidden)" 
+                      />
+                      <span style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', display: 'block' }}>
+                        Agar price set hogi tab hi front par show hogi.
+                      </span>
+                    </div>
+
+                    <div className="vercel-field-group" style={{ margin: 0 }}>
+                      <label className="vercel-label">Discounted / Offer Price (PKR)</label>
+                      <input 
+                        className="vercel-input" 
+                        type="number" 
+                        min="0"
+                        value={courseForm.discount_price || ''} 
+                        onChange={e => setCourseForm({...courseForm, discount_price: e.target.value})} 
+                        placeholder="e.g. 18000 (Optional)" 
+                      />
+                      <span style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', display: 'block' }}>
+                        Base price se kam ho to strike-through & discount show hoga.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="vercel-field-group" style={{ marginTop: '12px', marginBottom: 0 }}>
+                    <label className="vercel-label">Special Offer Tag / Badge (Optional)</label>
+                    <input 
+                      className="vercel-input" 
+                      type="text" 
+                      value={courseForm.special_offer_tag || ''} 
+                      onChange={e => setCourseForm({...courseForm, special_offer_tag: e.target.value})} 
+                      placeholder="e.g. Limited Time Offer, Early Bird 20% Off" 
+                    />
+                  </div>
                 </div>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '8px' }}>

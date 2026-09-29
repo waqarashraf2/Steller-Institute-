@@ -649,8 +649,38 @@
   display: block;
   font-size: 13px;
   color: var(--text-muted);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-weight: 500;
+}
+
+/* Dynamic Course Pricing in PKR */
+.home-course-price-box {
+  margin-bottom: 14px;
+  padding: 6px 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.home-price-dual {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.home-price-current {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.home-price-old {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-decoration: line-through;
 }
 
 .course-card-link {
@@ -661,6 +691,7 @@
   letter-spacing: 0.5px;
   transition: letter-spacing 0.2s ease;
   font-family: var(--font-main);
+  display: inline-block;
 }
 
 .course-card-link:hover {

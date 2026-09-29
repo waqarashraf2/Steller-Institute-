@@ -259,6 +259,29 @@ export default function SkilledInstitute() {
                               Certified
                             </span>
                           </div>
+
+                          {/* Dynamic Course Pricing in PKR (Rendered ONLY if base_price > 0) */}
+                          {Boolean(course.base_price && Number(course.base_price) > 0) && (
+                            <div className="course-pricing-row">
+                              <div className="course-price-container">
+                                {course.discount_price && Number(course.discount_price) > 0 && Number(course.discount_price) < Number(course.base_price) ? (
+                                  <div className="course-price-dual">
+                                    <span className="course-discounted-price">PKR {Number(course.discount_price).toLocaleString()}</span>
+                                    <span className="course-original-price">PKR {Number(course.base_price).toLocaleString()}</span>
+                                  </div>
+                                ) : (
+                                  <div className="course-price-single">
+                                    <span className="course-discounted-price">PKR {Number(course.base_price).toLocaleString()}</span>
+                                  </div>
+                                )}
+                              </div>
+                              {course.discount_price && Number(course.discount_price) > 0 && Number(course.discount_price) < Number(course.base_price) && (
+                                <span className="course-price-discount-tag">
+                                  {course.special_offer_tag || `${Math.round((1 - Number(course.discount_price) / Number(course.base_price)) * 100)}% OFF`}
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {/* Footer & Action Button */}

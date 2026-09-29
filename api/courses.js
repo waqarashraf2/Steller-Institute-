@@ -35,35 +35,87 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const { category, title, duration, image_url, banner_url } = req.body;
+      const { category, title, duration, image_url, banner_url, base_price, discount_price, special_offer_tag } = req.body;
       if (!category || !title) {
         return res.status(400).json({ error: 'Category and title are required' });
       }
 
       const rows = await db`
-        INSERT INTO courses (category, title, duration, image_url, banner_url)
-        VALUES (${category}, ${title}, ${duration || null}, ${image_url || null}, ${banner_url || null})
+        INSERT INTO courses (category, title, duration, image_url, banner_url, base_price, discount_price, special_offer_tag)
+        VALUES (
+          ${category}, 
+          ${title}, 
+          ${duration || null}, 
+          ${image_url || null}, 
+          ${banner_url || null}, 
+          ${base_price ? parseInt(base_price) : 0}, 
+          ${discount_price ? parseInt(discount_price) : 0}, 
+          ${special_offer_tag || null}
+        )
         RETURNING *
       `;
       return res.status(201).json(rows[0]);
     }
 
     if (req.method === 'PUT') {
-      const { id, category, title, duration, image_url, banner_url } = req.body;
-      if (!id) return res.status(400).json({ error: 'ID is required' });
+      const { id, category, title, duration, image_url, banner_url, base_price, discount_price, special_offer_tag } = req.body;
+      if (!id && !title) return res.status(400).json({ error: 'ID or Title is required' });
 
-      const rows = await db`
-        UPDATE courses
-        SET 
-          category = COALESCE(${category}, category),
-          title = COALESCE(${title}, title),
-          duration = ${duration},
-          image_url = ${image_url},
-          banner_url = ${banner_url}
-        WHERE id = ${id}
-        RETURNING *
-      `;
-      return res.status(200).json(rows[0]);
+      const parsedBasePrice = base_price !== undefined ? (base_price ? parseInt(base_price) : 0) : 0;
+      const parsedDiscountPrice = discount_price !== undefined ? (discount_price ? parseInt(discount_price) : 0) : 0;
+
+      const isNumericId = id && !isNaN(Number(id)) && Number.isInteger(Number(id)) && Number(id) < 2147483647;
+
+      let rows;
+      if (isNumericId) {
+        rows = await db`
+          UPDATE courses
+          SET 
+            category = COALESCE(${category}, category),
+            title = COALESCE(${title}, title),
+            duration = ${duration},
+            image_url = ${image_url},
+            banner_url = ${banner_url},
+            base_price = ${parsedBasePrice},
+            discount_price = ${parsedDiscountPrice},
+            special_offer_tag = ${special_offer_tag || null}
+          WHERE id = ${Number(id)}
+          RETURNING *
+        `;
+      } else {
+        const existing = await db`SELECT id FROM courses WHERE LOWER(TRIM(title)) = LOWER(TRIM(${title})) LIMIT 1`;
+        if (existing.length > 0) {
+          rows = await db`
+            UPDATE courses
+            SET 
+              category = COALESCE(${category}, category),
+              duration = ${duration},
+              image_url = ${image_url},
+              banner_url = ${banner_url},
+              base_price = ${parsedBasePrice},
+              discount_price = ${parsedDiscountPrice},
+              special_offer_tag = ${special_offer_tag || null}
+            WHERE id = ${existing[0].id}
+            RETURNING *
+          `;
+        } else {
+          rows = await db`
+            INSERT INTO courses (category, title, duration, image_url, banner_url, base_price, discount_price, special_offer_tag)
+            VALUES (
+              ${category || 'it'}, 
+              ${title}, 
+              ${duration || null}, 
+              ${image_url || null}, 
+              ${banner_url || null}, 
+              ${parsedBasePrice}, 
+              ${parsedDiscountPrice}, 
+              ${special_offer_tag || null}
+            )
+            RETURNING *
+          `;
+        }
+      }
+      return res.status(200).json(rows[0] || { success: true });
     }
 
     if (req.method === 'DELETE') {

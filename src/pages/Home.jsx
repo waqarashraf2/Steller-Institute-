@@ -301,6 +301,21 @@ export default function Home() {
                       <div className="course-card-body">
                         <h4>{course.title}</h4>
                         <span className="course-dur">{course.duration}</span>
+                        
+                        {/* Dynamic Course Pricing in PKR (Only if set) */}
+                        {Boolean(course.base_price && Number(course.base_price) > 0) && (
+                          <div className="home-course-price-box">
+                            {course.discount_price && Number(course.discount_price) > 0 && Number(course.discount_price) < Number(course.base_price) ? (
+                              <div className="home-price-dual">
+                                <span className="home-price-current">PKR {Number(course.discount_price).toLocaleString()}</span>
+                                <span className="home-price-old">PKR {Number(course.base_price).toLocaleString()}</span>
+                              </div>
+                            ) : (
+                              <span className="home-price-current">PKR {Number(course.base_price).toLocaleString()}</span>
+                            )}
+                          </div>
+                        )}
+
                         <Link to="/admission" className="course-card-link">Enroll →</Link>
                       </div>
                     </div>
