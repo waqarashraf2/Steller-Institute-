@@ -14,6 +14,9 @@ export default function Admission() {
     parentName: '',
     parentMobile: '',
     email: '',
+    cnic: '',
+    batch_timing: 'Morning',
+    expected_joining_date: new Date().toISOString().split('T')[0],
     classCourse: '',
     specificCourse: '',
     board: '',
@@ -36,25 +39,56 @@ export default function Admission() {
     e.preventDefault();
     setStatus('sending');
     setErrorMsg('');
+
+    const courseSelected = formData.specificCourse 
+      ? `${formData.classCourse} - ${formData.specificCourse}` 
+      : (formData.classCourse || 'General Admission');
+
+    const crmPayload = {
+      student_name: formData.fullName || '',
+      father_name: formData.parentName || '',
+      phone: formData.mobileNumber || formData.parentMobile || '',
+      cnic: formData.cnic || '',
+      batch_timing: formData.batch_timing || 'Morning',
+      education_level: formData.board ? `${formData.classCourse} (${formData.board})` : (formData.classCourse || 'Intermediate / Matric'),
+      expected_joining_date: formData.expected_joining_date || new Date().toISOString().split('T')[0],
+      course_name: courseSelected
+    };
+
+    let crmSuccess = false;
+
     try {
-      const res = await fetch(`https://stellarinstitute.pk/api/admission.php`, {
+      const response = await fetch('https://crm.stellarinstitute.pk/api/api/v1/public/online-admission', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Accept': 'application/json' 
+        },
+        body: JSON.stringify(crmPayload)
+      });
+
+      const data = await response.json().catch(() => ({}));
+      console.log('Admission Submission Result:', data);
+
+      if (response.ok || data.status === 'success' || data.lead_id) {
+        crmSuccess = true;
+      }
+    } catch (crmErr) {
+      console.warn('CRM Submission error:', crmErr);
+    }
+
+    // Also send email notification to cPanel backend
+    try {
+      await fetch(`https://stellarinstitute.pk/api/admission.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      const data = await res.json();
-      if (data.success) {
-        navigate('/admission/thankyou');
-      } else {
-        setStatus('error');
-        setErrorMsg(data.error || 'Something went wrong. Please try again.');
-        setTimeout(() => setStatus('idle'), 5000);
-      }
-    } catch (err) {
-      setStatus('error');
-      setErrorMsg('Network error. Please check your connection and try again.');
-      setTimeout(() => setStatus('idle'), 5000);
+        body: JSON.stringify({ ...formData, course_name: courseSelected })
+      }).catch(() => {});
+    } catch (phpErr) {
+      console.warn('PHP Email notification warning:', phpErr);
     }
+
+    navigate('/admission/thankyou');
   };
 
   return (
@@ -144,6 +178,12 @@ export default function Admission() {
                           <input className="adm-input" type="tel" id="mobileNumber" name="mobileNumber" placeholder="+92-300-0000000" value={formData.mobileNumber} onChange={handleChange} required />
                         </div>
                       </div>
+                      <div className="adm-row-single" style={{ marginTop: '20px' }}>
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="cnic">CNIC / B-Form Number <span className="opt-note">(Optional)</span></label>
+                          <input className="adm-input" type="text" id="cnic" name="cnic" placeholder="e.g. 35201-1234567-1" value={formData.cnic} onChange={handleChange} />
+                        </div>
+                      </div>
                     </div>
 
                     <hr className="adm-divider" />
@@ -173,7 +213,7 @@ export default function Admission() {
 
                     {/* Program of Study */}
                     <div className="adm-fieldset">
-                      <div className="adm-section-title">Program of study</div>
+                      <div className="adm-section-title">Program of study & Schedule</div>
                       <div className="adm-row">
                         <div className="adm-field">
                           <label className="adm-label" htmlFor="classCourse">Class / Course <span className="req">*</span></label>
@@ -197,6 +237,23 @@ export default function Admission() {
                             <option value="Cambridge/O-Level">Cambridge / O-Level</option>
                             <option value="Other">Other</option>
                           </select>
+                        </div>
+                      </div>
+
+                      <div className="adm-row" style={{ marginTop: '20px' }}>
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="batch_timing">Preferred Batch Timing <span className="req">*</span></label>
+                          <select className="adm-select" id="batch_timing" name="batch_timing" value={formData.batch_timing} onChange={handleChange}>
+                            <option value="Morning">Morning Batch (9:00 AM - 1:00 PM)</option>
+                            <option value="Afternoon">Afternoon Batch (1:00 PM - 5:00 PM)</option>
+                            <option value="Evening">Evening Batch (5:00 PM - 9:00 PM)</option>
+                            <option value="Weekend">Weekend Batch (Sat & Sun)</option>
+                            <option value="Flexible">Flexible / Any Timing</option>
+                          </select>
+                        </div>
+                        <div className="adm-field">
+                          <label className="adm-label" htmlFor="expected_joining_date">Expected Joining Date <span className="req">*</span></label>
+                          <input className="adm-input" type="date" id="expected_joining_date" name="expected_joining_date" value={formData.expected_joining_date} onChange={handleChange} required />
                         </div>
                       </div>
 
