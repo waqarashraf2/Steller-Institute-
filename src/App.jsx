@@ -22,6 +22,7 @@ const ComingSoon = React.lazy(() => import('./pages/ComingSoon'));
 const StellarAdmin = React.lazy(() => import('./pages/StellarAdmin'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
 const VerifyCertificate = React.lazy(() => import('./pages/VerifyCertificate'));
+const CampaignApply = React.lazy(() => import('./pages/CampaignApply'));
 
 import PageTransition from './components/PageTransition';
 import { WebsiteImagesProvider } from './components/WebsiteImagesProvider';
@@ -70,6 +71,9 @@ function AppLayout() {
               <Route path="/about" element={<About />} />
               <Route path="/admission" element={<Admission />} />
               <Route path="/admission/thankyou" element={<AdmissionThankYou />} />
+              <Route path="/apply" element={<CampaignApply />} />
+              <Route path="/campaign" element={<CampaignApply />} />
+              <Route path="/quick-apply" element={<CampaignApply />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/verify/:regNo" element={<VerifyCertificate />} />
               <Route path="/verify" element={<VerifyCertificate />} />
