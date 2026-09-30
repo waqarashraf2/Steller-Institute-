@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import './AnnouncementPopup.css';
 
 export default function AnnouncementPopup() {
   const [announcement, setAnnouncement] = useState(null);
   const [visible, setVisible] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if already dismissed this session
@@ -39,9 +41,54 @@ export default function AnnouncementPopup() {
     setVisible(false);
   };
 
-  const handleClick = () => {
-    if (announcement?.link_url) {
-      window.open(announcement.link_url, '_blank', 'noopener,noreferrer');
+  const handleClick = (e) => {
+    e.preventDefault();
+    dismiss();
+
+    const linkText = (announcement?.link_text || '').trim().toLowerCase();
+    const linkUrl = (announcement?.link_url || '').trim();
+
+    // If button text contains "apply" or "admission", or url points to admission/apply
+    if (
+      linkText.includes('apply') ||
+      linkText.includes('admission') ||
+      linkUrl.includes('/admission') ||
+      linkUrl.includes('admission') ||
+      !linkUrl ||
+      linkUrl === '#'
+    ) {
+      navigate('/admission');
+      return;
+    }
+
+    // Internal routes must not be protocol-relative URLs such as //example.com.
+    if (linkUrl.startsWith('/') && !linkUrl.startsWith('//')) {
+      navigate(linkUrl);
+      return;
+    }
+
+    try {
+      const parsed = new URL(linkUrl, window.location.origin);
+      const isStellarHost = parsed.hostname === 'stellarinstitute.pk' ||
+        parsed.hostname.endsWith('.stellarinstitute.pk') ||
+        parsed.hostname === 'localhost';
+
+      if (isStellarHost) {
+        navigate(parsed.pathname + parsed.search);
+        return;
+      }
+
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        window.open(parsed.href, '_blank', 'noopener,noreferrer');
+        return;
+      }
+    } catch {
+      return;
+    }
+
+    // Permit ordinary contact links while rejecting executable URL schemes.
+    if (/^(mailto|tel):/i.test(linkUrl)) {
+      window.open(linkUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -56,16 +103,15 @@ export default function AnnouncementPopup() {
         </button>
 
         {/* Clickable content */}
-        <a
-          href={announcement.link_url || '#'}
-          target="_blank"
-          rel="noopener noreferrer"
+        <div
+          role="button"
+          tabIndex={0}
           className="popup-link"
-          onClick={(e) => {
-            if (!announcement.link_url) {
-              e.preventDefault();
-            }
+          onClick={handleClick}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') handleClick(e);
           }}
+          style={{ cursor: 'pointer' }}
         >
           {/* If image exists — show as the main content (KIPS-style) */}
           {announcement.image_url && !imageFailed ? (
@@ -85,14 +131,12 @@ export default function AnnouncementPopup() {
               )}
               <h3>{announcement.title}</h3>
               {announcement.body && <p>{announcement.body}</p>}
-              {announcement.link_url && (
-                <span className="popup-cta">
-                  {announcement.link_text || 'Learn More'} →
-                </span>
-              )}
+              <span className="popup-cta">
+                {announcement.link_text || 'APPLY NOW'} →
+              </span>
             </div>
           )}
-        </a>
+        </div>
       </div>
     </div>
   ), document.body);

@@ -22,8 +22,33 @@ export default function Contact() {
     setStatus('sending');
     setErrorMsg('');
 
+    let crmSuccess = false;
     try {
-      // Explicitly hit the cPanel backend for emails (bypasses Vercel API)
+      const crmRes = await fetch('https://stellarinstitute.pk/api/crm-intake.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ form: 'contact', payload: {
+          student_name: formData.name || '',
+          father_name: 'Website Contact Inquiry',
+          phone: formData.phone || '',
+          cnic: '',
+          batch_timing: 'Flexible',
+          education_level: formData.subject || 'Website Inquiry',
+          expected_joining_date: new Date().toISOString().split('T')[0],
+          course_name: formData.subject ? `Inquiry: ${formData.subject}` : 'General Contact Inquiry'
+        } })
+      });
+      const crmData = await crmRes.json().catch(() => ({}));
+      crmSuccess = crmRes.ok && crmData.success !== false;
+    } catch (crmErr) {
+      console.warn('CRM Contact log warning:', crmErr);
+    }
+
+    let emailSuccess = false;
+    try {
       const res = await fetch(`https://stellarinstitute.pk/api/contact.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -31,21 +56,21 @@ export default function Contact() {
       });
 
       const data = await res.json();
-
-      if (data.success) {
-        setStatus('success');
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-        setTimeout(() => setStatus('idle'), 5000);
-      } else {
-        setStatus('error');
-        setErrorMsg(data.error || 'Something went wrong. Please try again.');
-        setTimeout(() => setStatus('idle'), 5000);
-      }
+      emailSuccess = res.ok && data.success === true;
     } catch (err) {
-      setStatus('error');
-      setErrorMsg('Network error. Please check your connection and try again.');
-      setTimeout(() => setStatus('idle'), 5000);
+      console.warn('Contact email submission failed:', err);
     }
+
+    if (crmSuccess || emailSuccess) {
+      setStatus('success');
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setTimeout(() => setStatus('idle'), 5000);
+      return;
+    }
+
+    setStatus('error');
+    setErrorMsg('We could not send your message. Please try again or contact our office directly.');
+    setTimeout(() => setStatus('idle'), 5000);
   };
 
   return (
@@ -118,9 +143,9 @@ export default function Contact() {
                   <textarea id="message" name="message" placeholder="How can we help you?" value={formData.message} onChange={handleChange} required />
                 </div>
 
-                <button 
-                  type="submit" 
-                  className="btn btn-primary btn-lg" 
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg"
                   style={{ width: '100%', opacity: status === 'sending' ? 0.7 : 1 }}
                   disabled={status === 'sending'}
                 >
