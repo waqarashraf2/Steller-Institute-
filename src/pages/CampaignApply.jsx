@@ -292,7 +292,7 @@ export default function CampaignApply() {
                 <div className="benefit-items-list">
                   <div className="benefit-item">
                     <div className="benefit-icon-box">
-                      <span className="campaign-font-icon" aria-hidden="true">½</span>
+                      <span className="campaign-icon campaign-icon--percent" aria-hidden="true" />
                     </div>
                     <div className="benefit-text">
                       <h4>50% Discount on Admission Fee</h4>
@@ -302,7 +302,7 @@ export default function CampaignApply() {
 
                   <div className="benefit-item">
                     <div className="benefit-icon-box">
-                      <span className="campaign-font-icon" aria-hidden="true">A+</span>
+                      <span className="campaign-icon campaign-icon--award" aria-hidden="true" />
                     </div>
                     <div className="benefit-text">
                       <h4>Scholarships Up to 50%</h4>
@@ -312,7 +312,7 @@ export default function CampaignApply() {
 
                   <div className="benefit-item">
                     <div className="benefit-icon-box">
-                      <span className="campaign-font-icon" aria-hidden="true">▶</span>
+                      <span className="campaign-icon campaign-icon--chalkboard" aria-hidden="true" />
                     </div>
                     <div className="benefit-text">
                       <h4>Free Demo Class</h4>
@@ -331,7 +331,7 @@ export default function CampaignApply() {
               <div className="campaign-campus-card">
                 <div className="campus-info-header">
                   <div className="campus-pin-icon">
-                    <span className="campaign-font-icon" aria-hidden="true">⌖</span>
+                    <span className="campaign-icon campaign-icon--location" aria-hidden="true" />
                   </div>
                   <div>
                     <h4>Campus Location</h4>
@@ -366,7 +366,7 @@ export default function CampaignApply() {
             {/* Feature 1 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
-                <span className="campaign-font-icon" aria-hidden="true">T</span>
+                <span className="campaign-icon campaign-icon--chalkboard" aria-hidden="true" />
               </div>
               <h3>Experienced Teachers</h3>
               <p>Learn from qualified and experienced teachers with a strong focus on concept-based learning.</p>
@@ -375,7 +375,7 @@ export default function CampaignApply() {
             {/* Feature 2 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
-                <span className="campaign-font-icon" aria-hidden="true">A+</span>
+                <span className="campaign-icon campaign-icon--clipboard" aria-hidden="true" />
               </div>
               <h3>Weekly Tests &amp; Progress Tracking</h3>
               <p>Regular tests help students identify weaknesses and improve their preparation throughout the session.</p>
@@ -384,7 +384,7 @@ export default function CampaignApply() {
             {/* Feature 3 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
-                <span className="campaign-font-icon" aria-hidden="true">P</span>
+                <span className="campaign-icon campaign-icon--chart" aria-hidden="true" />
               </div>
               <h3>Parent Reporting</h3>
               <p>Parents stay informed about their child's academic progress, attendance, and exam performance.</p>
@@ -393,7 +393,7 @@ export default function CampaignApply() {
             {/* Feature 4 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
-                <span className="campaign-font-icon" aria-hidden="true">B+</span>
+                <span className="campaign-icon campaign-icon--reader" aria-hidden="true" />
               </div>
               <h3>Board-Focused Preparation</h3>
               <p>Structured preparation, important questions, past paper practice and exam-oriented guidance to help students perform better.</p>
@@ -402,7 +402,7 @@ export default function CampaignApply() {
             {/* Feature 5 */}
             <div className="why-feature-card why-feature-card-wide">
               <div className="feature-icon-wrapper">
-                <span className="campaign-font-icon" aria-hidden="true">+</span>
+                <span className="campaign-icon campaign-icon--heart" aria-hidden="true" />
               </div>
               <div>
                 <h3>Supportive Learning Environment</h3>
@@ -431,7 +431,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">01</div>
               <div className="program-icon-badge">
-                <span className="campaign-font-icon" aria-hidden="true">5–8</span>
+                <span className="campaign-icon campaign-icon--book" aria-hidden="true" />
               </div>
               <h3>Classes 5th–8th</h3>
               <p>Build strong academic concepts and prepare students thoroughly for higher classes and foundation building.</p>
@@ -441,7 +441,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">02</div>
               <div className="program-icon-badge">
-                <span className="campaign-font-icon" aria-hidden="true">M</span>
+                <span className="campaign-icon campaign-icon--layers" aria-hidden="true" />
               </div>
               <h3>Matric (9th &amp; 10th)</h3>
               <p>Focused preparation for board examinations with regular testing, complete syllabus revision, and past papers.</p>
@@ -451,7 +451,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">03</div>
               <div className="program-icon-badge">
-                <span className="campaign-font-icon" aria-hidden="true">F</span>
+                <span className="campaign-icon campaign-icon--graduation" aria-hidden="true" />
               </div>
               <h3>Intermediate (FSc, ICS, FA)</h3>
               <p>In-depth academic support and exam-focused preparation for college students aiming for top board positions.</p>
@@ -461,7 +461,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">04</div>
               <div className="program-icon-badge">
-                <span className="campaign-font-icon" aria-hidden="true">E</span>
+                <span className="campaign-icon campaign-icon--checklist" aria-hidden="true" />
               </div>
               <h3>Entry Test Preparation</h3>
               <p>Structured practice, test tricks, and comprehensive guidance for students preparing for competitive entry tests.</p>
@@ -471,7 +471,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">05</div>
               <div className="program-icon-badge">
-                <span className="campaign-font-icon" aria-hidden="true">IT</span>
+                <span className="campaign-icon campaign-icon--laptop" aria-hidden="true" />
               </div>
               <h3>Computer Courses</h3>
               <p>Practical computer skills designed for students who want to improve their digital knowledge and career readiness.</p>

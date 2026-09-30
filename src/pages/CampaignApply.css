@@ -1,4 +1,12 @@
 /* ─── Campaign Lead Landing Page Styles (Stellar Academy 2026-27 - Sky Theme) ─── */
+@font-face {
+  font-family: 'Font Awesome 7 Free';
+  src: url('@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
 .campaign-page-wrapper {
   min-height: 100vh;
   background: #f8fafc;
@@ -362,16 +370,35 @@
   flex-shrink: 0;
 }
 
-.campaign-font-icon {
+.campaign-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 22px;
-  font-weight: 700;
-  font-style: italic;
+  font-family: 'Font Awesome 7 Free';
+  font-size: 18px;
+  font-weight: 900;
+  font-style: normal;
   line-height: 1;
-  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.campaign-icon--percent { --fa-glyph: '%'; }
+.campaign-icon--award { --fa-glyph: '\f559'; }
+.campaign-icon--chalkboard { --fa-glyph: '\f51c'; }
+.campaign-icon--location { --fa-glyph: '\f3c5'; }
+.campaign-icon--clipboard { --fa-glyph: '\f46c'; }
+.campaign-icon--chart { --fa-glyph: '\f201'; }
+.campaign-icon--reader { --fa-glyph: '\f5da'; }
+.campaign-icon--heart { --fa-glyph: '\f004'; }
+.campaign-icon--book { --fa-glyph: '\f518'; }
+.campaign-icon--layers { --fa-glyph: '\f5fd'; }
+.campaign-icon--graduation { --fa-glyph: '\f19d'; }
+.campaign-icon--checklist { --fa-glyph: '\f0ae'; }
+.campaign-icon--laptop { --fa-glyph: '\f109'; }
+
+.campaign-icon::before {
+  content: var(--fa-glyph);
 }
 
 .benefit-text h4 {
