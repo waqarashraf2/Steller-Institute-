@@ -16,12 +16,13 @@ export default function CampaignApply() {
                       'Website Campaign';
 
   const urlCourse = searchParams.get('course') || searchParams.get('program') || '';
+  const urlLocation = searchParams.get('location') || searchParams.get('area') || searchParams.get('city') || '';
 
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    course: '',
-    email: '',
+    location: urlLocation,
+    course: urlCourse,
     campaign: urlCampaign
   });
 
@@ -29,21 +30,15 @@ export default function CampaignApply() {
   const [errorMsg, setErrorMsg] = useState('');
   const [leadResult, setLeadResult] = useState(null);
 
-  // Set course from URL if available
+  // Set course and location from URL if available
   useEffect(() => {
-    if (urlCourse) {
-      setFormData(prev => ({
-        ...prev,
-        course: urlCourse,
-        campaign: urlCampaign
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        campaign: urlCampaign
-      }));
-    }
-  }, [urlCourse, urlCampaign]);
+    setFormData(prev => ({
+      ...prev,
+      course: urlCourse || prev.course,
+      location: urlLocation || prev.location,
+      campaign: urlCampaign
+    }));
+  }, [urlCourse, urlLocation, urlCampaign]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,9 +56,10 @@ export default function CampaignApply() {
       const payload = {
         name: formData.name.trim(),
         phone: formData.phone.trim(),
-        course: formData.course || 'General Inquiry',
+        location: formData.location ? formData.location.trim() : null,
+        course: formData.course ? formData.course.trim() : null,
         campaign: formData.campaign.trim() || 'Website Campaign',
-        email: formData.email ? formData.email.trim() : null
+        email: null
       };
 
       const response = await fetch('https://crm.stellarinstitute.pk/api/api/v1/public/campaign-lead', {
@@ -94,7 +90,7 @@ export default function CampaignApply() {
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hello Stellar Institute! I just applied for *${formData.course || 'a course'}* via the online campaign. Please share further batch details with me.`
+    `Hello Stellar Institute! I just applied${formData.course ? ` for *${formData.course}*` : ''}${formData.location ? ` from *${formData.location}*` : ''} via the online campaign. Please share further details with me.`
   );
 
   return (
@@ -142,7 +138,7 @@ export default function CampaignApply() {
                   </div>
                   <h3>Application Submitted Successfully!</h3>
                   <p>
-                    Thank you, <strong>{formData.name}</strong>! Your seat request for <strong>{formData.course}</strong> has been registered in our system. Our admissions team will contact you shortly.
+                    Thank you, <strong>{formData.name}</strong>! Your application {formData.course ? <>for <strong>{formData.course}</strong></> : ''} {formData.location ? <>from <strong>{formData.location}</strong></> : ''} has been registered in our CRM. Our admissions team will contact you shortly.
                   </p>
                   
                   <div className="success-action-btns">
@@ -222,10 +218,31 @@ export default function CampaignApply() {
                     </div>
                   </div>
 
+                  {/* Location / Area */}
+                  <div className="campaign-form-group">
+                    <label className="campaign-label" htmlFor="location">
+                      <span>Location / Area <span className="opt">(Optional)</span></span>
+                    </label>
+                    <div className="campaign-input-wrap">
+                      <span className="campaign-input-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                      </span>
+                      <input
+                        className="campaign-input"
+                        type="text"
+                        id="location"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleChange}
+                        placeholder="e.g. Gulberg, Lahore"
+                      />
+                    </div>
+                  </div>
+
                   {/* Course of Interest */}
                   <div className="campaign-form-group">
                     <label className="campaign-label" htmlFor="course">
-                      <span>Course of Interest <span className="req">*</span></span>
+                      <span>Course of Interest <span className="opt">(Optional)</span></span>
                     </label>
                     <div className="campaign-input-wrap">
                       <span className="campaign-input-icon">
@@ -237,9 +254,8 @@ export default function CampaignApply() {
                         name="course"
                         value={formData.course}
                         onChange={handleChange}
-                        required
                       >
-                        <option value="">Select a Course or Program</option>
+                        <option value="">Select a Course or Program (Optional)</option>
                         
                         <optgroup label="💻 Professional IT Courses">
                           {itCourses.map(c => (
@@ -261,27 +277,6 @@ export default function CampaignApply() {
                           <option value="Middle Classes (5th - 8th)">Middle Classes (5th - 8th)</option>
                         </optgroup>
                       </select>
-                    </div>
-                  </div>
-
-                  {/* Email (Optional) */}
-                  <div className="campaign-form-group">
-                    <label className="campaign-label" htmlFor="email">
-                      <span>Email Address <span className="opt">(Optional)</span></span>
-                    </label>
-                    <div className="campaign-input-wrap">
-                      <span className="campaign-input-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                      </span>
-                      <input
-                        className="campaign-input"
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="yourname@gmail.com"
-                      />
                     </div>
                   </div>
 
