@@ -292,7 +292,7 @@ export default function CampaignApply() {
                 <div className="benefit-items-list">
                   <div className="benefit-item">
                     <div className="benefit-icon-box">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                      <span className="campaign-font-icon" aria-hidden="true">½</span>
                     </div>
                     <div className="benefit-text">
                       <h4>50% Discount on Admission Fee</h4>
@@ -302,7 +302,7 @@ export default function CampaignApply() {
 
                   <div className="benefit-item">
                     <div className="benefit-icon-box">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                      <span className="campaign-font-icon" aria-hidden="true">A+</span>
                     </div>
                     <div className="benefit-text">
                       <h4>Scholarships Up to 50%</h4>
@@ -312,7 +312,7 @@ export default function CampaignApply() {
 
                   <div className="benefit-item">
                     <div className="benefit-icon-box">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                      <span className="campaign-font-icon" aria-hidden="true">▶</span>
                     </div>
                     <div className="benefit-text">
                       <h4>Free Demo Class</h4>
@@ -331,7 +331,7 @@ export default function CampaignApply() {
               <div className="campaign-campus-card">
                 <div className="campus-info-header">
                   <div className="campus-pin-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span className="campaign-font-icon" aria-hidden="true">⌖</span>
                   </div>
                   <div>
                     <h4>Campus Location</h4>
@@ -366,7 +366,7 @@ export default function CampaignApply() {
             {/* Feature 1 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span className="campaign-font-icon" aria-hidden="true">T</span>
               </div>
               <h3>Experienced Teachers</h3>
               <p>Learn from qualified and experienced teachers with a strong focus on concept-based learning.</p>
@@ -375,7 +375,7 @@ export default function CampaignApply() {
             {/* Feature 2 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span className="campaign-font-icon" aria-hidden="true">A+</span>
               </div>
               <h3>Weekly Tests &amp; Progress Tracking</h3>
               <p>Regular tests help students identify weaknesses and improve their preparation throughout the session.</p>
@@ -384,7 +384,7 @@ export default function CampaignApply() {
             {/* Feature 3 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                <span className="campaign-font-icon" aria-hidden="true">P</span>
               </div>
               <h3>Parent Reporting</h3>
               <p>Parents stay informed about their child's academic progress, attendance, and exam performance.</p>
@@ -393,7 +393,7 @@ export default function CampaignApply() {
             {/* Feature 4 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                <span className="campaign-font-icon" aria-hidden="true">B+</span>
               </div>
               <h3>Board-Focused Preparation</h3>
               <p>Structured preparation, important questions, past paper practice and exam-oriented guidance to help students perform better.</p>
@@ -402,7 +402,7 @@ export default function CampaignApply() {
             {/* Feature 5 */}
             <div className="why-feature-card why-feature-card-wide">
               <div className="feature-icon-wrapper">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span className="campaign-font-icon" aria-hidden="true">+</span>
               </div>
               <div>
                 <h3>Supportive Learning Environment</h3>
@@ -431,7 +431,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">01</div>
               <div className="program-icon-badge">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span className="campaign-font-icon" aria-hidden="true">5–8</span>
               </div>
               <h3>Classes 5th–8th</h3>
               <p>Build strong academic concepts and prepare students thoroughly for higher classes and foundation building.</p>
@@ -441,7 +441,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">02</div>
               <div className="program-icon-badge">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <span className="campaign-font-icon" aria-hidden="true">M</span>
               </div>
               <h3>Matric (9th &amp; 10th)</h3>
               <p>Focused preparation for board examinations with regular testing, complete syllabus revision, and past papers.</p>
@@ -451,7 +451,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">03</div>
               <div className="program-icon-badge">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                <span className="campaign-font-icon" aria-hidden="true">F</span>
               </div>
               <h3>Intermediate (FSc, ICS, FA)</h3>
               <p>In-depth academic support and exam-focused preparation for college students aiming for top board positions.</p>
@@ -461,7 +461,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">04</div>
               <div className="program-icon-badge">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                <span className="campaign-font-icon" aria-hidden="true">E</span>
               </div>
               <h3>Entry Test Preparation</h3>
               <p>Structured practice, test tricks, and comprehensive guidance for students preparing for competitive entry tests.</p>
@@ -471,7 +471,7 @@ export default function CampaignApply() {
             <div className="program-box">
               <div className="program-number">05</div>
               <div className="program-icon-badge">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                <span className="campaign-font-icon" aria-hidden="true">IT</span>
               </div>
               <h3>Computer Courses</h3>
               <p>Practical computer skills designed for students who want to improve their digital knowledge and career readiness.</p>
