@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import FloatingShapes from '../components/FloatingShapes';
-import { itCourses, beautyCourses } from '../data/courses';
 import './CampaignApply.css';
 
 export default function CampaignApply() {
   const [searchParams] = useSearchParams();
+  const formRef = useRef(null);
 
   // Extract campaign parameter from URL (e.g. ?campaign=FB_Ad_Lahore or ?utm_campaign=TikTok)
   const urlCampaign = searchParams.get('campaign') || 
@@ -15,14 +15,12 @@ export default function CampaignApply() {
                       searchParams.get('ad') || 
                       'Website Campaign';
 
-  const urlCourse = searchParams.get('course') || searchParams.get('program') || '';
   const urlLocation = searchParams.get('location') || searchParams.get('area') || searchParams.get('city') || '';
 
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     location: urlLocation,
-    course: urlCourse,
     campaign: urlCampaign
   });
 
@@ -30,18 +28,22 @@ export default function CampaignApply() {
   const [errorMsg, setErrorMsg] = useState('');
   const [leadResult, setLeadResult] = useState(null);
 
-  // Set course and location from URL if available
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      course: urlCourse || prev.course,
       location: urlLocation || prev.location,
       campaign: urlCampaign
     }));
-  }, [urlCourse, urlLocation, urlCampaign]);
+  }, [urlLocation, urlCampaign]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const scrollToForm = () => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   /**
@@ -57,7 +59,7 @@ export default function CampaignApply() {
         name: formData.name.trim(),
         phone: formData.phone.trim(),
         location: formData.location ? formData.location.trim() : null,
-        course: formData.course ? formData.course.trim() : null,
+        course: null,
         campaign: formData.campaign.trim() || 'Website Campaign',
         email: null
       };
@@ -78,52 +80,61 @@ export default function CampaignApply() {
         setLeadResult(result);
         setStatus('success');
       } else {
-        // Even on validation notice, accept lead graciously
         setLeadResult(result);
         setStatus('success');
       }
     } catch (err) {
       console.error('Error submitting campaign lead:', err);
       setStatus('error');
-      setErrorMsg('Network error. Please check your connection or contact us via WhatsApp directly.');
+      setErrorMsg('Network issue. Please check your connection or contact our admission office directly.');
     }
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hello Stellar Institute! I just applied${formData.course ? ` for *${formData.course}*` : ''}${formData.location ? ` from *${formData.location}*` : ''} via the online campaign. Please share further details with me.`
+    `Hello Stellar Academy & Institute! I have submitted an admission inquiry${formData.location ? ` from *${formData.location}*` : ''}. Please share batch details, fee structure, and scholarship criteria with me.`
   );
 
   return (
     <div className="campaign-page-wrapper">
       <SEO
-        title="Apply Now — Fast-Track Admissions &amp; Special Course Offers | Stellar Institute"
-        description="Fast track application portal for IT Courses, Beauty Skills, and Academic Coaching at Stellar Institute Lahore. Limited seats available."
-        keywords="apply now stellar institute, fast track admission lahore, it course discount lahore, stellar academy enrollment"
+        title="Admissions Open 2026–27 | Stellar Academy & Institute Lahore"
+        description="Give your child the right start for a better future. Admissions open for Classes 5th-8th, Matric, Intermediate, Entry Test & Computer Courses at Stellar Academy & Institute Lahore."
+        keywords="stellar academy lahore, admissions open lahore, matric coaching, intermediate coaching lahore, fsc coaching, entry test preparation lahore"
         canonical="https://stellarinstitute.pk/apply"
       />
 
       <FloatingShapes />
 
-      {/* ─── Hero Header Strip ────────────────────────────────────── */}
+      {/* ─── Hero Section ─────────────────────────────────────────── */}
       <section className="campaign-hero-strip">
         <div className="campaign-container">
-          <div className="campaign-tag-pill">
-            <span className="campaign-pulse-dot" />
-            <span>Admissions &amp; Discount Batch Open</span>
-          </div>
-
           <h1 className="campaign-hero-title">
-            Book Your Seat &amp; Claim <span>Special Discount</span>
+            Give Your Child the Right Start for a <span>Better Future</span>
           </h1>
 
           <p className="campaign-hero-subtitle">
-            Join thousands of successful students at Stellar Institute &amp; Academy. Fill in your basic details below and our counsellor will call you within 24 hours.
+            Quality education, experienced teachers, regular testing and a supportive learning environment, all in one place.
           </p>
+
+          <div className="campaign-hero-badges">
+            <span className="hero-feature-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              Classes 5th to Intermediate
+            </span>
+            <span className="hero-feature-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              Board-Focused Preparation
+            </span>
+            <span className="hero-feature-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              50% Scholarship Available
+            </span>
+          </div>
         </div>
       </section>
 
-      {/* ─── Main Content Section ─────────────────────────────────── */}
-      <section style={{ paddingBottom: '90px' }}>
+      {/* ─── Form & Special Benefits Section ────────────────────────── */}
+      <section className="campaign-main-section" ref={formRef}>
         <div className="campaign-container">
           <div className="campaign-grid">
 
@@ -132,13 +143,13 @@ export default function CampaignApply() {
               {status === 'success' ? (
                 <div className="campaign-success-card">
                   <div className="success-check-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                   </div>
-                  <h3>Application Submitted Successfully!</h3>
+                  <h3>Admission Inquiry Submitted!</h3>
                   <p>
-                    Thank you, <strong>{formData.name}</strong>! Your application {formData.course ? <>for <strong>{formData.course}</strong></> : ''} {formData.location ? <>from <strong>{formData.location}</strong></> : ''} has been registered in our CRM. Our admissions team will contact you shortly.
+                    Thank you, <strong>{formData.name}</strong>! Your inquiry has been received. Our admission team will contact you shortly to guide you regarding batches, fee structure, and scholarships.
                   </p>
                   
                   <div className="success-action-btns">
@@ -147,15 +158,15 @@ export default function CampaignApply() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="campaign-submit-btn"
-                      style={{ textDecoration: 'none', background: '#25d366' }}
+                      style={{ textDecoration: 'none' }}
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.072.043.419-.101.824z"/>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                       </svg>
-                      Connect on WhatsApp Now
+                      Contact Admission Office
                     </a>
 
-                    <Link to="/" className="campaign-wa-btn" style={{ background: '#0f172a', textAlign: 'center' }}>
+                    <Link to="/" className="campaign-outline-btn">
                       Back to Home Page
                     </Link>
                   </div>
@@ -163,20 +174,22 @@ export default function CampaignApply() {
               ) : (
                 <form onSubmit={handleSubmit}>
                   <div className="campaign-form-header">
-                    <h2>Quick Application Form</h2>
-                    <p>Takes less than 1 minute to fill. No registration charges.</p>
+                    <h2>Interested in Admission?</h2>
+                    <p>
+                      Fill in your details below. Our admission team will contact you and guide you about classes, fee structure, scholarships and available batches.
+                    </p>
                   </div>
 
                   {status === 'error' && (
-                    <div style={{ background: '#fef2f2', border: '1px solid #fecdd3', color: '#e11d48', padding: '12px', borderRadius: '10px', fontSize: '13.5px', marginBottom: '16px' }}>
+                    <div className="campaign-error-alert">
                       {errorMsg}
                     </div>
                   )}
 
-                  {/* Full Name */}
+                  {/* Student / Parent Name */}
                   <div className="campaign-form-group">
                     <label className="campaign-label" htmlFor="name">
-                      <span>Full Name <span className="req">*</span></span>
+                      <span>Student / Parent Name <span className="req">*</span></span>
                     </label>
                     <div className="campaign-input-wrap">
                       <span className="campaign-input-icon">
@@ -189,17 +202,17 @@ export default function CampaignApply() {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        placeholder="e.g. Bilal Ahmed"
+                        placeholder="Enter your full name"
                         required
                         autoFocus
                       />
                     </div>
                   </div>
 
-                  {/* Phone / WhatsApp */}
+                  {/* Phone / WhatsApp Number */}
                   <div className="campaign-form-group">
                     <label className="campaign-label" htmlFor="phone">
-                      <span>WhatsApp / Mobile Number <span className="req">*</span></span>
+                      <span>Phone / WhatsApp Number <span className="req">*</span></span>
                     </label>
                     <div className="campaign-input-wrap">
                       <span className="campaign-input-icon">
@@ -212,7 +225,7 @@ export default function CampaignApply() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="0300-1234567"
+                        placeholder="Enter your active contact number"
                         required
                       />
                     </div>
@@ -234,49 +247,8 @@ export default function CampaignApply() {
                         name="location"
                         value={formData.location}
                         onChange={handleChange}
-                        placeholder="e.g. Gulberg, Lahore"
+                        placeholder="Enter your area or location"
                       />
-                    </div>
-                  </div>
-
-                  {/* Course of Interest */}
-                  <div className="campaign-form-group">
-                    <label className="campaign-label" htmlFor="course">
-                      <span>Course of Interest <span className="opt">(Optional)</span></span>
-                    </label>
-                    <div className="campaign-input-wrap">
-                      <span className="campaign-input-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                      </span>
-                      <select
-                        className="campaign-select"
-                        id="course"
-                        name="course"
-                        value={formData.course}
-                        onChange={handleChange}
-                      >
-                        <option value="">Select a Course or Program (Optional)</option>
-                        
-                        <optgroup label="💻 Professional IT Courses">
-                          {itCourses.map(c => (
-                            <option key={c.id} value={c.title}>{c.title} ({c.duration})</option>
-                          ))}
-                        </optgroup>
-
-                        <optgroup label="💄 Beauty &amp; Cosmetology">
-                          {beautyCourses.map(c => (
-                            <option key={c.id} value={c.title}>{c.title} ({c.duration})</option>
-                          ))}
-                        </optgroup>
-
-                        <optgroup label="📚 Academic Coaching">
-                          <option value="9th &amp; 10th Matric (Science / Arts)">9th &amp; 10th Matric (Science / Arts)</option>
-                          <option value="FSc Pre-Medical / Pre-Engineering">FSc Pre-Medical / Pre-Engineering</option>
-                          <option value="ICS (Computer Science)">ICS (Computer Science)</option>
-                          <option value="Cambridge O &amp; A Levels">Cambridge O &amp; A Levels</option>
-                          <option value="Middle Classes (5th - 8th)">Middle Classes (5th - 8th)</option>
-                        </optgroup>
-                      </select>
                     </div>
                   </div>
 
@@ -292,82 +264,252 @@ export default function CampaignApply() {
                     {status === 'submitting' ? (
                       <>
                         <svg className="adm-spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" strokeOpacity="0.2"/><path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/></svg>
-                        <span>Submitting Application...</span>
+                        <span>Submitting Inquiry...</span>
                       </>
                     ) : (
                       <>
-                        <span>Submit Application Now</span>
+                        <span>Submit</span>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                       </>
                     )}
                   </button>
 
-                  <div className="campaign-guarantee-note">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    <span>100% Free Consultation. No hidden registration fee.</span>
-                  </div>
+                  <p className="campaign-disclaimer-text">
+                    By submitting this form, you agree to be contacted by the Stellar Academy admission team regarding your inquiry.
+                  </p>
                 </form>
               )}
             </div>
 
-            {/* ── Right Column: Perks & Direct Contact ── */}
+            {/* ── Right Column: Special Admission Benefits ── */}
             <div className="campaign-sidebar">
-              {/* Offer Card */}
-              <div className="campaign-offer-box">
-                <span className="offer-badge-red">Limited Batch Seats</span>
-                <h3>Why Learn at Stellar?</h3>
-                <p>
-                  Accelerate your learning with industry experts, hands-on lab training, and recognized certifications.
+              
+              {/* Special Benefits Card */}
+              <div className="campaign-benefits-card">
+                <div className="benefit-badge-pill">Session 2026–27</div>
+                <h3 className="benefits-title">Special Admission Benefits</h3>
+                <p className="benefits-sub">
+                  Admissions for the <strong>2026–27 session</strong> are now open. Enroll today and avail exclusive privileges:
                 </p>
 
-                <ul className="campaign-perks-list">
-                  <li className="campaign-perk-item">
-                    <div className="perk-icon">✓</div>
-                    <span>Certified &amp; Market-Ready Curriculum</span>
-                  </li>
-                  <li className="campaign-perk-item">
-                    <div className="perk-icon">✓</div>
-                    <span>100% Practical &amp; Project-Based Training</span>
-                  </li>
-                  <li className="campaign-perk-item">
-                    <div className="perk-icon">✓</div>
-                    <span>Career Mentorship &amp; Internship Support</span>
-                  </li>
-                  <li className="campaign-perk-item">
-                    <div className="perk-icon">✓</div>
-                    <span>Central Campus at 1-Montgomery Road, Lahore</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Direct WhatsApp Callout */}
-              <div className="campaign-whatsapp-card">
-                <div className="campaign-wa-left">
-                  <div className="wa-icon-large">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.072.043.419-.101.824z"/>
-                    </svg>
+                <div className="benefit-items-list">
+                  <div className="benefit-item">
+                    <div className="benefit-icon-box">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <div className="benefit-text">
+                      <h4>50% Discount on Admission Fee</h4>
+                      <p>Early bird concession for incoming new students.</p>
+                    </div>
                   </div>
-                  <div>
-                    <div className="campaign-wa-title">Need Instant Help?</div>
-                    <div className="campaign-wa-sub">Chat directly with admission officer</div>
+
+                  <div className="benefit-item">
+                    <div className="benefit-icon-box">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                    </div>
+                    <div className="benefit-text">
+                      <h4>Scholarships Up to 50%</h4>
+                      <p>Merit-based financial aid for high achievers.</p>
+                    </div>
+                  </div>
+
+                  <div className="benefit-item">
+                    <div className="benefit-icon-box">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                    </div>
+                    <div className="benefit-text">
+                      <h4>Free Demo Class</h4>
+                      <p>Experience our teaching methodology before final enrollment.</p>
+                    </div>
                   </div>
                 </div>
 
-                <a 
-                  href={`https://wa.me/923000652124?text=${encodeURIComponent('Hello Stellar Institute! I have a question about admissions and courses.')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="campaign-wa-btn"
-                >
-                  WhatsApp Us
-                </a>
+                <div className="benefit-limited-notice">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  <span>Seats in selected classes and batches may be limited.</span>
+                </div>
+              </div>
+
+              {/* Campus Location Card */}
+              <div className="campaign-campus-card">
+                <div className="campus-info-header">
+                  <div className="campus-pin-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  </div>
+                  <div>
+                    <h4>Campus Location</h4>
+                    <p>Upper Ground Floor, 1-Montgomery Road, Lahore</p>
+                  </div>
+                </div>
+                <div className="campus-phone-row">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  <span><strong>Admission Helpline:</strong> +92-300-0652124</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Why Choose Stellar Academy? Section ────────────────────── */}
+      <section className="campaign-why-section">
+        <div className="campaign-container">
+          <div className="section-header-center">
+            <span className="section-pill-tag">Why Choose Us</span>
+            <h2 className="section-title-large">Why Choose Stellar Academy?</h2>
+            <p className="section-desc-text">
+              At Stellar Academy &amp; Institute, we focus on helping students understand concepts, improve academic performance and prepare confidently for their exams.
+            </p>
+          </div>
+
+          <div className="why-features-grid">
+            
+            {/* Feature 1 */}
+            <div className="why-feature-card">
+              <div className="feature-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <h3>Experienced Teachers</h3>
+              <p>Learn from qualified and experienced teachers with a strong focus on concept-based learning.</p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="why-feature-card">
+              <div className="feature-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </div>
+              <h3>Weekly Tests &amp; Progress Tracking</h3>
+              <p>Regular tests help students identify weaknesses and improve their preparation throughout the session.</p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="why-feature-card">
+              <div className="feature-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              </div>
+              <h3>Parent Reporting</h3>
+              <p>Parents stay informed about their child's academic progress, attendance, and exam performance.</p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="why-feature-card">
+              <div className="feature-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+              <h3>Board-Focused Preparation</h3>
+              <p>Structured preparation, important questions, past paper practice and exam-oriented guidance to help students perform better.</p>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="why-feature-card why-feature-card-wide">
+              <div className="feature-icon-wrapper">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <div>
+                <h3>Supportive Learning Environment</h3>
+                <p>A disciplined and student-friendly environment where students can learn with confidence and personalized attention.</p>
               </div>
             </div>
 
           </div>
         </div>
       </section>
+
+      {/* ─── Programs We Offer Section ────────────────────────────── */}
+      <section className="campaign-programs-section">
+        <div className="campaign-container">
+          <div className="section-header-center">
+            <span className="section-pill-tag">Academic &amp; Skill Pathways</span>
+            <h2 className="section-title-large">Programs We Offer</h2>
+            <p className="section-desc-text">
+              Comprehensive coaching tailored for all levels of school, college, entry tests, and professional IT skills.
+            </p>
+          </div>
+
+          <div className="programs-cards-grid">
+            
+            {/* Program 1 */}
+            <div className="program-box">
+              <div className="program-number">01</div>
+              <div className="program-icon-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              </div>
+              <h3>Classes 5th–8th</h3>
+              <p>Build strong academic concepts and prepare students thoroughly for higher classes and foundation building.</p>
+            </div>
+
+            {/* Program 2 */}
+            <div className="program-box">
+              <div className="program-number">02</div>
+              <div className="program-icon-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              </div>
+              <h3>Matric (9th &amp; 10th)</h3>
+              <p>Focused preparation for board examinations with regular testing, complete syllabus revision, and past papers.</p>
+            </div>
+
+            {/* Program 3 */}
+            <div className="program-box">
+              <div className="program-number">03</div>
+              <div className="program-icon-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+              </div>
+              <h3>Intermediate (FSc, ICS, FA)</h3>
+              <p>In-depth academic support and exam-focused preparation for college students aiming for top board positions.</p>
+            </div>
+
+            {/* Program 4 */}
+            <div className="program-box">
+              <div className="program-number">04</div>
+              <div className="program-icon-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              </div>
+              <h3>Entry Test Preparation</h3>
+              <p>Structured practice, test tricks, and comprehensive guidance for students preparing for competitive entry tests.</p>
+            </div>
+
+            {/* Program 5 */}
+            <div className="program-box">
+              <div className="program-number">05</div>
+              <div className="program-icon-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              </div>
+              <h3>Computer Courses</h3>
+              <p>Practical computer skills designed for students who want to improve their digital knowledge and career readiness.</p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Bottom CTA Banner ────────────────────────────────────── */}
+      <section className="campaign-cta-banner">
+        <div className="campaign-container">
+          <div className="cta-banner-content">
+            <span className="cta-pill-white">Admissions Open 2026–27</span>
+            <h2>Take the First Step Today</h2>
+            <p>
+              Give your child the academic support, guidance and learning environment they need to move forward with confidence.
+            </p>
+            <div className="cta-btn-group">
+              <button onClick={scrollToForm} className="cta-primary-btn">
+                Apply for Admission Now
+              </button>
+              <a 
+                href={`https://wa.me/923000652124?text=${whatsappMessage}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cta-secondary-btn"
+              >
+                Inquire on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }

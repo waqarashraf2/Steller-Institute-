@@ -1,124 +1,136 @@
-/* ─── Campaign Lead Landing Page Styles ───────────────────────── */
+/* ─── Campaign Lead Landing Page Styles (Stellar Academy 2026-27 - Sky Theme) ─── */
 .campaign-page-wrapper {
   min-height: 100vh;
-  background: linear-gradient(180deg, #0b1e3e 0%, #0f172a 40%, #f8fafc 40%, #f8fafc 100%);
+  background: #f8fafc;
   position: relative;
   overflow-x: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1e293b;
 }
 
+/* ─── Hero Section ─────────────────────────────────────────────────── */
 .campaign-hero-strip {
-  padding: 50px 0 70px;
-  color: #ffffff;
+  background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 60%, #f8fafc 100%);
+  padding: 45px 0 65px;
+  color: #0f172a;
   text-align: center;
   position: relative;
   z-index: 2;
-}
-
-.campaign-tag-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(2, 132, 199, 0.25);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  color: #38bdf8;
-  padding: 6px 16px;
-  border-radius: 9999px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  backdrop-filter: blur(8px);
-}
-
-.campaign-pulse-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #38bdf8;
-  box-shadow: 0 0 10px #38bdf8;
-  animation: pulseCampaign 1.8s infinite;
-}
-
-@keyframes pulseCampaign {
-  0% { transform: scale(0.95); opacity: 0.7; }
-  50% { transform: scale(1.3); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.7; }
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .campaign-hero-title {
-  font-size: clamp(28px, 4.5vw, 44px);
+  font-size: clamp(28px, 4.5vw, 46px);
   font-weight: 800;
-  line-height: 1.15;
-  color: #ffffff;
-  max-width: 780px;
+  line-height: 1.2;
+  color: #0f172a;
+  max-width: 860px;
   margin: 0 auto 16px;
+  letter-spacing: -0.02em;
 }
 
 .campaign-hero-title span {
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  color: #0284c7;
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 60%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .campaign-hero-subtitle {
-  font-size: 16px;
-  color: #94a3b8;
-  max-width: 620px;
-  margin: 0 auto 10px;
-  line-height: 1.6;
+  font-size: clamp(16px, 1.8vw, 19px);
+  color: #475569;
+  max-width: 680px;
+  margin: 0 auto 28px;
+  line-height: 1.65;
 }
 
-/* Main Content Layout */
+.campaign-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.hero-feature-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #bae6fd;
+  color: #0369a1;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.08);
+}
+
+.hero-feature-badge svg {
+  color: #0ea5e9;
+}
+
+/* ─── Main Section & Grid ──────────────────────────────────────────── */
 .campaign-container {
-  max-width: 1140px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 0 20px;
   position: relative;
   z-index: 10;
 }
 
+.campaign-main-section {
+  padding: 45px 0 70px;
+  margin-top: -30px;
+}
+
 .campaign-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 36px;
+  gap: 32px;
   align-items: start;
 }
 
 @media (min-width: 992px) {
   .campaign-grid {
-    grid-template-columns: 1.15fr 0.95fr;
+    grid-template-columns: 1.18fr 0.82fr;
   }
 }
 
-/* Lead Form Card */
+/* ─── Form Card ────────────────────────────────────────────────────── */
 .campaign-form-card {
   background: #ffffff;
   border-radius: 20px;
-  padding: 36px;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
-  position: relative;
+  padding: 36px 32px;
+  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.09), 0 0 0 1px rgba(226, 232, 240, 0.8);
 }
 
 .campaign-form-header {
   margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f1f5f9;
 }
 
 .campaign-form-header h2 {
   font-size: 24px;
   font-weight: 800;
   color: #0f172a;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
 }
 
 .campaign-form-header p {
-  font-size: 14px;
+  font-size: 14.5px;
   color: #64748b;
-  margin: 0;
+  line-height: 1.6;
+}
+
+.campaign-error-alert {
+  background: #fef2f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  margin-bottom: 18px;
 }
 
 .campaign-form-group {
@@ -127,23 +139,23 @@
 
 .campaign-label {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 7px;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 8px;
 }
 
 .campaign-label .req {
-  color: #e11d48;
+  color: #ef4444;
   margin-left: 3px;
 }
 
 .campaign-label .opt {
-  font-size: 11.5px;
-  font-weight: 500;
+  font-weight: 400;
   color: #94a3b8;
+  font-size: 12.5px;
 }
 
 .campaign-input-wrap {
@@ -154,78 +166,59 @@
 
 .campaign-input-icon {
   position: absolute;
-  left: 14px;
+  left: 15px;
   color: #94a3b8;
-  pointer-events: none;
   display: flex;
   align-items: center;
+  pointer-events: none;
 }
 
 .campaign-input {
   width: 100%;
-  height: 48px;
-  padding: 0 16px 0 44px;
-  font-size: 14.5px;
-  color: #0f172a;
+  padding: 13px 16px 13px 44px;
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
   border-radius: 12px;
-  outline: none;
+  font-size: 15px;
+  color: #0f172a;
   transition: all 0.2s ease;
   font-family: inherit;
 }
 
 .campaign-input:focus {
-  background: #ffffff;
-  border-color: #0284c7;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-}
-
-.campaign-select {
-  width: 100%;
-  height: 48px;
-  padding: 0 16px 0 44px;
-  font-size: 14.5px;
-  color: #0f172a;
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
   outline: none;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.campaign-select:focus {
   background: #ffffff;
-  border-color: #0284c7;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
 }
 
 .campaign-submit-btn {
   width: 100%;
-  height: 52px;
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  padding: 15px 24px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   color: #ffffff;
   border: none;
   border-radius: 12px;
   font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
-  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: 0 10px 24px -6px rgba(14, 165, 233, 0.45);
+  transition: all 0.25s ease;
   margin-top: 10px;
 }
 
 .campaign-submit-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0369a1 0%, #0b1e3e 100%);
-  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45);
   transform: translateY(-2px);
+  box-shadow: 0 14px 28px -6px rgba(14, 165, 233, 0.55);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+}
+
+.campaign-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .campaign-submit-btn:disabled {
@@ -233,195 +226,551 @@
   cursor: not-allowed;
 }
 
-.campaign-guarantee-note {
-  text-align: center;
-  font-size: 12.5px;
-  color: #64748b;
-  margin-top: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-/* Sidebar Perks & Urgency */
-.campaign-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.campaign-offer-box {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #ffffff;
-  border-radius: 20px;
-  padding: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.offer-badge-red {
-  display: inline-block;
-  background: #e11d48;
-  color: #ffffff;
-  font-size: 11.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 6px;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
-}
-
-.campaign-offer-box h3 {
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 8px;
-  color: #ffffff;
-}
-
-.campaign-offer-box p {
-  font-size: 14px;
-  color: #cbd5e1;
+.campaign-disclaimer-text {
+  font-size: 12px;
+  color: #94a3b8;
   line-height: 1.5;
-  margin-bottom: 20px;
+  margin-top: 14px;
+  text-align: center;
 }
 
-.campaign-perks-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.campaign-perk-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #f1f5f9;
-}
-
-.perk-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.campaign-whatsapp-card {
-  background: #f0fdf4;
-  border: 1.5px solid #bbf7d0;
-  border-radius: 18px;
-  padding: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.campaign-wa-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.wa-icon-large {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #25d366;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
-}
-
-.campaign-wa-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #14532d;
-  margin-bottom: 2px;
-}
-
-.campaign-wa-sub {
-  font-size: 12.5px;
-  color: #166534;
-}
-
-.campaign-wa-btn {
-  padding: 9px 16px;
-  background: #25d366;
-  color: #ffffff;
-  border-radius: 10px;
-  font-size: 13.5px;
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
-  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);
-  transition: transform 0.2s ease;
-}
-
-.campaign-wa-btn:hover {
-  transform: scale(1.04);
-  color: #ffffff;
-}
-
-/* Success Modal / Screen */
+/* Success Card */
 .campaign-success-card {
   text-align: center;
-  padding: 30px 10px;
+  padding: 24px 10px;
 }
 
 .success-check-icon {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
   border-radius: 50%;
-  background: #ecfdf5;
-  border: 2px solid #10b981;
-  color: #10b981;
-  display: inline-flex;
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  animation: bounceSuccess 0.6s ease;
-}
-
-@keyframes bounceSuccess {
-  0% { transform: scale(0.3); opacity: 0; }
-  60% { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(1); }
 }
 
 .campaign-success-card h3 {
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 800;
   color: #0f172a;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .campaign-success-card p {
   font-size: 15px;
-  color: #64748b;
-  line-height: 1.6;
-  max-width: 440px;
-  margin: 0 auto 24px;
+  color: #475569;
+  line-height: 1.65;
+  max-width: 480px;
+  margin: 0 auto 26px;
 }
 
 .success-action-btns {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 320px;
+  max-width: 380px;
   margin: 0 auto;
+}
+
+.campaign-outline-btn {
+  padding: 13px 20px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  color: #334155;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.campaign-outline-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+/* ─── Right Column: Benefits Sidebar ──────────────────────────────── */
+.campaign-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.campaign-benefits-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%);
+  border-radius: 20px;
+  padding: 32px 28px;
+  border: 1.5px solid #e0f2fe;
+  box-shadow: 0 12px 30px -8px rgba(15, 23, 42, 0.06);
+  position: relative;
+}
+
+.benefit-badge-pill {
+  display: inline-block;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.benefits-title {
+  font-size: 21px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.benefits-sub {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.55;
+  margin-bottom: 22px;
+}
+
+.benefit-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  transition: transform 0.2s ease;
+}
+
+.benefit-item:hover {
+  transform: translateX(3px);
+  border-color: #7dd3fc;
+}
+
+.benefit-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f0f9ff;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.benefit-text h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 3px;
+}
+
+.benefit-text p {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.benefit-limited-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.campaign-campus-card {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 18px;
+  padding: 24px;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
+}
+
+.campus-info-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.campus-pin-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #f0f9ff;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.campus-info-header h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 3px;
+}
+
+.campus-info-header p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.campus-phone-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 13.5px;
+  color: #334155;
+}
+
+.campus-phone-row svg {
+  color: #0284c7;
+}
+
+/* ─── Section Headers ──────────────────────────────────────────────── */
+.section-header-center {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 50px;
+}
+
+.section-pill-tag {
+  display: inline-block;
+  background: #f0f9ff;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+
+.section-title-large {
+  font-size: clamp(26px, 3.5vw, 36px);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.section-desc-text {
+  font-size: 16px;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+/* ─── Why Choose Us Grid ───────────────────────────────────────────── */
+.campaign-why-section {
+  padding: 80px 0;
+  background: #ffffff;
+  border-top: 1px solid #edf2f7;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.why-features-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .why-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.why-feature-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 30px 26px;
+  transition: all 0.25s ease;
+}
+
+.why-feature-card:hover {
+  background: #ffffff;
+  border-color: #7dd3fc;
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -8px rgba(14, 165, 233, 0.12);
+}
+
+.why-feature-card-wide {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .why-feature-card-wide {
+    flex-direction: column;
+  }
+}
+
+.feature-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #f0f9ff;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.why-feature-card-wide .feature-icon-wrapper {
+  margin-bottom: 0;
+}
+
+.why-feature-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.why-feature-card p {
+  font-size: 14.5px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ─── Programs We Offer Grid ───────────────────────────────────────── */
+.campaign-programs-section {
+  padding: 85px 0;
+  background: #f8fafc;
+}
+
+.programs-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+}
+
+@media (min-width: 640px) {
+  .programs-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .programs-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.program-box {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 30px 24px;
+  position: relative;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.program-box:hover {
+  border-color: #7dd3fc;
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px -10px rgba(14, 165, 233, 0.12);
+}
+
+.program-number {
+  position: absolute;
+  top: 20px;
+  right: 22px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #e2e8f0;
+  font-family: inherit;
+}
+
+.program-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f0f9ff;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.program-box h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.program-box p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ─── Bottom CTA Banner ────────────────────────────────────────────── */
+.campaign-cta-banner {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+  padding: 70px 0;
+  color: #0f172a;
+  text-align: center;
+  position: relative;
+  border-top: 1px solid #bae6fd;
+}
+
+.cta-banner-content {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.cta-pill-white {
+  display: inline-block;
+  background: #ffffff;
+  border: 1px solid #bae6fd;
+  color: #0284c7;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.08);
+}
+
+.cta-banner-content h2 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.cta-banner-content p {
+  font-size: 17px;
+  color: #475569;
+  line-height: 1.65;
+  margin-bottom: 32px;
+}
+
+.cta-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.cta-primary-btn {
+  padding: 15px 32px;
+  background: #0ea5e9;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -4px rgba(14, 165, 233, 0.4);
+  transition: all 0.25s ease;
+}
+
+.cta-primary-btn:hover {
+  background: #0284c7;
+  transform: translateY(-2px);
+}
+
+.cta-secondary-btn {
+  padding: 14px 28px;
+  background: #ffffff;
+  color: #1e293b;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 15.5px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.cta-secondary-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* Spinner */
+.adm-spinner {
+  animation: rotateSpin 1s linear infinite;
+}
+
+@keyframes rotateSpin {
+  100% { transform: rotate(360deg); }
+}
+
+/* ─── Mobile View Optimizations ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .campaign-hero-strip {
+    padding: 28px 0 36px;
+  }
+
+  .campaign-hero-title {
+    margin-bottom: 0;
+    font-size: 25px;
+    line-height: 1.25;
+  }
+
+  /* Safely hide hero subtitle and feature badges in mobile view */
+  .campaign-hero-subtitle,
+  .campaign-hero-badges {
+    display: none !important;
+  }
+
+  .campaign-main-section {
+    padding: 16px 0 45px;
+    margin-top: -12px;
+  }
+
+  .campaign-form-card {
+    padding: 24px 18px;
+    border-radius: 16px;
+  }
 }
