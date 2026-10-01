@@ -1,12 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import FloatingShapes from '../components/FloatingShapes';
+import { pushStellarEvent } from '../utils/tracking';
 import './CampaignApply.css';
+
+const FORM_ID = 'apply_admission_inquiry';
 
 export default function CampaignApply() {
   const [searchParams] = useSearchParams();
   const formRef = useRef(null);
+  const formElementRef = useRef(null);
+
+  // Tracking state refs (prevent duplicates & track lifecycle)
+  const hasFiredFormViewRef = useRef(false);
+  const hasFiredFormStartRef = useRef(false);
+  const focusedFieldsRef = useRef(new Set());
+  const completedFieldsRef = useRef(new Set());
+  const debounceTimersRef = useRef({});
+  const lastSubmissionMethodRef = useRef('button');
+  const leadFiredRef = useRef(false);
 
   // Extract campaign parameter from URL (e.g. ?campaign=FB_Ad_Lahore or ?utm_campaign=TikTok)
   const urlCampaign = searchParams.get('campaign') ||
@@ -35,11 +48,127 @@ export default function CampaignApply() {
     }));
   }, [urlLocation, urlCampaign]);
 
+  // Form View Tracking (>= 50% visible, once per route visit)
+  useEffect(() => {
+    const el = formElementRef.current;
+    if (!el || hasFiredFormViewRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5 && !hasFiredFormViewRef.current) {
+            hasFiredFormViewRef.current = true;
+            pushStellarEvent('form_view', {
+              form_id: FORM_ID
+            });
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, [status]);
+
+  // Map DOM names to safe allowlisted tracking field names
+  const getFieldTrackName = (name) => {
+    if (name === 'name') return 'student_parent_name';
+    if (name === 'phone') return 'phone_whatsapp';
+    if (name === 'location') return 'location_area';
+    return null;
+  };
+
+  // Trigger form_start on first non-whitespace input
+  const triggerFormStart = () => {
+    if (!hasFiredFormStartRef.current) {
+      hasFiredFormStartRef.current = true;
+      pushStellarEvent('form_start', {
+        form_id: FORM_ID
+      });
+    }
+  };
+
+  // Field Focus tracking
+  const handleFieldFocus = (fieldKey) => {
+    const trackName = getFieldTrackName(fieldKey);
+    if (!trackName) return;
+
+    if (!focusedFieldsRef.current.has(trackName)) {
+      focusedFieldsRef.current.add(trackName);
+      pushStellarEvent('form_field_focus', {
+        form_id: FORM_ID,
+        field_name: trackName
+      });
+    }
+  };
+
+  // Field Completed tracking (500ms debounce or blur, fires once per field)
+  const triggerFieldCompleted = useCallback((fieldKey, value) => {
+    const trackName = getFieldTrackName(fieldKey);
+    if (!trackName) return;
+
+    if (debounceTimersRef.current[trackName]) {
+      clearTimeout(debounceTimersRef.current[trackName]);
+      delete debounceTimersRef.current[trackName];
+    }
+
+    if (value && value.trim().length > 0 && !completedFieldsRef.current.has(trackName)) {
+      completedFieldsRef.current.add(trackName);
+      pushStellarEvent('form_field_completed', {
+        form_id: FORM_ID,
+        field_name: trackName,
+        field_status: 'non_empty'
+      });
+    }
+  }, []);
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    if (value && value.trim().length > 0) {
+      triggerFormStart();
+
+      const trackName = getFieldTrackName(name);
+      if (trackName && !completedFieldsRef.current.has(trackName)) {
+        if (debounceTimersRef.current[trackName]) {
+          clearTimeout(debounceTimersRef.current[trackName]);
+        }
+        debounceTimersRef.current[trackName] = setTimeout(() => {
+          triggerFieldCompleted(name, value);
+        }, 500);
+      }
+    }
+  };
+
+  const handleFieldBlur = (e) => {
+    const { name, value } = e.target;
+    triggerFieldCompleted(name, value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      lastSubmissionMethodRef.current = 'keyboard';
+    }
+  };
+
+  const handleSubmitClick = () => {
+    lastSubmissionMethodRef.current = 'button';
+    pushStellarEvent('form_submit_click', {
+      form_id: FORM_ID,
+      button_id: 'apply_submit',
+      click_location: 'apply_form'
+    });
   };
 
   const scrollToForm = () => {
+    pushStellarEvent('apply_cta_click', {
+      button_id: 'apply_admission_now',
+      click_location: 'apply_bottom_cta'
+    });
     if (formRef.current) {
       formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -50,20 +179,75 @@ export default function CampaignApply() {
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const submissionMethod = lastSubmissionMethodRef.current || 'button';
+
+    // Flush pending completed fields
+    triggerFieldCompleted('name', formData.name);
+    triggerFieldCompleted('phone', formData.phone);
+    if (formData.location) {
+      triggerFieldCompleted('location', formData.location);
+    }
+
+    // Submit Intent
+    pushStellarEvent('form_submit_attempt', {
+      form_id: FORM_ID,
+      submission_method: submissionMethod
+    });
+
+    // Client-side Validation Checks
+    const trimmedName = formData.name.trim();
+    const trimmedPhone = formData.phone.trim();
+    let hasValidationError = false;
+
+    if (!trimmedName) {
+      hasValidationError = true;
+      pushStellarEvent('form_error', {
+        form_id: FORM_ID,
+        field_name: 'student_parent_name',
+        error_type: 'validation',
+        error_code: 'required'
+      });
+    }
+
+    if (!trimmedPhone) {
+      hasValidationError = true;
+      pushStellarEvent('form_error', {
+        form_id: FORM_ID,
+        field_name: 'phone_whatsapp',
+        error_type: 'validation',
+        error_code: 'required'
+      });
+    } else if (trimmedPhone.replace(/\D/g, '').length < 7) {
+      hasValidationError = true;
+      pushStellarEvent('form_error', {
+        form_id: FORM_ID,
+        field_name: 'phone_whatsapp',
+        error_type: 'validation',
+        error_code: 'invalid_phone'
+      });
+    }
+
+    if (hasValidationError) {
+      setStatus('error');
+      setErrorMsg('Please fill in your valid contact information.');
+      return;
+    }
+
     setStatus('submitting');
     setErrorMsg('');
 
     try {
       const payload = {
-        name: formData.name.trim(),
-        phone: formData.phone.trim(),
+        name: trimmedName,
+        phone: trimmedPhone,
         location: formData.location ? formData.location.trim() : null,
         course: null,
         campaign: formData.campaign.trim() || 'Website Campaign',
         email: null
       };
 
-      let success = false;
+      let saveSuccess = false;
 
       // Try direct CRM endpoint
       try {
@@ -77,14 +261,14 @@ export default function CampaignApply() {
         });
         const result = await response.json().catch(() => ({}));
         if (response.ok || result.status === 'success' || result.success || result.lead_id) {
-          success = true;
+          saveSuccess = true;
         }
       } catch (directErr) {
         console.warn('Direct CRM endpoint error, trying proxy:', directErr);
       }
 
       // Try proxy if direct failed
-      if (!success) {
+      if (!saveSuccess) {
         try {
           const response = await fetch('https://stellarinstitute.pk/api/crm-intake.php', {
             method: 'POST',
@@ -96,14 +280,40 @@ export default function CampaignApply() {
           });
           const result = await response.json().catch(() => ({}));
           if (response.ok && result.success !== false) {
-            success = true;
+            saveSuccess = true;
           }
         } catch {}
+      }
+
+      // Fallback: If both network calls failed
+      if (!saveSuccess) {
+        pushStellarEvent('form_error', {
+          form_id: FORM_ID,
+          error_type: 'server',
+          error_code: 'save_failed'
+        });
+        setStatus('error');
+        setErrorMsg('We could not save your inquiry at this moment. Please try again or reach out on WhatsApp.');
+        return;
+      }
+
+      // Fire generate_lead ONLY once upon confirmed backend save
+      if (!leadFiredRef.current) {
+        leadFiredRef.current = true;
+        pushStellarEvent('generate_lead', {
+          form_id: FORM_ID,
+          lead_type: 'admission_inquiry'
+        });
       }
 
       setStatus('success');
     } catch (err) {
       console.error('Error submitting campaign lead:', err);
+      pushStellarEvent('form_error', {
+        form_id: FORM_ID,
+        error_type: 'network',
+        error_code: 'network_failure'
+      });
       setStatus('error');
       setErrorMsg('Network issue. Please check your connection or contact our admission office directly.');
     }
@@ -158,7 +368,7 @@ export default function CampaignApply() {
           <div className="campaign-grid">
 
             {/* ── Left Column: Lead Capture Form ── */}
-            <div className="campaign-form-card">
+            <div className="campaign-form-card" ref={formElementRef}>
               {status === 'success' ? (
                 <div className="campaign-success-card">
                   <div className="success-check-icon">
@@ -178,6 +388,9 @@ export default function CampaignApply() {
                       rel="noopener noreferrer"
                       className="campaign-submit-btn"
                       style={{ textDecoration: 'none' }}
+                      data-track-id="apply_whatsapp_success"
+                      data-track-location="apply_success_cta"
+                      data-track-event="whatsapp_click"
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
@@ -185,13 +398,13 @@ export default function CampaignApply() {
                       Contact Admission Office
                     </a>
 
-                    <Link to="/" className="campaign-outline-btn">
+                    <Link to="/" className="campaign-outline-btn" data-track-id="apply_success_home_btn" data-track-location="apply_success_cta">
                       Back to Home Page
                     </Link>
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
                   <div className="campaign-form-header">
                     <h2>Interested in Admission?</h2>
                     <p>
@@ -221,9 +434,12 @@ export default function CampaignApply() {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        onFocus={() => handleFieldFocus('name')}
+                        onBlur={handleFieldBlur}
                         placeholder="Enter your full name"
                         required
                         autoFocus
+                        data-track-field="student_parent_name"
                       />
                     </div>
                   </div>
@@ -244,8 +460,11 @@ export default function CampaignApply() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        onFocus={() => handleFieldFocus('phone')}
+                        onBlur={handleFieldBlur}
                         placeholder="Enter your active contact number"
                         required
+                        data-track-field="phone_whatsapp"
                       />
                     </div>
                   </div>
@@ -266,7 +485,10 @@ export default function CampaignApply() {
                         name="location"
                         value={formData.location}
                         onChange={handleChange}
+                        onFocus={() => handleFieldFocus('location')}
+                        onBlur={handleFieldBlur}
                         placeholder="Enter your area or location"
+                        data-track-field="location_area"
                       />
                     </div>
                   </div>
@@ -279,6 +501,9 @@ export default function CampaignApply() {
                     type="submit"
                     className="campaign-submit-btn"
                     disabled={status === 'submitting'}
+                    onClick={handleSubmitClick}
+                    data-track-id="apply_submit"
+                    data-track-location="apply_form"
                   >
                     {status === 'submitting' ? (
                       <>
@@ -513,7 +738,13 @@ export default function CampaignApply() {
               Give your child the academic support, guidance and learning environment they need to move forward with confidence.
             </p>
             <div className="cta-btn-group">
-              <button onClick={scrollToForm} className="cta-primary-btn">
+              <button
+                onClick={scrollToForm}
+                className="cta-primary-btn"
+                data-track-id="apply_admission_now"
+                data-track-location="apply_bottom_cta"
+                data-track-event="apply_cta_click"
+              >
                 Apply for Admission Now
               </button>
               <a
@@ -521,6 +752,9 @@ export default function CampaignApply() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="cta-secondary-btn"
+                data-track-id="apply_whatsapp"
+                data-track-location="apply_bottom_cta"
+                data-track-event="whatsapp_click"
               >
                 Inquire on WhatsApp
               </a>

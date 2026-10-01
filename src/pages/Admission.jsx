@@ -4,6 +4,7 @@ import FloatingShapes from '../components/FloatingShapes';
 import ScrollReveal from '../components/ScrollReveal';
 import SEO from '../components/SEO';
 import { itCourses, beautyCourses } from '../data/courses';
+import { pushStellarEvent } from '../utils/tracking';
 import './Pages.css';
 import './Admission.css';
 
@@ -40,6 +41,11 @@ export default function Admission() {
     setStatus('sending');
     setErrorMsg('');
 
+    pushStellarEvent('form_submit_attempt', {
+      form_id: 'online_admission_form',
+      submission_method: 'button'
+    });
+
     const courseSelected = formData.specificCourse
       ? `${formData.classCourse} - ${formData.specificCourse}`
       : (formData.classCourse || 'General Admission');
@@ -69,8 +75,6 @@ export default function Admission() {
       });
 
       const data = await response.json().catch(() => ({}));
-      console.log('Admission Submission Result:', data);
-
       if (response.ok || data.status === 'success' || data.lead_id) {
         crmSuccess = true;
       }
@@ -100,6 +104,13 @@ export default function Admission() {
       emailSuccess = response.ok && data.success === true;
     } catch (phpErr) {
       console.warn('PHP Email notification warning:', phpErr);
+    }
+
+    if (crmSuccess || emailSuccess) {
+      pushStellarEvent('generate_lead', {
+        form_id: 'online_admission_form',
+        lead_type: 'admission_inquiry'
+      });
     }
 
     navigate('/admission/thankyou');

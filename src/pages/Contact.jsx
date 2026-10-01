@@ -4,6 +4,7 @@ import FloatingShapes from '../components/FloatingShapes';
 import ScrollReveal from '../components/ScrollReveal';
 import SEO from '../components/SEO';
 import { contactInfo } from '../data/courses';
+import { pushStellarEvent } from '../utils/tracking';
 import './Pages.css';
 
 export default function Contact() {
@@ -21,6 +22,11 @@ export default function Contact() {
     e.preventDefault();
     setStatus('sending');
     setErrorMsg('');
+
+    pushStellarEvent('form_submit_attempt', {
+      form_id: 'contact_inquiry_form',
+      submission_method: 'button'
+    });
 
     let crmSuccess = false;
     let emailSuccess = false;
@@ -81,6 +87,13 @@ export default function Contact() {
       emailSuccess = res.ok && data.success === true;
     } catch (err) {
       console.warn('Contact email submission warning:', err);
+    }
+
+    if (crmSuccess || emailSuccess) {
+      pushStellarEvent('generate_lead', {
+        form_id: 'contact_inquiry_form',
+        lead_type: 'contact_inquiry'
+      });
     }
 
     setStatus('success');

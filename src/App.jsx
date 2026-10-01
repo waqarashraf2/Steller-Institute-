@@ -28,12 +28,27 @@ import PageTransition from './components/PageTransition';
 import { WebsiteImagesProvider } from './components/WebsiteImagesProvider';
 import { CoursesProvider } from './components/CoursesProvider';
 import LoadingScreen from './components/LoadingScreen';
+import { trackPageReady, createScrollTracker, setupGlobalClickTracking } from './utils/tracking';
 
-function ScrollToTop() {
+function RouteTracker() {
   const { pathname } = useLocation();
+
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Give DOM a microtask for title/meta to settle, then fire page ready & attach scroll tracker
+    const timer = setTimeout(() => {
+      trackPageReady(pathname);
+    }, 100);
+
+    const cleanupScroll = createScrollTracker();
+
+    return () => {
+      clearTimeout(timer);
+      if (cleanupScroll) cleanupScroll();
+    };
   }, [pathname]);
+
   return null;
 }
 
@@ -101,12 +116,19 @@ function App() {
     }
   }, [isLoading]);
 
+  useEffect(() => {
+    const cleanupClicks = setupGlobalClickTracking();
+    return () => {
+      if (cleanupClicks) cleanupClicks();
+    };
+  }, []);
+
   return (
     <WebsiteImagesProvider>
       <CoursesProvider>
         <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
         <Router>
-          <ScrollToTop />
+          <RouteTracker />
           <Routes>
             <Route path="/stellar-admin" element={
               <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loading-spinner"></div></div>}>
