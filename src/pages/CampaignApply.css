@@ -1,4 +1,12 @@
 /* ─── Campaign Lead Landing Page Styles (Stellar Academy 2026-27 - Sky Theme) ─── */
+@font-face {
+  font-family: 'Font Awesome 7 Free';
+  src: url('@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
 .campaign-page-wrapper {
   min-height: 100vh;
   background: #f8fafc;
@@ -49,21 +57,16 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px 28px;
 }
 
 .hero-feature-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #ffffff;
-  border: 1px solid #bae6fd;
-  color: #0369a1;
-  padding: 7px 16px;
-  border-radius: 9999px;
-  font-size: 13.5px;
+  color: #334155;
+  font-size: 13px;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.08);
 }
 
 .hero-feature-badge svg {
@@ -311,16 +314,12 @@
 
 .benefit-badge-pill {
   display: inline-block;
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
   color: #0284c7;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 5px 12px;
-  border-radius: 9999px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
 }
 
 .benefits-title {
@@ -361,15 +360,45 @@
 }
 
 .benefit-icon-box {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #f0f9ff;
-  color: #0284c7;
+  width: 38px;
+  height: 40px;
+  border-bottom: 2px solid #bae6fd;
+  color: #075985;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.campaign-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Font Awesome 7 Free';
+  font-size: 18px;
+  font-weight: 900;
+  font-style: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.campaign-icon--percent { --fa-glyph: '%'; }
+.campaign-icon--award { --fa-glyph: '\f559'; }
+.campaign-icon--chalkboard { --fa-glyph: '\f51c'; }
+.campaign-icon--location { --fa-glyph: '\f3c5'; }
+.campaign-icon--clipboard { --fa-glyph: '\f46c'; }
+.campaign-icon--chart { --fa-glyph: '\f201'; }
+.campaign-icon--reader { --fa-glyph: '\f5da'; }
+.campaign-icon--heart { --fa-glyph: '\f004'; }
+.campaign-icon--book { --fa-glyph: '\f518'; }
+.campaign-icon--layers { --fa-glyph: '\f5fd'; }
+.campaign-icon--graduation { --fa-glyph: '\f19d'; }
+.campaign-icon--checklist { --fa-glyph: '\f0ae'; }
+.campaign-icon--laptop { --fa-glyph: '\f109'; }
+
+.campaign-icon::before {
+  content: var(--fa-glyph);
 }
 
 .benefit-text h4 {
@@ -390,13 +419,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  color: #92400e;
-  padding: 10px 14px;
-  border-radius: 10px;
+  border-left: 2px solid #94a3b8;
+  color: #475569;
+  padding: 4px 0 4px 12px;
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .campaign-campus-card {
@@ -416,11 +443,10 @@
 }
 
 .campus-pin-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: #f0f9ff;
-  color: #0284c7;
+  width: 30px;
+  height: 32px;
+  border-bottom: 2px solid #bae6fd;
+  color: #075985;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,16 +490,12 @@
 
 .section-pill-tag {
   display: inline-block;
-  background: #f0f9ff;
   color: #0284c7;
-  border: 1px solid #bae6fd;
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 6px 16px;
-  border-radius: 9999px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 14px;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
 }
 
 .section-title-large {
@@ -539,11 +561,10 @@
 }
 
 .feature-icon-wrapper {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: #f0f9ff;
-  color: #0284c7;
+  width: 38px;
+  height: 40px;
+  border-bottom: 2px solid #bae6fd;
+  color: #075985;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -622,10 +643,9 @@
 
 .program-icon-badge {
   width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #f0f9ff;
-  color: #0284c7;
+  height: 40px;
+  border-bottom: 2px solid #bae6fd;
+  color: #075985;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -646,7 +666,7 @@
   margin: 0;
 }
 
-/* ─── Bottom CTA Banner ────────────────────────────────────── */
+/* ─── Bottom CTA Banner ────────────────────────────────────────────── */
 .campaign-cta-banner {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
   padding: 70px 0;
@@ -663,17 +683,12 @@
 
 .cta-pill-white {
   display: inline-block;
-  background: #ffffff;
-  border: 1px solid #bae6fd;
   color: #0284c7;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 6px 18px;
-  border-radius: 9999px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 18px;
-  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.08);
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
 }
 
 .cta-banner-content h2 {

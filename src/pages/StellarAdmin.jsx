@@ -128,15 +128,8 @@ export default function StellarAdmin() {
       if (rAnns.ok && announcementsData !== null) setAnns(announcementsData);
       if (rImgs.ok && imagesData !== null) setWebsiteImages(imagesData);
 
-      if (rCourses.ok && Array.isArray(coursesData) && coursesData.length > 0) {
+      if (rCourses.ok && Array.isArray(coursesData)) {
         setCourses(coursesData);
-        setCoursesError('');
-      } else if (Array.isArray(coursesData)) {
-        const initialDefault = [
-          ...itCourses.map(c => ({ ...c, category: 'it', image_url: c.image, banner_url: c.bannerImage })),
-          ...beautyCourses.map(c => ({ ...c, category: 'beauty', image_url: c.image, banner_url: c.bannerImage }))
-        ];
-        setCourses(coursesData.length > 0 ? coursesData : initialDefault);
         setCoursesError('');
       } else {
         setCoursesError('Could not load courses. Please refresh and try again.');
@@ -350,22 +343,6 @@ export default function StellarAdmin() {
       img.src = event.target.result;
     };
     reader.readAsDataURL(file);
-  };
-
-  // Helpers for resilient course storage
-  const getLocalCourses = () => {
-    try {
-      return JSON.parse(localStorage.getItem('stellar_custom_courses') || '[]');
-    } catch {
-      return [];
-    }
-  };
-
-  const saveLocalCourses = (data) => {
-    try {
-      localStorage.setItem('stellar_custom_courses', JSON.stringify(data));
-      window.dispatchEvent(new Event('stellar_courses_updated'));
-    } catch {}
   };
 
   // --- COURSES LOGIC ---
