@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useCallback, useContext, useState, useEffect } from 'react';
 import { itCourses as initialIt, beautyCourses as initialBeauty } from '../data/courses';
 
 const CoursesContext = createContext();
@@ -43,10 +43,11 @@ export function CoursesProvider({ children }) {
   const [courses, setCourses] = useState(getInitialCourses);
   const [loading, setLoading] = useState(false);
 
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async (refresh = false) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || '/api';
-      const response = await fetch(`${apiUrl}/courses`);
+      const refreshParam = refresh ? `?refresh=${Date.now()}` : '';
+      const response = await fetch(`${apiUrl}/courses${refreshParam}`, refresh ? { cache: 'no-store' } : undefined);
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -62,21 +63,19 @@ export function CoursesProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCourses();
 
-    const handleLocalUpdate = () => {
-      setCourses(prev => mergeWithLocalOverrides(prev));
-    };
-    window.addEventListener('stellar_courses_updated', handleLocalUpdate);
-    window.addEventListener('storage', handleLocalUpdate);
+    const handleCoursesUpdated = () => fetchCourses(true);
+    window.addEventListener('stellar_courses_updated', handleCoursesUpdated);
+    window.addEventListener('storage', handleCoursesUpdated);
     return () => {
-      window.removeEventListener('stellar_courses_updated', handleLocalUpdate);
-      window.removeEventListener('storage', handleLocalUpdate);
+      window.removeEventListener('stellar_courses_updated', handleCoursesUpdated);
+      window.removeEventListener('storage', handleCoursesUpdated);
     };
-  }, []);
+  }, [fetchCourses]);
 
   const itCourses = courses.filter(c => c.category === 'it');
   const beautyCourses = courses.filter(c => c.category === 'beauty');

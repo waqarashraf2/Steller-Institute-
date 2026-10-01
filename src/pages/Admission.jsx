@@ -40,8 +40,8 @@ export default function Admission() {
     setStatus('sending');
     setErrorMsg('');
 
-    const courseSelected = formData.specificCourse 
-      ? `${formData.classCourse} - ${formData.specificCourse}` 
+    const courseSelected = formData.specificCourse
+      ? `${formData.classCourse} - ${formData.specificCourse}`
       : (formData.classCourse || 'General Admission');
 
     const crmPayload = {
@@ -56,6 +56,7 @@ export default function Admission() {
     };
 
     let crmSuccess = false;
+    let emailSuccess = false;
 
     try {
       const response = await fetch('https://crm.stellarinstitute.pk/api/api/v1/public/online-admission', {
@@ -74,16 +75,29 @@ export default function Admission() {
         crmSuccess = true;
       }
     } catch (crmErr) {
-      console.warn('CRM Submission error:', crmErr);
+      console.warn('Direct CRM error, attempting proxy:', crmErr);
+      try {
+        const response = await fetch('https://stellarinstitute.pk/api/crm-intake.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ form: 'admission', payload: crmPayload })
+        });
+        const data = await response.json().catch(() => ({}));
+        crmSuccess = response.ok && data.success !== false;
+      } catch {}
     }
 
-    // Also send email notification to cPanel backend
     try {
-      await fetch(`https://stellarinstitute.pk/api/admission.php`, {
+      const response = await fetch(`https://stellarinstitute.pk/api/admission.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, course_name: courseSelected })
-      }).catch(() => {});
+      });
+      const data = await response.json().catch(() => ({}));
+      emailSuccess = response.ok && data.success === true;
     } catch (phpErr) {
       console.warn('PHP Email notification warning:', phpErr);
     }

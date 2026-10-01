@@ -67,6 +67,8 @@ export default function StellarAdmin() {
   // Courses State
   const emptyCourse = { category: 'it', title: '', duration: '', image_url: '', banner_url: '', base_price: '', discount_price: '', special_offer_tag: '' };
   const [courses, setCourses] = useState([]);
+  const [coursesError, setCoursesError] = useState('');
+  const [savingCourse, setSavingCourse] = useState(false);
   const [showCourseForm, setShowCourseForm] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
   const [courseForm, setCourseForm] = useState(emptyCourse);
@@ -89,6 +91,13 @@ export default function StellarAdmin() {
     'Authorization': `Bearer ${token}`
   }), [token]);
 
+  const logout = useCallback(() => {
+    setToken('');
+    setUser(null);
+    sessionStorage.removeItem('stellar-admin-token');
+    sessionStorage.removeItem('stellar-admin-user');
+  }, []);
+
   const fetchData = useCallback(async (showLoading = false) => {
     if (!token) return;
     if (showLoading) setLoading(true);
@@ -100,7 +109,11 @@ export default function StellarAdmin() {
         fetch(`${API}/pages?slug=privacy-policy`),
         fetch(`${API}/admin-certificates`, { headers: headers() }).catch(() => ({ ok: false }))
       ]);
-      
+      if (rAnns.status === 401 || rCourses.status === 401) {
+        logout();
+        return;
+      }
+
       const readJson = (response) => response?.ok
         ? response.json().catch(() => null)
         : Promise.resolve(null);
@@ -114,23 +127,20 @@ export default function StellarAdmin() {
 
       if (rAnns.ok && announcementsData !== null) setAnns(announcementsData);
       if (rImgs.ok && imagesData !== null) setWebsiteImages(imagesData);
-      
-      const localCourses = getLocalCourses();
-      const initialDefault = [
-        ...itCourses.map(c => ({ ...c, category: 'it', image_url: c.image, banner_url: c.bannerImage })),
-        ...beautyCourses.map(c => ({ ...c, category: 'beauty', image_url: c.image, banner_url: c.bannerImage }))
-      ];
 
-      const dbCourses = coursesData;
-      const baseList = (Array.isArray(dbCourses) && dbCourses.length > 0) ? dbCourses : initialDefault;
-      const merged = baseList.map(c => {
-        const override = localCourses.find(lc => 
-          (lc.id && c.id && String(lc.id) === String(c.id)) || 
-          (lc.title && c.title && lc.title.trim().toLowerCase() === c.title.trim().toLowerCase())
-        );
-        return override ? { ...c, ...override } : c;
-      });
-      setCourses(merged);
+      if (rCourses.ok && Array.isArray(coursesData) && coursesData.length > 0) {
+        setCourses(coursesData);
+        setCoursesError('');
+      } else if (Array.isArray(coursesData)) {
+        const initialDefault = [
+          ...itCourses.map(c => ({ ...c, category: 'it', image_url: c.image, banner_url: c.bannerImage })),
+          ...beautyCourses.map(c => ({ ...c, category: 'beauty', image_url: c.image, banner_url: c.bannerImage }))
+        ];
+        setCourses(coursesData.length > 0 ? coursesData : initialDefault);
+        setCoursesError('');
+      } else {
+        setCoursesError('Could not load courses. Please refresh and try again.');
+      }
 
       if (rPages.ok) setPrivacyPolicy(pagesData?.content || '');
       if (rCerts && rCerts.ok) {
@@ -165,10 +175,13 @@ export default function StellarAdmin() {
       } else {
         setCertificates(getLocalCerts());
       }
-    } catch {} finally {
+    } catch (error) {
+      console.error('Admin data load failed:', error);
+      setCoursesError('Could not load courses. Please refresh and try again.');
+    } finally {
       if (showLoading) setLoading(false);
     }
-  }, [token, headers]);
+  }, [token, headers, logout]);
 
   useEffect(() => {
     if (token) {
@@ -201,13 +214,6 @@ export default function StellarAdmin() {
       setLoginError('Network error');
     }
     setLoginLoading(false);
-  };
-
-  const logout = () => {
-    setToken('');
-    setUser(null);
-    sessionStorage.removeItem('stellar-admin-token');
-    sessionStorage.removeItem('stellar-admin-user');
   };
 
   // --- ANNOUNCEMENTS LOGIC ---
@@ -365,78 +371,85 @@ export default function StellarAdmin() {
   // --- COURSES LOGIC ---
   const handleSaveCourse = async (e) => {
     e.preventDefault();
+    if (savingCourse) return;
+    setSavingCourse(true);
     const isEdit = Boolean(editingCourse);
-    const targetCourse = { 
-      ...(editingCourse || {}), 
+    const payload = {
       ...courseForm,
-      base_price: courseForm.base_price ? Number(courseForm.base_price) : 0,
-      discount_price: courseForm.discount_price ? Number(courseForm.discount_price) : 0,
-      special_offer_tag: courseForm.special_offer_tag || '',
-      id: editingCourse?.id || Date.now()
+      base_price: courseForm.base_price === '' ? 0 : Number(courseForm.base_price),
+      discount_price: courseForm.discount_price === '' ? 0 : Number(courseForm.discount_price),
+      special_offer_tag: courseForm.special_offer_tag || ''
     };
-
-    // 1. Immediately save to LocalStorage for instant persistence & reactive update
-    const local = getLocalCourses();
-    let updatedLocal;
-    const matchIdx = local.findIndex(c => 
-      (c.id && targetCourse.id && String(c.id) === String(targetCourse.id)) ||
-      (c.title && targetCourse.title && c.title.trim().toLowerCase() === targetCourse.title.trim().toLowerCase())
-    );
-    if (matchIdx !== -1) {
-      updatedLocal = [...local];
-      updatedLocal[matchIdx] = { ...updatedLocal[matchIdx], ...targetCourse };
-    } else {
-      updatedLocal = [...local, targetCourse];
-    }
-    saveLocalCourses(updatedLocal);
-
-    // 2. Update state in Admin UI immediately
-    setCourses(prev => {
-      const exists = prev.some(c => 
-        (c.id && targetCourse.id && String(c.id) === String(targetCourse.id)) ||
-        (c.title && targetCourse.title && c.title.trim().toLowerCase() === targetCourse.title.trim().toLowerCase())
-      );
-      if (exists) {
-        return prev.map(c => 
-          ((c.id && targetCourse.id && String(c.id) === String(targetCourse.id)) ||
-           (c.title && targetCourse.title && c.title.trim().toLowerCase() === targetCourse.title.trim().toLowerCase()))
-            ? { ...c, ...targetCourse }
-            : c
-        );
-      }
-      return [targetCourse, ...prev];
-    });
-
-    setShowCourseForm(false);
-    setEditingCourse(null);
-    setCourseForm(emptyCourse);
-
-    // 3. Save to backend database API
     try {
       const method = isEdit ? 'PUT' : 'POST';
-      await fetch(`${API}/courses`, {
-        method, headers: headers(), body: JSON.stringify(targetCourse)
+      delete payload.id;
+      delete payload.original_title;
+
+      if (isEdit) {
+        const courseId = Number(editingCourse.id);
+        if (Number.isSafeInteger(courseId) && courseId > 0 && courseId <= 2147483647) {
+          payload.id = courseId;
+        } else if (editingCourse.title) {
+          payload.original_title = editingCourse.title;
+        }
+      }
+
+      const response = await fetch(`${API}/courses`, {
+        method,
+        headers: headers(),
+        body: JSON.stringify(payload)
       });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.id) {
+        alert(result?.error || 'Failed to save course. Please try again.');
+        return;
+      }
+
+      setCourses(prev => {
+        if (!isEdit) return [result, ...prev];
+        const oldId = editingCourse?.id;
+        const oldTitle = editingCourse?.title?.trim().toLowerCase();
+        const index = prev.findIndex(course => (
+          oldId != null && String(course.id) === String(oldId)
+        ) || (
+          oldTitle && course.title?.trim().toLowerCase() === oldTitle
+        ));
+        if (index === -1) return [result, ...prev];
+        return prev.map((course, currentIndex) => currentIndex === index ? result : course);
+      });
+      setCoursesError('');
+      window.dispatchEvent(new Event('stellar_courses_updated'));
+      setShowCourseForm(false);
+      setEditingCourse(null);
+      setCourseForm(emptyCourse);
     } catch (err) {
-      console.warn('API course sync warning:', err);
+      console.error('Course save failed:', err);
+      alert('Could not save course. Please check your connection and try again.');
+    } finally {
+      setSavingCourse(false);
     }
   };
 
   const handleDeleteCourse = async (id) => {
     if (!window.confirm('Are you sure you want to delete this course?')) return;
-    
-    // Remove from local storage
-    const local = getLocalCourses();
-    const updatedLocal = local.filter(c => String(c.id) !== String(id));
-    saveLocalCourses(updatedLocal);
-
-    setCourses(prev => prev.filter(c => String(c.id) !== String(id)));
 
     try {
-      await fetch(`${API}/courses`, {
+      const response = await fetch(`${API}/courses`, {
         method: 'DELETE', headers: headers(), body: JSON.stringify({ id })
       });
-    } catch {}
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        alert(result?.error || 'Failed to delete course. Please refresh and try again.');
+        return;
+      }
+
+      setCourses(prev => prev.filter(course => String(course.id) !== String(id)));
+      setCoursesError('');
+      window.dispatchEvent(new Event('stellar_courses_updated'));
+    } catch (err) {
+      console.error('Course deletion failed:', err);
+      alert('Could not delete course. Please check your connection and try again.');
+    }
   };
 
   // Helper for resilient certificate storage
@@ -911,6 +924,8 @@ export default function StellarAdmin() {
             </button>
           </div>
 
+          {coursesError && <div className="admin-error" role="alert">{coursesError}</div>}
+
           <div className="course-grid">
             {courses.length === 0 ? (
               <div className="admin-empty" style={{ gridColumn: '1 / -1', padding: '60px 20px', background: '#fff', border: '1px solid var(--admin-border)', borderRadius: '8px' }}>
@@ -1005,13 +1020,13 @@ export default function StellarAdmin() {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div className="vercel-field-group" style={{ margin: 0 }}>
                       <label className="vercel-label">Base Course Price (PKR)</label>
-                      <input 
-                        className="vercel-input" 
-                        type="number" 
+                      <input
+                        className="vercel-input"
+                        type="number"
                         min="0"
-                        value={courseForm.base_price || ''} 
-                        onChange={e => setCourseForm({...courseForm, base_price: e.target.value})} 
-                        placeholder="e.g. 25000 (Leave blank if hidden)" 
+                        value={courseForm.base_price || ''}
+                        onChange={e => setCourseForm({...courseForm, base_price: e.target.value})}
+                        placeholder="e.g. 25000 (Leave blank if hidden)"
                       />
                       <span style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', display: 'block' }}>
                         Agar price set hogi tab hi front par show hogi.
@@ -1020,13 +1035,13 @@ export default function StellarAdmin() {
 
                     <div className="vercel-field-group" style={{ margin: 0 }}>
                       <label className="vercel-label">Discounted / Offer Price (PKR)</label>
-                      <input 
-                        className="vercel-input" 
-                        type="number" 
+                      <input
+                        className="vercel-input"
+                        type="number"
                         min="0"
-                        value={courseForm.discount_price || ''} 
-                        onChange={e => setCourseForm({...courseForm, discount_price: e.target.value})} 
-                        placeholder="e.g. 18000 (Optional)" 
+                        value={courseForm.discount_price || ''}
+                        onChange={e => setCourseForm({...courseForm, discount_price: e.target.value})}
+                        placeholder="e.g. 18000 (Optional)"
                       />
                       <span style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', display: 'block' }}>
                         Base price se kam ho to strike-through & discount show hoga.
@@ -1036,12 +1051,12 @@ export default function StellarAdmin() {
 
                   <div className="vercel-field-group" style={{ marginTop: '12px', marginBottom: 0 }}>
                     <label className="vercel-label">Special Offer Tag / Badge (Optional)</label>
-                    <input 
-                      className="vercel-input" 
-                      type="text" 
-                      value={courseForm.special_offer_tag || ''} 
-                      onChange={e => setCourseForm({...courseForm, special_offer_tag: e.target.value})} 
-                      placeholder="e.g. Limited Time Offer, Early Bird 20% Off" 
+                    <input
+                      className="vercel-input"
+                      type="text"
+                      value={courseForm.special_offer_tag || ''}
+                      onChange={e => setCourseForm({...courseForm, special_offer_tag: e.target.value})}
+                      placeholder="e.g. Limited Time Offer, Early Bird 20% Off"
                     />
                   </div>
                 </div>
@@ -1083,8 +1098,8 @@ export default function StellarAdmin() {
 
               <div className="vercel-modal-footer">
                 <button type="button" className="vercel-btn-secondary" onClick={() => setShowCourseForm(false)}>Cancel</button>
-                <button type="submit" className="vercel-btn-primary">
-                  {editingCourse ? 'Save Changes' : 'Create Course'}
+                <button type="submit" className="vercel-btn-primary" disabled={savingCourse}>
+                  {savingCourse ? 'Saving…' : editingCourse ? 'Save Changes' : 'Create Course'}
                 </button>
               </div>
             </form>

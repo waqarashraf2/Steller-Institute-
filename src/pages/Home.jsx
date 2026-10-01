@@ -301,7 +301,7 @@ export default function Home() {
                       <div className="course-card-body">
                         <h4>{course.title}</h4>
                         <span className="course-dur">{course.duration}</span>
-                        
+
                         {/* Dynamic Course Pricing in PKR (Only if set) */}
                         {Boolean(course.base_price && Number(course.base_price) > 0) && (
                           <div className="home-course-price-box">

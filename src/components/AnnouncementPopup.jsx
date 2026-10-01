@@ -50,37 +50,46 @@ export default function AnnouncementPopup() {
 
     // If button text contains "apply" or "admission", or url points to admission/apply
     if (
-      linkText.includes('apply') || 
-      linkText.includes('admission') || 
-      linkUrl.includes('/admission') || 
+      linkText.includes('apply') ||
+      linkText.includes('admission') ||
+      linkUrl.includes('/admission') ||
       linkUrl.includes('admission') ||
-      !linkUrl || 
+      !linkUrl ||
       linkUrl === '#'
     ) {
       navigate('/admission');
       return;
     }
 
-    // If internal relative route
-    if (linkUrl.startsWith('/')) {
+    // Internal routes must not be protocol-relative URLs such as //example.com.
+    if (linkUrl.startsWith('/') && !linkUrl.startsWith('//')) {
       navigate(linkUrl);
       return;
     }
 
-    // If absolute URL pointing to stellar website
-    if (linkUrl.includes('stellarinstitute.pk') || linkUrl.includes('localhost')) {
-      try {
-        const parsed = new URL(linkUrl);
+    try {
+      const parsed = new URL(linkUrl, window.location.origin);
+      const isStellarHost = parsed.hostname === 'stellarinstitute.pk' ||
+        parsed.hostname.endsWith('.stellarinstitute.pk') ||
+        parsed.hostname === 'localhost';
+
+      if (isStellarHost) {
         navigate(parsed.pathname + parsed.search);
         return;
-      } catch {
-        navigate('/admission');
+      }
+
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        window.open(parsed.href, '_blank', 'noopener,noreferrer');
         return;
       }
+    } catch {
+      return;
     }
 
-    // External URL
-    window.open(linkUrl, '_blank', 'noopener,noreferrer');
+    // Permit ordinary contact links while rejecting executable URL schemes.
+    if (/^(mailto|tel):/i.test(linkUrl)) {
+      window.open(linkUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   if (!visible || !announcement) return null;
@@ -94,11 +103,14 @@ export default function AnnouncementPopup() {
         </button>
 
         {/* Clickable content */}
-        <div 
+        <div
           role="button"
           tabIndex={0}
           className="popup-link"
           onClick={handleClick}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') handleClick(e);
+          }}
           style={{ cursor: 'pointer' }}
         >
           {/* If image exists — show as the main content (KIPS-style) */}

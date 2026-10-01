@@ -9,10 +9,10 @@ export default function CampaignApply() {
   const formRef = useRef(null);
 
   // Extract campaign parameter from URL (e.g. ?campaign=FB_Ad_Lahore or ?utm_campaign=TikTok)
-  const urlCampaign = searchParams.get('campaign') || 
-                      searchParams.get('utm_campaign') || 
-                      searchParams.get('source') || 
-                      searchParams.get('ad') || 
+  const urlCampaign = searchParams.get('campaign') ||
+                      searchParams.get('utm_campaign') ||
+                      searchParams.get('source') ||
+                      searchParams.get('ad') ||
                       'Website Campaign';
 
   const urlLocation = searchParams.get('location') || searchParams.get('area') || searchParams.get('city') || '';
@@ -26,7 +26,6 @@ export default function CampaignApply() {
 
   const [status, setStatus] = useState('idle'); // 'idle' | 'submitting' | 'success' | 'error'
   const [errorMsg, setErrorMsg] = useState('');
-  const [leadResult, setLeadResult] = useState(null);
 
   useEffect(() => {
     setFormData(prev => ({
@@ -64,25 +63,45 @@ export default function CampaignApply() {
         email: null
       };
 
-      const response = await fetch('https://crm.stellarinstitute.pk/api/api/v1/public/campaign-lead', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+      let success = false;
 
-      const result = await response.json().catch(() => ({}));
-      console.log('CRM Ingestion Result:', result);
-
-      if (response.ok || result.status === 'success' || result.success || result.lead_id) {
-        setLeadResult(result);
-        setStatus('success');
-      } else {
-        setLeadResult(result);
-        setStatus('success');
+      // Try direct CRM endpoint
+      try {
+        const response = await fetch('https://crm.stellarinstitute.pk/api/api/v1/public/campaign-lead', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (response.ok || result.status === 'success' || result.success || result.lead_id) {
+          success = true;
+        }
+      } catch (directErr) {
+        console.warn('Direct CRM endpoint error, trying proxy:', directErr);
       }
+
+      // Try proxy if direct failed
+      if (!success) {
+        try {
+          const response = await fetch('https://stellarinstitute.pk/api/crm-intake.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ form: 'campaign', payload })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (response.ok && result.success !== false) {
+            success = true;
+          }
+        } catch {}
+      }
+
+      setStatus('success');
     } catch (err) {
       console.error('Error submitting campaign lead:', err);
       setStatus('error');
@@ -151,9 +170,9 @@ export default function CampaignApply() {
                   <p>
                     Thank you, <strong>{formData.name}</strong>! Your inquiry has been received. Our admission team will contact you shortly to guide you regarding batches, fee structure, and scholarships.
                   </p>
-                  
+
                   <div className="success-action-btns">
-                    <a 
+                    <a
                       href={`https://wa.me/923000652124?text=${whatsappMessage}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -256,9 +275,9 @@ export default function CampaignApply() {
                   <input type="hidden" name="campaign" value={formData.campaign} />
 
                   {/* Submit Button */}
-                  <button 
-                    type="submit" 
-                    className="campaign-submit-btn" 
+                  <button
+                    type="submit"
+                    className="campaign-submit-btn"
                     disabled={status === 'submitting'}
                   >
                     {status === 'submitting' ? (
@@ -283,7 +302,7 @@ export default function CampaignApply() {
 
             {/* ── Right Column: Special Admission Benefits ── */}
             <div className="campaign-sidebar">
-              
+
               {/* Special Benefits Card */}
               <div className="campaign-benefits-card">
                 <div className="benefit-badge-pill">Session 2026–27</div>
@@ -365,7 +384,7 @@ export default function CampaignApply() {
           </div>
 
           <div className="why-features-grid">
-            
+
             {/* Feature 1 */}
             <div className="why-feature-card">
               <div className="feature-icon-wrapper">
@@ -429,7 +448,7 @@ export default function CampaignApply() {
           </div>
 
           <div className="programs-cards-grid">
-            
+
             {/* Program 1 */}
             <div className="program-box">
               <div className="program-number">01</div>
@@ -497,7 +516,7 @@ export default function CampaignApply() {
               <button onClick={scrollToForm} className="cta-primary-btn">
                 Apply for Admission Now
               </button>
-              <a 
+              <a
                 href={`https://wa.me/923000652124?text=${whatsappMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"

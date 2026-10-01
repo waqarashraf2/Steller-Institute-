@@ -22,7 +22,10 @@ export default function Contact() {
     setStatus('sending');
     setErrorMsg('');
 
-    // 1. Post to CRM public online-admission / lead endpoint
+    let crmSuccess = false;
+    let emailSuccess = false;
+
+    // 1. Post to CRM endpoint
     try {
       const crmRes = await fetch('https://crm.stellarinstitute.pk/api/api/v1/public/online-admission', {
         method: 'POST',
@@ -42,9 +45,29 @@ export default function Contact() {
         })
       });
       const crmData = await crmRes.json().catch(() => ({}));
-      console.log('CRM Contact Inquiry Result:', crmData);
+      if (crmRes.ok || crmData.status === 'success' || crmData.lead_id) {
+        crmSuccess = true;
+      }
     } catch (crmErr) {
-      console.warn('CRM Contact log warning:', crmErr);
+      console.warn('Direct CRM Contact log warning, trying proxy:', crmErr);
+      try {
+        const crmRes = await fetch('https://stellarinstitute.pk/api/crm-intake.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ form: 'contact', payload: {
+            student_name: formData.name || '',
+            father_name: 'Website Contact Inquiry',
+            phone: formData.phone || '',
+            cnic: '',
+            batch_timing: 'Flexible',
+            education_level: formData.subject || 'Website Inquiry',
+            expected_joining_date: new Date().toISOString().split('T')[0],
+            course_name: formData.subject ? `Inquiry: ${formData.subject}` : 'General Contact Inquiry'
+          } })
+        });
+        const crmData = await crmRes.json().catch(() => ({}));
+        crmSuccess = crmRes.ok && crmData.success !== false;
+      } catch {}
     }
 
     // 2. Post to cPanel email backend
@@ -54,24 +77,15 @@ export default function Contact() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-
-      const data = await res.json();
-
-      if (data.success) {
-        setStatus('success');
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-        setTimeout(() => setStatus('idle'), 5000);
-      } else {
-        // Even if PHP email fails, if CRM succeeded we consider it sent
-        setStatus('success');
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-        setTimeout(() => setStatus('idle'), 5000);
-      }
+      const data = await res.json().catch(() => ({}));
+      emailSuccess = res.ok && data.success === true;
     } catch (err) {
-      setStatus('success');
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-      setTimeout(() => setStatus('idle'), 5000);
+      console.warn('Contact email submission warning:', err);
     }
+
+    setStatus('success');
+    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    setTimeout(() => setStatus('idle'), 5000);
   };
 
   return (
@@ -144,9 +158,9 @@ export default function Contact() {
                   <textarea id="message" name="message" placeholder="How can we help you?" value={formData.message} onChange={handleChange} required />
                 </div>
 
-                <button 
-                  type="submit" 
-                  className="btn btn-primary btn-lg" 
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg"
                   style={{ width: '100%', opacity: status === 'sending' ? 0.7 : 1 }}
                   disabled={status === 'sending'}
                 >
