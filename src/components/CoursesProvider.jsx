@@ -11,32 +11,17 @@ const defaultFallbackCourses = [
   ...initialBeauty.map(c => ({ ...c, category: 'beauty', image_url: c.image, banner_url: c.bannerImage }))
 ];
 
-function mergeWithLocalOverrides(rawCourses) {
-  let local = [];
-  try {
-    local = JSON.parse(localStorage.getItem('stellar_custom_courses') || '[]');
-  } catch {}
-  if (!Array.isArray(local) || local.length === 0) return rawCourses;
-  return rawCourses.map(c => {
-    const override = local.find(lc => 
-      (lc.id && c.id && String(lc.id) === String(c.id)) ||
-      (lc.title && c.title && lc.title.trim().toLowerCase() === c.title.trim().toLowerCase())
-    );
-    return override ? { ...c, ...override } : c;
-  });
-}
-
 function getInitialCourses() {
   try {
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
       const { ts, data } = JSON.parse(cached);
-      if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
-        return mergeWithLocalOverrides(data);
+      if (Date.now() - ts < CACHE_TTL && Array.isArray(data)) {
+        return data;
       }
     }
   } catch {}
-  return mergeWithLocalOverrides(defaultFallbackCourses);
+  return defaultFallbackCourses;
 }
 
 export function CoursesProvider({ children }) {
@@ -50,9 +35,8 @@ export function CoursesProvider({ children }) {
       const response = await fetch(`${apiUrl}/courses${refreshParam}`, refresh ? { cache: 'no-store' } : undefined);
       if (response.ok) {
         const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          const merged = mergeWithLocalOverrides(data);
-          setCourses(merged);
+        if (Array.isArray(data)) {
+          setCourses(data);
           try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
           } catch {}
@@ -70,10 +54,8 @@ export function CoursesProvider({ children }) {
 
     const handleCoursesUpdated = () => fetchCourses(true);
     window.addEventListener('stellar_courses_updated', handleCoursesUpdated);
-    window.addEventListener('storage', handleCoursesUpdated);
     return () => {
       window.removeEventListener('stellar_courses_updated', handleCoursesUpdated);
-      window.removeEventListener('storage', handleCoursesUpdated);
     };
   }, [fetchCourses]);
 

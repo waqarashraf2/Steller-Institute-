@@ -112,9 +112,6 @@ export async function ensureTables() {
     await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS cnic VARCHAR(50)`;
     await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS duration_from DATE`;
     await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS duration_to DATE`;
-    await db`ALTER TABLE courses ADD COLUMN IF NOT EXISTS base_price INT DEFAULT 0`;
-    await db`ALTER TABLE courses ADD COLUMN IF NOT EXISTS discount_price INT DEFAULT 0`;
-    await db`ALTER TABLE courses ADD COLUMN IF NOT EXISTS special_offer_tag VARCHAR(100)`;
   } catch {}
 
   const targetPass = process.env.ADMIN_DEFAULT_PASS;
