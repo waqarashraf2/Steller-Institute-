@@ -75,9 +75,9 @@ export default function CampaignApply() {
 
   // Map DOM names to safe allowlisted tracking field names
   const getFieldTrackName = (name) => {
-    if (name === 'name') return 'student_parent_name';
-    if (name === 'phone') return 'phone_whatsapp';
-    if (name === 'location') return 'location_area';
+    if (name === 'name' || name === 'student_parent_name') return 'student_parent_name';
+    if (name === 'phone' || name === 'phone_whatsapp') return 'phone_whatsapp';
+    if (name === 'location' || name === 'location_area') return 'location_area';
     return null;
   };
 
@@ -115,7 +115,7 @@ export default function CampaignApply() {
       delete debounceTimersRef.current[trackName];
     }
 
-    if (value && value.trim().length > 0 && !completedFieldsRef.current.has(trackName)) {
+    if (value && typeof value === 'string' && value.trim().length > 0 && !completedFieldsRef.current.has(trackName)) {
       completedFieldsRef.current.add(trackName);
       pushStellarEvent('form_field_completed', {
         form_id: FORM_ID,
@@ -128,6 +128,9 @@ export default function CampaignApply() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Ensure focus event is recorded even if user typed directly or used autofill
+    handleFieldFocus(name);
 
     if (value && value.trim().length > 0) {
       triggerFormStart();
@@ -435,10 +438,10 @@ export default function CampaignApply() {
                         value={formData.name}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus('name')}
+                        onClick={() => handleFieldFocus('name')}
                         onBlur={handleFieldBlur}
                         placeholder="Enter your full name"
                         required
-                        autoFocus
                         data-track-field="student_parent_name"
                       />
                     </div>
@@ -461,6 +464,7 @@ export default function CampaignApply() {
                         value={formData.phone}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus('phone')}
+                        onClick={() => handleFieldFocus('phone')}
                         onBlur={handleFieldBlur}
                         placeholder="Enter your active contact number"
                         required
@@ -486,6 +490,7 @@ export default function CampaignApply() {
                         value={formData.location}
                         onChange={handleChange}
                         onFocus={() => handleFieldFocus('location')}
+                        onClick={() => handleFieldFocus('location')}
                         onBlur={handleFieldBlur}
                         placeholder="Enter your area or location"
                         data-track-field="location_area"
@@ -743,7 +748,6 @@ export default function CampaignApply() {
                 className="cta-primary-btn"
                 data-track-id="apply_admission_now"
                 data-track-location="apply_bottom_cta"
-                data-track-event="apply_cta_click"
               >
                 Apply for Admission Now
               </button>
