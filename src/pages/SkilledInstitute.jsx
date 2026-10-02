@@ -37,6 +37,28 @@ export default function SkilledInstitute() {
     return 'All Available Courses';
   };
 
+  const coursesSchema = useMemo(() => {
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Stellar Professional IT & Skill Courses",
+      "itemListElement": allCourses.slice(0, 15).map((c, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "Course",
+          "name": c.title,
+          "description": c.desc || `${c.title} training and certification at Stellar Institute Lahore.`,
+          "provider": {
+            "@type": "EducationalOrganization",
+            "name": "Stellar Institute & Academy",
+            "sameAs": "https://stellarinstitute.pk"
+          }
+        }
+      }))
+    };
+  }, [allCourses]);
+
   return (
     <>
       <SEO
@@ -44,6 +66,7 @@ export default function SkilledInstitute() {
         description="Explore 23+ industry-certified professional short courses in Lahore. Master Web Development, Graphic Design, Digital Marketing, and Cosmetology with hands-on training."
         keywords="IT Courses Lahore, Web Development Course Lahore, Digital Marketing Training, Graphic Designing, Beautician Course Lahore, Certificate Verification"
         canonical="https://stellarinstitute.pk/skilled-institute"
+        schemaData={coursesSchema}
       />
       {/* ─── Hero Section ────────────────────────────────────────── */}
       <section className="page-hero relative" style={{ overflow: 'hidden' }}>

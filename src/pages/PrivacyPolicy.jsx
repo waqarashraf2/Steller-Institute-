@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
+import SEO from '../components/SEO';
 import './PrivacyPolicy.css';
 import { privacyPolicyHtml } from '../data/privacyPolicyHtml';
 
@@ -31,6 +32,11 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="page-container privacy-policy-page">
+      <SEO
+        title="Privacy Policy — Stellar Institute & Academy"
+        description="Read the official Privacy Policy of Stellar Institute & Academy Lahore regarding student data protection, cookies, and communication terms."
+        canonical="https://stellarinstitute.pk/privacy-policy"
+      />
       <header className="privacy-policy-hero">
         <div className="privacy-policy-frame">
           <span className="privacy-policy-accent" aria-hidden="true" />

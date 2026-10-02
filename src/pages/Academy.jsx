@@ -8,6 +8,19 @@ import { academyReviews } from '../data/reviews';
 import './Pages.css';
 
 export default function Academy() {
+  const academySchema = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOccupationalProgram",
+    "name": "Stellar Academy Board Exam Coaching",
+    "description": "Comprehensive board exam coaching for Matric (9th-10th), Intermediate (FSc, ICS, FA, I.Com), and Cambridge O/A Levels in Lahore.",
+    "provider": {
+      "@type": "EducationalOrganization",
+      "name": "Stellar Institute & Academy",
+      "url": "https://stellarinstitute.pk"
+    },
+    "educationalCredentialAwarded": "Board Exam Success & Academic Excellence"
+  };
+
   return (
     <>
       <SEO
@@ -15,6 +28,7 @@ export default function Academy() {
         description="Top-tier academic preparation for 5th to 12th grades and Cambridge O/A Levels in Lahore. High-achieving board test sessions, separate boys/girls classes, and expert teachers."
         keywords="Stellar Academy Lahore, Matric Coaching, FSc Pre Medical Lahore, ICS Academy, O Level Classes Lahore, A Level Academy, Board Exam Preparation"
         canonical="https://stellarinstitute.pk/academy"
+        schemaData={academySchema}
       />
       {/* SECTION 1: HERO */}
       <section className="page-hero relative" style={{ overflow: 'hidden' }}>

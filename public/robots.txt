@@ -1,0 +1,9 @@
+# Robots.txt for Stellar Institute & Academy
+User-agent: *
+Allow: /
+Disallow: /stellar-admin
+Disallow: /api/
+Disallow: /coming-soon
+
+# Sitemap Location
+Sitemap: https://stellarinstitute.pk/sitemap.xml
