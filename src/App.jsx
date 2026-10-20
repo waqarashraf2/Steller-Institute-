@@ -136,11 +136,9 @@ function App() {
               </Suspense>
             } />
             <Route path="*" element={
-              <PageTransition>
-                <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loading-spinner"></div></div>}>
-                  <AppLayout />
-                </Suspense>
-              </PageTransition>
+              <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loading-spinner"></div></div>}>
+                <AppLayout />
+              </Suspense>
             } />
           </Routes>
         </Router>

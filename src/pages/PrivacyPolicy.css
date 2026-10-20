@@ -20,7 +20,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: clamp(58px, 7vw, 88px) 0 clamp(76px, 8vw, 108px);
+  padding: clamp(98px, 10vw, 130px) 0 clamp(76px, 8vw, 108px);
   color: #fff;
   background: linear-gradient(112deg, #0a2540 0%, #0d3150 68%, #10415d 100%);
 }
