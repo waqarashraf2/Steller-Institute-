@@ -115,6 +115,7 @@ export default async function handler(req, res) {
           is_valid = EXCLUDED.is_valid
         RETURNING *
       `;
+
       return res.status(200).json(rows[0]);
     }
 
