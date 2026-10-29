@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - v3
   workflow_dispatch:
 
 jobs:
@@ -39,7 +38,7 @@ jobs:
 
       - name: Sync compiled assets
         run: |
-          rsync -avz --delete -e "ssh -p ${{ secrets.CPANEL_PORT }}" dist/assets/ ${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:public_html/assets/
+          rsync -avz -e "ssh -p ${{ secrets.CPANEL_PORT }}" dist/assets/ ${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:public_html/assets/
 
       - name: Sync PHP form handlers to the cPanel API directory
         run: |

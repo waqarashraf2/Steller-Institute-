@@ -263,7 +263,7 @@ export default function CampaignApply() {
           body: JSON.stringify(payload)
         });
         const result = await response.json().catch(() => ({}));
-        if (response.ok || result.status === 'success' || result.success || result.lead_id) {
+        if (response.ok && result.success !== false && !['error', 'failed', 'failure'].includes(String(result.status || '').toLowerCase())) {
           saveSuccess = true;
         }
       } catch (directErr) {

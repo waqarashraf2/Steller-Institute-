@@ -75,11 +75,11 @@ export default function Admission() {
       });
 
       const data = await response.json().catch(() => ({}));
-      if (response.ok || data.status === 'success' || data.lead_id) {
-        crmSuccess = true;
-      }
+      crmSuccess = response.ok && data.success !== false && !['error', 'failed', 'failure'].includes(String(data.status || '').toLowerCase());
     } catch (crmErr) {
-      console.warn('Direct CRM error, attempting proxy:', crmErr);
+      console.warn('Direct CRM error:', crmErr);
+    }
+    if (!crmSuccess) {
       try {
         const response = await fetch('https://stellarinstitute.pk/api/crm-intake.php', {
           method: 'POST',
@@ -106,13 +106,16 @@ export default function Admission() {
       console.warn('PHP Email notification warning:', phpErr);
     }
 
-    if (crmSuccess || emailSuccess) {
-      pushStellarEvent('generate_lead', {
-        form_id: 'online_admission_form',
-        lead_type: 'admission_inquiry'
-      });
+    if (!crmSuccess && !emailSuccess) {
+      setStatus('error');
+      setErrorMsg('We could not send your application. Please try again or contact the admission office.');
+      return;
     }
 
+    pushStellarEvent('generate_lead', {
+      form_id: 'online_admission_form',
+      lead_type: 'admission_inquiry'
+    });
     navigate('/admission/thankyou');
   };
 

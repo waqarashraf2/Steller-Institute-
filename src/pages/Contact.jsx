@@ -51,11 +51,11 @@ export default function Contact() {
         })
       });
       const crmData = await crmRes.json().catch(() => ({}));
-      if (crmRes.ok || crmData.status === 'success' || crmData.lead_id) {
-        crmSuccess = true;
-      }
+      crmSuccess = crmRes.ok && crmData.success !== false && !['error', 'failed', 'failure'].includes(String(crmData.status || '').toLowerCase());
     } catch (crmErr) {
-      console.warn('Direct CRM Contact log warning, trying proxy:', crmErr);
+      console.warn('Direct CRM Contact log warning:', crmErr);
+    }
+    if (!crmSuccess) {
       try {
         const crmRes = await fetch('https://stellarinstitute.pk/api/crm-intake.php', {
           method: 'POST',
@@ -89,13 +89,17 @@ export default function Contact() {
       console.warn('Contact email submission warning:', err);
     }
 
-    if (crmSuccess || emailSuccess) {
-      pushStellarEvent('generate_lead', {
-        form_id: 'contact_inquiry_form',
-        lead_type: 'contact_inquiry'
-      });
+    // Only the email handler receives the full contact message and email address.
+    if (!emailSuccess) {
+      setStatus('error');
+      setErrorMsg('We could not send your message. Please try again or contact us by phone.');
+      return;
     }
 
+    pushStellarEvent('generate_lead', {
+      form_id: 'contact_inquiry_form',
+      lead_type: 'contact_inquiry'
+    });
     setStatus('success');
     setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     setTimeout(() => setStatus('idle'), 5000);
