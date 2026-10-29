@@ -1,16 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 const DriveVideoFacade = ({ videoId, title, videoPath }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
-
-  useEffect(() => {
-    // We use Google Drive's undocumented thumbnail endpoint
-    // It returns a high-res thumbnail of the video instantly without CORS issues
-    const thumbUrl = `https://drive.google.com/thumbnail?id=${videoId}&sz=w1280-h720`;
-    setThumbnailUrl(thumbUrl);
-  }, [videoId]);
+  const thumbnailUrl = `https://drive.google.com/thumbnail?id=${videoId}&sz=w1280-h720`;
 
   const handlePlay = () => setIsPlaying(true);
   const handleClose = () => setIsPlaying(false);

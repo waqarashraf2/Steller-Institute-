@@ -1,5 +1,4 @@
-import React from 'react';
-import { useWebsiteImage, useWebsiteImages } from './WebsiteImagesProvider';
+import { useWebsiteImage } from './WebsiteImagesProvider';
 import './ImagePlaceholder.css';
 
 /**

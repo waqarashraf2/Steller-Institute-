@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { defaultWebsiteImages } from '../data/defaultImages';
 
 const WebsiteImagesContext = createContext({});
@@ -21,7 +21,7 @@ function loadCache() {
 function saveCache(images) {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), images }));
-  } catch {}
+  } catch { /* Continue with the existing fallback. */ }
 }
 
 export function WebsiteImagesProvider({ children }) {
@@ -30,7 +30,7 @@ export function WebsiteImagesProvider({ children }) {
     ...defaultWebsiteImages,
     ...(cached || {})
   }));
-  const [loaded, setLoaded] = useState(true);
+  const loaded = true;
 
   useEffect(() => {
     const API = import.meta.env.VITE_API_URL || '/api';

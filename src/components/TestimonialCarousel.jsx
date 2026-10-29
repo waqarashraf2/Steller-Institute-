@@ -23,10 +23,10 @@ export default function TestimonialCarousel({ testimonials }) {
   const total = testimonials.length;
   const loopWidth = total * STEP;
 
-  const normalise = (val) => {
+  const normalise = useCallback((val) => {
     // keep in range [0, loopWidth)
     return ((val % loopWidth) + loopWidth) % loopWidth;
-  };
+  }, [loopWidth]);
 
   // Animation loop
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function TestimonialCarousel({ testimonials }) {
     };
     rafRef.current = requestAnimationFrame(animate);
     return () => { running = false; cancelAnimationFrame(rafRef.current); };
-  }, [loopWidth, items.length]);
+  }, [loopWidth, items.length, normalise]);
 
   // Auto-scroll
   useEffect(() => {

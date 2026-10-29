@@ -112,7 +112,9 @@ export async function ensureTables() {
     await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS cnic VARCHAR(50)`;
     await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS duration_from DATE`;
     await db`ALTER TABLE certificates ADD COLUMN IF NOT EXISTS duration_to DATE`;
-  } catch {}
+  } catch (error) {
+    console.warn('Could not check certificate columns:', error.message);
+  }
 
   const targetPass = process.env.ADMIN_DEFAULT_PASS;
   if (!targetPass) {

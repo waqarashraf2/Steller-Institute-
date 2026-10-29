@@ -1,4 +1,3 @@
-import React, { useMemo } from 'react';
 import LogoLoop from './LogoLoop';
 import './LogoMarquee.css';
 

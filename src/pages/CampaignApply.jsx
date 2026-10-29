@@ -41,6 +41,8 @@ export default function CampaignApply() {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    // Keep campaign parameters in sync when the URL changes without a remount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormData(prev => ({
       ...prev,
       location: urlLocation || prev.location,
@@ -285,7 +287,7 @@ export default function CampaignApply() {
           if (response.ok && result.success !== false) {
             saveSuccess = true;
           }
-        } catch {}
+        } catch { /* Continue with the existing fallback. */ }
       }
 
       // Fallback: If both network calls failed

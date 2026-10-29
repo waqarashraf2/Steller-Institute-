@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'node:fs';
 let code = fs.readFileSync('src/pages/Home.jsx', 'utf8');
 
 const newTestimonialsHtml = `      {/* ===== TESTIMONIALS ===== */}

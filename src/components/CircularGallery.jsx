@@ -83,7 +83,7 @@ async function resolveFont(font, fontUrl) {
       try {
         await document.fonts.load(font);
         await document.fonts.ready;
-      } catch {}
+      } catch { /* Continue with the existing fallback. */ }
     }
     return font;
   }
@@ -93,7 +93,7 @@ async function resolveFont(font, fontUrl) {
     const prefix = sizeMatch ? sizeMatch[1].trim() : 'bold 30px';
     const resolved = `${prefix} "${family}"`;
     if (document.fonts && document.fonts.load) {
-      try { await document.fonts.load(resolved); } catch {}
+      try { await document.fonts.load(resolved); } catch { /* Continue with the existing fallback. */ }
     }
     return resolved;
   } catch (error) {

@@ -10,6 +10,8 @@ export default function Navbar() {
 
   // Close mobile menu on page change
   useEffect(() => {
+    // Close the drawer when navigation is triggered outside the drawer itself.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
   }, [location.pathname]);
 

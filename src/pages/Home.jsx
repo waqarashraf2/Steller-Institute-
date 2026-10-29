@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { testimonials } from '../data/courses';
 import { useCourses } from '../components/CoursesProvider';
 import HeroSlider from '../components/HeroSlider';
 import StatsCounter from '../components/StatsCounter';

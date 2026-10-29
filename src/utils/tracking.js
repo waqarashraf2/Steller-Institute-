@@ -213,7 +213,7 @@ export function setupGlobalClickTracking() {
             destination_type: 'internal',
             destination_path: url.pathname
           });
-        } catch {}
+        } catch { /* Continue with the existing fallback. */ }
       } else if (href.startsWith('http://') || href.startsWith('https://')) {
         try {
           const url = new URL(href);
@@ -223,7 +223,7 @@ export function setupGlobalClickTracking() {
             destination_type: 'external',
             destination_host: url.hostname
           });
-        } catch {}
+        } catch { /* Continue with the existing fallback. */ }
       }
       return;
     }

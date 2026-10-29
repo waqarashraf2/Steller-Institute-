@@ -20,7 +20,7 @@ function getInitialCourses() {
         return data;
       }
     }
-  } catch {}
+  } catch { /* Continue with the existing fallback. */ }
   return defaultFallbackCourses;
 }
 
@@ -39,7 +39,7 @@ export function CoursesProvider({ children }) {
           setCourses(data);
           try {
             localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
-          } catch {}
+          } catch { /* Continue with the existing fallback. */ }
         }
       }
     } catch (err) {
@@ -50,6 +50,8 @@ export function CoursesProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    // Fetch from the external API when this provider mounts.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCourses();
 
     const handleCoursesUpdated = () => fetchCourses(true);

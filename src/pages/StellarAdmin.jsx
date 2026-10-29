@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { itCourses, beautyCourses } from '../data/courses';
 import CertificateTemplate from '../components/CertificateTemplate';
@@ -34,6 +34,22 @@ const emptyCert = {
   instructor_title: 'Stellar Institute',
   is_valid: true
 };
+
+// Helper for resilient certificate storage
+const getLocalCerts = () => {
+  try {
+    return JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
+  } catch {
+    return [];
+  }
+};
+
+const saveLocalCerts = (certs) => {
+  try {
+    localStorage.setItem('stellar_admin_certs', JSON.stringify(certs));
+  } catch { /* Continue with the existing fallback. */ }
+};
+
 
 export default function StellarAdmin() {
   const [token, setToken] = useState(sessionStorage.getItem('stellar-admin-token') || '');
@@ -179,6 +195,8 @@ export default function StellarAdmin() {
   useEffect(() => {
     if (token) {
       const s = sessionStorage.getItem('stellar-admin-user');
+      // Restore the existing session alongside the authenticated data fetch.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (s) setUser(JSON.parse(s));
       fetchData(true);
     }
@@ -234,21 +252,27 @@ export default function StellarAdmin() {
 
   const handleDeleteAnn = async (id) => {
     try {
-      await fetch(`${API}/admin-announcements`, {
+      const r = await fetch(`${API}/admin-announcements`, {
         method: 'DELETE', headers: headers(), body: JSON.stringify({ id })
       });
+      if (!r.ok) throw new Error('Delete failed');
       setDeleteTarget(null);
       fetchData();
-    } catch {}
+    } catch {
+      alert('Could not delete the announcement. Please try again.');
+    }
   };
 
   const toggleActiveAnn = async (a) => {
     try {
-      await fetch(`${API}/admin-announcements`, {
+      const r = await fetch(`${API}/admin-announcements`, {
         method: 'PUT', headers: headers(), body: JSON.stringify({ ...a, is_active: !a.is_active })
       });
+      if (!r.ok) throw new Error('Update failed');
       fetchData();
-    } catch {}
+    } catch {
+      alert('Could not update the announcement. Please try again.');
+    }
   };
 
   const openEditAnn = (a) => {
@@ -310,8 +334,11 @@ export default function StellarAdmin() {
       const r = await fetch(`${API}/admin-images`, {
         method: 'DELETE', headers: headers(), body: JSON.stringify({ id })
       });
-      if (r.ok) fetchData();
-    } catch {}
+      if (!r.ok) throw new Error('Delete failed');
+      fetchData();
+    } catch {
+      alert('Could not delete the image. Please try again.');
+    }
   };
 
   const openEditImg = (i) => {
@@ -427,21 +454,6 @@ export default function StellarAdmin() {
       console.error('Course deletion failed:', err);
       alert('Could not delete course. Please check your connection and try again.');
     }
-  };
-
-  // Helper for resilient certificate storage
-  const getLocalCerts = () => {
-    try {
-      return JSON.parse(localStorage.getItem('stellar_admin_certs') || '[]');
-    } catch {
-      return [];
-    }
-  };
-
-  const saveLocalCerts = (certs) => {
-    try {
-      localStorage.setItem('stellar_admin_certs', JSON.stringify(certs));
-    } catch {}
   };
 
   // --- CERTIFICATES LOGIC ---

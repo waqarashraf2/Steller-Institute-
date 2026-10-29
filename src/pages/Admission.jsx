@@ -91,7 +91,7 @@ export default function Admission() {
         });
         const data = await response.json().catch(() => ({}));
         crmSuccess = response.ok && data.success !== false;
-      } catch {}
+      } catch { /* Continue with the existing fallback. */ }
     }
 
     try {

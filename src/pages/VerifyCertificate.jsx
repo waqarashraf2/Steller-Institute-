@@ -21,6 +21,8 @@ export default function VerifyCertificate() {
 
   useEffect(() => {
     if (!currentReg) {
+      // Clear the previous result when there is no registration to verify.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       setCertData(null);
       return;

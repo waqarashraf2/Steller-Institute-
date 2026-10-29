@@ -73,7 +73,7 @@ export default function Contact() {
         });
         const crmData = await crmRes.json().catch(() => ({}));
         crmSuccess = crmRes.ok && crmData.success !== false;
-      } catch {}
+      } catch { /* Continue with the existing fallback. */ }
     }
 
     // 2. Post to cPanel email backend
