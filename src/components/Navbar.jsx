@@ -8,18 +8,48 @@ export default function Navbar() {
   const [isHovered, setIsHovered] = useState(false);
   const location = useLocation();
 
-  // Close mobile menu on page change
+  // Close mobile menu and reset header on page change
   useEffect(() => {
     // Close the drawer when navigation is triggered outside the drawer itself.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
+    setIsScrolled(false);
   }, [location.pathname]);
 
-  // Track scroll state: when scrolled down, condense into slim floating address pill
+  // Track scroll direction:
+  // - Scrolling down past hero (>50px): collapse into slim floating address pill
+  // - Scrolling up anywhere on the page (even slightly): expand full header immediately
+  // - Near top of page (<= 50px): always show full header
   useEffect(() => {
+    let lastScrollY = typeof window !== 'undefined' ? window.scrollY : 0;
+    let ticking = false;
+
+    const updateScrollDirection = () => {
+      const currentScrollY = Math.max(0, window.scrollY);
+      const diff = currentScrollY - lastScrollY;
+
+      // Always show full header near the top of the page
+      if (currentScrollY <= 50) {
+        setIsScrolled(false);
+        lastScrollY = currentScrollY;
+      } else if (diff > 8) {
+        // Scrolling DOWN by > 8px -> condense into slim pill
+        setIsScrolled(true);
+        lastScrollY = currentScrollY;
+      } else if (diff < -8) {
+        // Scrolling UP by > 8px anywhere on page -> reveal full header
+        setIsScrolled(false);
+        lastScrollY = currentScrollY;
+      }
+
+      ticking = false;
+    };
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setIsScrolled(currentScrollY > 30);
+      if (!ticking) {
+        window.requestAnimationFrame(updateScrollDirection);
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -28,7 +58,7 @@ export default function Navbar() {
 
   return (
     <header 
-      className={`stellar-header-wrapper ${isScrolled ? 'is-scrolled' : ''} ${isHovered ? 'is-hovered' : ''}`}
+      className={`stellar-header-wrapper ${isScrolled && !mobileMenuOpen ? 'is-scrolled' : ''} ${isHovered ? 'is-hovered' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
